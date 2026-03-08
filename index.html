@@ -207,7 +207,7 @@ const el=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Obje
 
 // ── API Functions ──
 async function api(action,params={},body=null){
-  if(API_URL==='https://script.google.com/macros/s/AKfycbw2bEfuBJ7txhN1ETYVizRSkIC62IbSAUpcQSNPQZWPXp5-2w7xWvtEHfJCmc2Zxrtt/exec'){
+  if(!API_URL||API_URL.indexOf('PASTE_YOUR')!==-1){
     toast('⚠️ Set your API URL first! See setup guide.');
     throw new Error('API URL not configured');
   }
