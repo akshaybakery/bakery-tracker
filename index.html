@@ -158,7 +158,7 @@ const dTotal=a=>a.reduce((s,c,i)=>s+c*DV[i],0);
 const sf=(a,f)=>a.reduce((s,r)=>s+(r[f]||0),0);
 const af=(a,f)=>a.length?sf(a,f)/a.length:0;
 const $=s=>document.querySelector(s);
-const el=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(n==='style'&&typeof v==='object')Object.assign(e.style,v);else if(n.startsWith('on'))e.addEventListener(n.slice(2).toLowerCase(),v);else if(n==='className')e.className=v;else if(n==='html')e.innerHTML=v;else e.setAttribute(n,v)}k.flat(9).forEach(c=>{if(c!=null)e.appendChild(typeof c==='string'?document.createTextNode(c):c)});return e};
+const el=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(n==='style'&&typeof v==='object')Object.assign(e.style,v);else if(n.startsWith('on'))e.addEventListener(n.slice(2).toLowerCase(),v);else if(n==='className')e.className=v;else if(n==='html')e.innerHTML=v;else if(typeof v==='boolean'){if(v)e.setAttribute(n,'');else e.removeAttribute(n);}else e.setAttribute(n,v)}k.flat(9).forEach(c=>{if(c!=null)e.appendChild(typeof c==='string'?document.createTextNode(c):c)});return e};
 
 async function api(action,params={},body=null){
   const url=new URL(API);
