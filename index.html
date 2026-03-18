@@ -138,7 +138,7 @@ function callApi(action,params,body){
 }
 
 function loadForm(){
-  var r=null;for(var i=0;i<S.records.length;i++){if(S.records[i].shop==S.shop&&S.records[i].date===S.date){r=S.records[i];break}}
+  var r=null;for(var i=0;i<S.records.length;i++){var rec=S.records[i];if(typeof rec.openingCash==='string')try{rec.openingCash=JSON.parse(rec.openingCash)}catch(e){rec.openingCash=[0,0,0,0,0,0,0]};if(typeof rec.closingCash==='string')try{rec.closingCash=JSON.parse(rec.closingCash)}catch(e){rec.closingCash=[0,0,0,0,0,0,0]};if(typeof rec.expenses==='string')try{rec.expenses=JSON.parse(rec.expenses)}catch(e){rec.expenses=[]};if(typeof rec.vendorPayments==='string')try{rec.vendorPayments=JSON.parse(rec.vendorPayments)}catch(e){rec.vendorPayments=[]};if(rec.shop==S.shop&&rec.date===S.date){r=rec;break}}
   if(r){S.oc=r.openingCash?r.openingCash.slice():[0,0,0,0,0,0,0];S.cc=r.closingCash?r.closingCash.slice():[0,0,0,0,0,0,0];S.upi=r.upiReceived||0;S.billed=r.totalBilled||0;S.walk=r.walkIns||0;S.exps=(r.expenses||[]).map(function(e){return JSON.parse(JSON.stringify(e))});S.vends=(r.vendorPayments||[]).map(function(v){return JSON.parse(JSON.stringify(v))});S.notes=r.notes||''}
   else{S.oc=[0,0,0,0,0,0,0];S.cc=[0,0,0,0,0,0,0];S.upi=0;S.billed=0;S.walk=0;S.exps=[];S.vends=[];S.notes=''}
 }
