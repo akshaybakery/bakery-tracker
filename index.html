@@ -1085,37 +1085,91 @@ function renderOrderingEntry(){
   out+='<div style="margin-top:8px;text-align:right"><button class="ab g" id="addOrdItem">\uD83D\uDCE6 Add Item</button></div></div></div>';
   out+=prodDL;
 
-  // Action buttons
+  // Save button
   if(totalItems){
-    out+='<button class="save-btn" id="shareWhatsApp" style="background:linear-gradient(135deg,#25D366,#128C7E);margin-bottom:8px">\uD83D\uDCF2 Share via WhatsApp</button>';
-    out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveOrdBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save Order to Cloud')+'</button>';
+    out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveOrdBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save '+SHOPS[S.ordShop]+' Order')+'</button>';
   }
+
+  // Shop order status & WhatsApp share
+  var recs0=recsForDateShop(S.date,0),recs1=recsForDateShop(S.date,1);
+  var has0=false,has1=false,time0='',time1='';
+  for(var i=0;i<recs0.length;i++){var po=recs0[i].productOrders||[];if(po.length){has0=true;time0=recs0[i].savedAt||'';break}}
+  for(var i=0;i<recs1.length;i++){var po=recs1[i].productOrders||[];if(po.length){has1=true;time1=recs1[i].savedAt||'';break}}
+  var fmtTime=function(t){if(!t)return'';try{var d=new Date(t);return d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
+
+  out+='<div class="card" style="margin-top:12px"><div class="ch"><div class="ci '+(has0&&has1?'g':'a')+'">\uD83C\uDFEA</div><div><div class="ct">Order Status</div><div class="cs">Both shops must be saved before sharing</div></div></div>';
+  out+='<div style="display:flex;gap:8px;margin-bottom:10px">';
+  out+='<div style="flex:1;text-align:center;padding:10px;border-radius:8px;background:'+(has0?'var(--gl)':'var(--bg)')+';border:1.5px solid '+(has0?'var(--green)':'var(--border)')+'"><div style="font-size:16px">'+(has0?'\u2705':'\u23F3')+'</div><div style="font-size:11px;font-weight:700">Highway</div>'+(time0?'<div style="font-size:9px;color:var(--text3)">\u23F0 '+fmtTime(time0)+'</div>':'<div style="font-size:9px;color:var(--text3)">Pending</div>')+'</div>';
+  out+='<div style="flex:1;text-align:center;padding:10px;border-radius:8px;background:'+(has1?'var(--gl)':'var(--bg)')+';border:1.5px solid '+(has1?'var(--green)':'var(--border)')+'"><div style="font-size:16px">'+(has1?'\u2705':'\u23F3')+'</div><div style="font-size:11px;font-weight:700">Mainroad</div>'+(time1?'<div style="font-size:9px;color:var(--text3)">\u23F0 '+fmtTime(time1)+'</div>':'<div style="font-size:9px;color:var(--text3)">Pending</div>')+'</div>';
+  out+='</div>';
+
+  if(has0&&has1){
+    out+='<button class="save-btn" id="shareWhatsApp" style="background:linear-gradient(135deg,#25D366,#128C7E)">\uD83D\uDCF2 Share Combined Order via WhatsApp</button>';
+  }else{
+    out+='<div style="text-align:center;font-size:11px;color:var(--text3);padding:6px">\uD83D\uDD12 Save orders for both shops to unlock WhatsApp share</div>';
+  }
+  out+='</div>';
+
   return out;
 }
 
 function formatOrderForWhatsApp(){
   var d=new Date(S.date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'short',year:'numeric'});
+  // Get orders from both shops
+  var recs0=recsForDateShop(S.date,0),recs1=recsForDateShop(S.date,1);
+  var orders0=[],orders1=[];
+  for(var i=0;i<recs0.length;i++){var po=recs0[i].productOrders||[];for(var j=0;j<po.length;j++)orders0.push(po[j])}
+  for(var i=0;i<recs1.length;i++){var po=recs1[i].productOrders||[];for(var j=0;j<po.length;j++)orders1.push(po[j])}
+
+  // Combine into product map: {product: {cat, unit, s0, s1, notes}}
+  var prodMap={};
+  for(var i=0;i<orders0.length;i++){var o=orders0[i];var k=o.product;if(!prodMap[k])prodMap[k]={cat:o.category||'Baking',unit:o.unit||'pcs',s0:0,s1:0,notes:o.notes||''};prodMap[k].s0+=o.qty||0}
+  for(var i=0;i<orders1.length;i++){var o=orders1[i];var k=o.product;if(!prodMap[k])prodMap[k]={cat:o.category||'Baking',unit:o.unit||'pcs',s0:0,s1:0,notes:o.notes||''};prodMap[k].s1+=o.qty||0}
+
   var msg='\uD83C\uDF5E *AKSHAY BAKERY - PRODUCTION ORDER*\n';
   msg+='\uD83D\uDCC5 '+d+'\n';
-  msg+='\uD83C\uDFEA Shop: *'+SHOPS[S.ordShop]+'*\n';
   msg+='\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n';
   var icons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
-  var totalQty=0;
+  var totalQty=0,totalItems=0;
+
+  // Production totals by category
   for(var c=0;c<PCATS.length;c++){
     var cat=PCATS[c];
-    var items=S.ordItems.filter(function(o){return o.category===cat});
-    if(!items.length)continue;
+    var catItems=[];for(var k in prodMap){if(prodMap[k].cat===cat)catItems.push({name:k,data:prodMap[k]})}
+    if(!catItems.length)continue;
     msg+=(icons[cat]||'')+' *'+cat.toUpperCase()+'*\n';
-    for(var i=0;i<items.length;i++){
-      msg+='\u2022 '+items[i].product+' \u2014 *'+items[i].qty+' '+items[i].unit+'*';
-      if(items[i].notes)msg+=' ('+items[i].notes+')';
+    for(var i=0;i<catItems.length;i++){
+      var p=catItems[i],total=p.data.s0+p.data.s1;
+      msg+='\u2022 '+p.name+' \u2014 *'+total+' '+p.data.unit+'*';
+      if(p.data.notes)msg+=' ('+p.data.notes+')';
       msg+='\n';
-      totalQty+=items[i].qty||0;
+      totalQty+=total;totalItems++;
     }
     msg+='\n';
   }
+
+  // Dispatch / Shipping section
   msg+='\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n';
-  msg+='\uD83D\uDCE6 *Total: '+S.ordItems.length+' items, '+totalQty+' units*\n';
+  msg+='\uD83D\uDE9A *DISPATCH / SHIPPING*\n\n';
+  for(var c=0;c<PCATS.length;c++){
+    var cat=PCATS[c];
+    var catItems=[];for(var k in prodMap){if(prodMap[k].cat===cat)catItems.push({name:k,data:prodMap[k]})}
+    if(!catItems.length)continue;
+    var hasShopSplit=false;for(var i=0;i<catItems.length;i++){if(catItems[i].data.s0>0&&catItems[i].data.s1>0){hasShopSplit=true;break}}
+    msg+=(icons[cat]||'')+' *'+cat+'*\n';
+    for(var i=0;i<catItems.length;i++){
+      var p=catItems[i];
+      msg+='\u2022 '+p.name+': ';
+      if(p.data.s0>0)msg+='\uD83D\uDFE2 Hwy '+p.data.s0+p.data.unit;
+      if(p.data.s0>0&&p.data.s1>0)msg+=' | ';
+      if(p.data.s1>0)msg+='\uD83D\uDD35 Main '+p.data.s1+p.data.unit;
+      msg+='\n';
+    }
+    msg+='\n';
+  }
+
+  msg+='\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n';
+  msg+='\uD83D\uDCE6 *Total: '+totalItems+' items, '+totalQty+' units*\n';
   msg+='\u23F0 Sent at '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
   return msg;
 }
