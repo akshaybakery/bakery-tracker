@@ -581,9 +581,9 @@ function renderEntry(){
   // Gross Revenue = Cash Sales + Non-Cash Sales (UPI)
   // Net Profit = Gross Revenue - Total Expenses
   var venTot=0,nonVenTot=0;for(var i=0;i<S.exps.length;i++){if(S.exps[i].category==='Vendor Payment')venTot+=S.exps[i].amount;else nonVenTot+=S.exps[i].amount}
-  var cashSales=ct-ot+nonVenTot;
-  var grossRevenue=cashSales+S.upi;
-  var netProfit=grossRevenue-nonVenTot;
+  var cashInHand=ct-ot;
+  var grossRevenue=expTot+S.upi+cashInHand;
+  var netProfit=S.upi+cashInHand;
   var avgTicket=S.walk>0?Math.round(grossRevenue/S.walk):0;
   var grossMargin=grossRevenue>0?Math.round(netProfit/grossRevenue*100):0;
   // Auto-sync to state for saving
@@ -598,7 +598,7 @@ function renderEntry(){
 
   // Sales breakdown
   out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCB0 Sales</div>';
-  out+='<div class="sg">'+si('Cash Sales',fmt(cashSales),cashSales>=0?'g':'r')+si('UPI Sales',fmt(S.upi),'b')+(S.walk>0?si('Customers',S.walk,'g'):'')+(S.walk>0?si('Avg Ticket',fmt(avgTicket)):'')+si('','')+'</div>';
+  out+='<div class="sg">'+si('Cash in Hand (Close \u2212 Open)',fmt(cashInHand),cashInHand>=0?'g':'r')+si('UPI Sales',fmt(S.upi),'b')+si('Total Expenses (Paid Out)',fmt(expTot),'r')+(S.walk>0?si('Customers',S.walk,'g'):'')+(S.walk>0?si('Avg Ticket',fmt(avgTicket)):'')+si('','')+'</div>';
 
   // Expenses (Cost of Operations)
   out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCE4 Expenses (Paid Out)</div>';
@@ -613,7 +613,7 @@ function renderEntry(){
   out+='<div class="sg">'+si('\u2B50 Net Profit',fmt(netProfit),netProfit>=0?'g':'r')+si('Gross Margin',grossMargin+'%',grossMargin>=0?'g':'r')+'</div>';
 
   // Standard formula reference
-  out+='<div style="font-size:9px;color:var(--text3);margin-top:8px;padding:8px;background:var(--bg);border-radius:8px;line-height:1.8;text-align:center"><strong>Cash Register Reconciliation</strong><br>Cash Sales = Closing Balance + Paid Out \u2212 Opening Balance<br>Gross Revenue = Cash Sales + UPI Sales<br>Net Profit = Gross Revenue \u2212 Total Expenses</div>';
+  out+='<div style="font-size:9px;color:var(--text3);margin-top:8px;padding:8px;background:var(--bg);border-radius:8px;line-height:1.8;text-align:center"><strong>Daily Business Calculation</strong><br>Gross Revenue = Total Expenses + UPI + (Closing \u2212 Opening)<br>Net Profit = UPI + (Closing \u2212 Opening)</div>';
   out+='</div>';
   out+=vendorDL+staffDL+'<datalist id="dlExpNames"></datalist>';
   out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save Entry')+'</button>';
