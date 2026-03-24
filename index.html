@@ -857,7 +857,7 @@ function renderVendors(){
     for(var j=0;j<gi.length;j++){
       var vn=gi[j].vendor||'Unknown';
       if(!vMap[vn])vMap[vn]={bills:[],payments:[]};
-      vMap[vn].bills.push({date:rec.date,shop:rec.shop,amount:gi[j].amount,items:gi[j].items||'',billNo:gi[j].billNo||''});
+      vMap[vn].bills.push({date:rec.date,shop:rec.shop,amount:gi[j].amount,items:gi[j].items||'',billNo:gi[j].billNo||'',entryType:gi[j].entryType||'bill',qty:gi[j].qty||0,qtyUnit:gi[j].qtyUnit||''});
     }
     var exps=rec.expenses||[];
     for(var j=0;j<exps.length;j++){
@@ -868,15 +868,25 @@ function renderVendors(){
       }
     }
   }
-  var advMap={};
+  // Include GRN records from ordering staff
+  for(var i=0;i<(S.grnRecords||[]).length;i++){
+    var gr=S.grnRecords[i];var gi2=gr.goodsInward||[];
+    for(var j=0;j<gi2.length;j++){
+      var vn3=gi2[j].vendor||'Unknown';
+      if(!vMap[vn3])vMap[vn3]={bills:[],payments:[]};
+      var dup=false;for(var m=0;m<vMap[vn3].bills.length;m++){if(vMap[vn3].bills[m].id===gi2[j].id){dup=true;break}}
+      if(!dup)vMap[vn3].bills.push({id:gi2[j].id,date:gr.date,shop:gr.shop,amount:gi2[j].amount,items:gi2[j].items||'',billNo:gi2[j].billNo||'',entryType:gi2[j].entryType||'bill',qty:gi2[j].qty||0,qtyUnit:gi2[j].qtyUnit||'',source:'grn'});
+    }
+  }
+  var staffMap={};
   for(var i=0;i<R.length;i++){
     var exps2=R[i].expenses||[];
     for(var j=0;j<exps2.length;j++){
-      if(exps2[j].category==='Advance Salary'&&exps2[j].description){
+      if((exps2[j].category==='Salary'||exps2[j].category==='Advance Salary')&&exps2[j].description){
         var sn=exps2[j].description;
-        if(!advMap[sn])advMap[sn]={total:0,txns:[]};
-        advMap[sn].total+=exps2[j].amount;
-        advMap[sn].txns.push({date:R[i].date,shop:R[i].shop,amount:exps2[j].amount});
+        if(!staffMap[sn])staffMap[sn]={salary:0,advance:0,txns:[]};
+        if(exps2[j].category==='Salary'){staffMap[sn].salary+=exps2[j].amount}else{staffMap[sn].advance+=exps2[j].amount}
+        staffMap[sn].txns.push({date:R[i].date,shop:R[i].shop,amount:exps2[j].amount,type:exps2[j].category});
       }
     }
   }
@@ -892,7 +902,7 @@ function renderVendors(){
   vArr.sort(function(a,b){return b.balance-a.balance});
   var totalBalance=totalBills-totalPaid;
 
-  var out='<div class="ven-totals"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:8px">\uD83C\uDFEA Vendor Overview</div><div class="ven-totals-grid"><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalBills)+'</div><div class="ven-totals-lbl">Total Bills</div></div><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalPaid)+'</div><div class="ven-totals-lbl">Total Paid</div></div><div class="ven-totals-item"><div class="ven-totals-val" style="color:'+(totalBalance>0?'#fca5a5':'#86efac')+'">'+fmt(totalBalance)+'</div><div class="ven-totals-lbl">'+(totalBalance>0?'Outstanding':'Overpaid')+'</div></div></div></div>';
+  var out='<div class="ven-totals"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:8px">\uD83D\uDCCB Vendor Payables</div><div class="ven-totals-grid"><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalBills)+'</div><div class="ven-totals-lbl">Total Invoiced</div></div><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalPaid)+'</div><div class="ven-totals-lbl">Total Paid</div></div><div class="ven-totals-item"><div class="ven-totals-val" style="color:'+(totalBalance>0?'#fca5a5':'#86efac')+'">'+fmt(totalBalance)+'</div><div class="ven-totals-lbl">'+(totalBalance>0?'Outstanding':'Overpaid')+'</div></div></div></div>';
 
   if(!vArr.length){
     out+='<div class="es"><div class="esi">\uD83C\uDFEA</div><div class="est">No vendor data yet.<br>Add goods inward entries and vendor payments in the Entry tab.</div></div>';
@@ -905,7 +915,7 @@ function renderVendors(){
     out+='<div class="ven-card"><div class="ven-header" data-ventoggle="'+i+'"><div class="ven-name">\uD83C\uDFEA '+v.name+'</div><div class="ven-badge '+badgeCls+'">'+badgeText+'</div></div>';
     out+='<div class="ven-summary"><div class="ven-stat"><div class="ven-stat-lbl">Bills</div><div class="ven-stat-val" style="color:var(--amber)">'+fmt(v.billTotal)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Paid</div><div class="ven-stat-val" style="color:var(--green)">'+fmt(v.paidTotal)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Balance</div><div class="ven-stat-val" style="color:'+(v.balance>0?'var(--rose)':'var(--green)')+'">'+fmt(v.balance)+'</div></div></div>';
     var allTxns=[];
-    for(var j=0;j<v.bills.length;j++)allTxns.push({date:v.bills[j].date,type:'bill',desc:v.bills[j].items||(v.bills[j].billNo?'Bill #'+v.bills[j].billNo:'Goods received'),amount:v.bills[j].amount,shop:v.bills[j].shop});
+    for(var j=0;j<v.bills.length;j++){var bl=v.bills[j];var bDesc=bl.items||(bl.billNo?'Inv #'+bl.billNo:'Goods received');if(bl.entryType==='qty'&&bl.qty)bDesc=bl.qty+' '+bl.qtyUnit+(bl.items?' \u2022 '+bl.items:'');if(bl.billNo&&bl.entryType!=='qty')bDesc+=(bDesc?' \u2022 ':'')+'Inv #'+bl.billNo;if(bl.source==='grn')bDesc+=' (GRN)';allTxns.push({date:bl.date,type:'bill',desc:bDesc,amount:bl.amount,shop:bl.shop})}
     for(var j=0;j<v.payments.length;j++)allTxns.push({date:v.payments[j].date,type:'pay',desc:'Payment',amount:v.payments[j].amount,shop:v.payments[j].shop});
     allTxns.sort(function(a,b){return b.date<a.date?-1:b.date>a.date?1:0});
     if(allTxns.length){
@@ -920,20 +930,30 @@ function renderVendors(){
     out+='</div>';
   }
 
-  var advArr=[];for(var k in advMap)advArr.push({name:k,total:advMap[k].total,txns:advMap[k].txns});
-  advArr.sort(function(a,b){return b.total-a.total});
-  if(advArr.length){
-    out+='<div class="staff-adv-card"><div class="ch"><div class="ci r">\uD83D\uDCB3</div><div><div class="ct">Advance Salary Tracker</div><div class="cs">Staff advance payments from expenses</div></div></div>';
-    var advTotal=0;
-    for(var i=0;i<advArr.length;i++){
-      advTotal+=advArr[i].total;
-      out+='<div class="staff-adv-row"><div><div class="staff-adv-name">'+advArr[i].name+'</div><div style="font-size:10px;color:var(--text3)">'+advArr[i].txns.length+' payment'+(advArr[i].txns.length>1?'s':'')+'</div></div><div class="staff-adv-amt">'+fmt(advArr[i].total)+'</div></div>';
+  var staffArr=[];for(var k in staffMap)staffArr.push({name:k,salary:staffMap[k].salary,advance:staffMap[k].advance,total:staffMap[k].salary+staffMap[k].advance,txns:staffMap[k].txns});
+  staffArr.sort(function(a,b){return b.total-a.total});
+  if(staffArr.length){
+    var salTotal=0,advTotal=0;
+    for(var i=0;i<staffArr.length;i++){salTotal+=staffArr[i].salary;advTotal+=staffArr[i].advance}
+    out+='<div class="staff-adv-card"><div class="ch"><div class="ci r">\uD83D\uDCB3</div><div><div class="ct">Staff Payroll</div><div class="cs">Salary disbursements &amp; advance payments</div></div></div>';
+    out+='<div style="display:flex;gap:8px;margin-bottom:10px">';
+    out+='<div style="flex:1;text-align:center;padding:8px;background:var(--gl);border-radius:8px"><div style="font-size:14px;font-weight:700;color:var(--green)">'+fmt(salTotal)+'</div><div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Salary Paid</div></div>';
+    out+='<div style="flex:1;text-align:center;padding:8px;background:var(--al);border-radius:8px"><div style="font-size:14px;font-weight:700;color:var(--amber)">'+fmt(advTotal)+'</div><div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Advances Given</div></div>';
+    out+='<div style="flex:1;text-align:center;padding:8px;background:var(--rl);border-radius:8px"><div style="font-size:14px;font-weight:700;color:var(--rose)">'+fmt(salTotal+advTotal)+'</div><div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Total Payroll</div></div>';
+    out+='</div>';
+    for(var i=0;i<staffArr.length;i++){
+      var st=staffArr[i];
+      out+='<div class="staff-adv-row"><div><div class="staff-adv-name">'+st.name+'</div><div style="font-size:10px;color:var(--text3)">';
+      if(st.salary)out+='Salary: '+fmt(st.salary);
+      if(st.salary&&st.advance)out+=' \u2022 ';
+      if(st.advance)out+='Advance: '+fmt(st.advance);
+      out+=' \u2022 '+st.txns.length+' payment'+(st.txns.length>1?'s':'')+'</div></div><div class="staff-adv-amt">'+fmt(st.total)+'</div></div>';
     }
-    out+='<div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:4px;border-top:1.5px solid var(--border)"><span style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase">Total Advances</span><span style="font-size:14px;font-weight:700;color:var(--rose)">'+fmt(advTotal)+'</span></div>';
+    out+='<div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:4px;border-top:1.5px solid var(--border)"><span style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase">Total Payroll</span><span style="font-size:14px;font-weight:700;color:var(--rose)">'+fmt(salTotal+advTotal)+'</span></div>';
     out+='</div>';
   }
 
-  out+='<div class="ins"><div class="inst">\uD83D\uDCA1 How Vendor Tracking Works</div><div class="insi">\uD83D\uDCE6 <strong>Goods Inward</strong> \u2014 Log incoming stock in the Entry tab with vendor name and bill amount. This creates a bill record.</div><div class="insi">\uD83D\uDCB0 <strong>Vendor Payments</strong> \u2014 Add an expense with category "Vendor Payment" and put the vendor name in the description. This records a payment.</div><div class="insi">\uD83D\uDCB3 <strong>Advance Salary</strong> \u2014 Add an expense with category "Advance Salary" and put the staff name in the description.</div><div class="insi">\u26A0\uFE0F Use the <strong>exact same vendor/staff name</strong> each time for accurate matching.</div></div>';
+  out+='<div class="ins"><div class="inst">\uD83D\uDCA1 How Ledger Tracking Works</div><div class="insi">\uD83D\uDCE6 <strong>Goods Inward</strong> \u2014 Log incoming stock (Entry tab or Ordering Staff GRN) with vendor name and bill amount. Creates an invoice record under Vendor Payables.</div><div class="insi">\uD83D\uDCB0 <strong>Vendor Payments</strong> \u2014 Add expense with category "Vendor Payment" and vendor name in description. Records payment against vendor payables.</div><div class="insi">\uD83D\uDCB3 <strong>Salary</strong> \u2014 Add expense with category "Salary" and staff name in description. Tracks regular salary disbursements.</div><div class="insi">\uD83D\uDCB3 <strong>Advance Salary</strong> \u2014 Add expense with category "Advance Salary" and staff name. Tracks advance payments separately.</div><div class="insi">\u26A0\uFE0F Use the <strong>exact same vendor/staff name</strong> each time for accurate matching.</div></div>';
   return out;
 }
 
