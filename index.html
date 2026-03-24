@@ -389,7 +389,7 @@ function sf(a,f){var s=0;for(var i=0;i<a.length;i++)s+=(a[i][f]||0);return s}
 function af(a,f){return a.length?sf(a,f)/a.length:0}
 function pctChange(cur,prev){if(!prev)return cur>0?100:0;return((cur-prev)/prev)*100}
 
-var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],grnRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[]};
+var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],grnRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advShop:0};
 
 function h(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
 
@@ -430,7 +430,7 @@ function loadForm(){
 }
 function doFetch(){
   S.loading=true;render();
-  callApi('getAll').then(function(res){var d=res.data||[];S.records=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];for(var i=0;i<d.length;i++){parseRecord(d[i]);if(d[i].type==='recipe')S.recipes.push(d[i]);else if(d[i].type==='rawMaterial')S.rawMatRecords.push(d[i]);else if(d[i].type==='goodsInward')S.grnRecords.push(d[i]);else S.records.push(d[i])}S.connected=true;syncKnownNames();syncProductNames()}).catch(function(e){toast('\u274C '+e.message);S.connected=false}).then(function(){S.loading=false;loadForm();render()})
+  callApi('getAll').then(function(res){var d=res.data||[];S.records=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];S.advOrders=[];for(var i=0;i<d.length;i++){parseRecord(d[i]);if(d[i].type==='recipe')S.recipes.push(d[i]);else if(d[i].type==='rawMaterial')S.rawMatRecords.push(d[i]);else if(d[i].type==='goodsInward')S.grnRecords.push(d[i]);else if(d[i].type==='advanceOrder')S.advOrders.push(d[i]);else S.records.push(d[i])}S.connected=true;syncKnownNames();syncProductNames()}).catch(function(e){toast('\u274C '+e.message);S.connected=false}).then(function(){S.loading=false;loadForm();render()})
 }
 function toast(msg){var old=document.querySelector('.toast');if(old)old.remove();var t=h('div','toast',msg);document.body.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove()},2500)}
 
@@ -463,7 +463,7 @@ function renderApp(){
   var tabs;
   if(isO)tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83C\uDFED Production','\uD83D\uDCD1 Report','\uD83D\uDCCA Dashboard','\uD83E\uDDE0 Analytics','\uD83D\uDCDA Ledger','\uD83D\uDCD6 Recipes','\u2699\uFE0F Settings'];
   else if(isP)tabs=['\uD83D\uDCE6 Orders','\uD83E\uDDF1 Raw Materials','\uD83D\uDCD6 Recipes'];
-  else if(isOrd)tabs=['\uD83D\uDCE6 Place Order','\uD83D\uDCE5 Goods Inward','\uD83D\uDCCB Order History'];
+  else if(isOrd)tabs=['\uD83D\uDCE6 Place Order','\uD83D\uDCE5 Goods Inward','\uD83D\uDCCB Advance Orders','\uD83D\uDCCB Order History'];
   else tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83D\uDCE6 Orders'];
   var tabH='';for(var i=0;i<tabs.length;i++)tabH+='<button class="tab-btn'+(S.tab===i?' on':'')+'" data-tab="'+i+'">'+tabs[i]+'</button>';
   var hdr='<div class="app-header"><div class="header-row"><div class="header-left"><div class="header-icon"><img src="data:image/png;base64,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" style="width:auto;height:28px" alt="AB"></div><div><div class="header-title">Akshay Bakery</div><div class="header-role"><span class="sync-dot '+(S.connected?'on':'off')+'"></span>'+roleLabel+' \u2022 Cloud</div></div></div><div style="display:flex;gap:6px"><button class="logout-btn" id="btnSync">\u21BB</button><button class="logout-btn" id="btnLogout">Logout</button></div></div><div class="tab-bar">'+tabH+'</div></div>';
@@ -481,7 +481,8 @@ function renderApp(){
   }else if(isOrd){
     if(S.tab===0)body+=renderOrderingEntry();
     else if(S.tab===1)body+=renderOrderingGRN();
-    else if(S.tab===2)body+=renderOrderingHistory();
+    else if(S.tab===2)body+=renderAdvanceOrders();
+    else if(S.tab===3)body+=renderOrderingHistory();
   }else if(isP){
     if(S.tab===0)body+=renderProductionOrders();
     else if(S.tab===1)body+=renderRawMaterials();
@@ -1047,6 +1048,21 @@ function renderOrderingEntry(){
 
   var out='<div class="fr c2"><div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="ordDateInp2" value="'+S.date+'"></div><div class="fg"><div class="fl">Shop</div><select class="fi" id="ordShopInp"><option value="0"'+(S.ordShop===0?' selected':'')+'>Highway</option><option value="1"'+(S.ordShop===1?' selected':'')+'>Mainroad</option></select></div></div>';
 
+  // Advance orders for this date & shop
+  var advForDay=getAdvOrdersForDate(S.date,S.ordShop);
+  if(advForDay.length){
+    out+='<div class="card" style="border-left:3px solid var(--amber);background:var(--al)"><div class="ch"><div class="ci a">\uD83D\uDCCB</div><div><div class="ct">Advance Customer Orders</div><div class="cs">'+advForDay.length+' pre-order'+(advForDay.length>1?'s':'')+' for today</div></div></div>';
+    for(var i=0;i<advForDay.length;i++){
+      var a=advForDay[i];var alreadyAdded=false;
+      for(var j=0;j<S.ordItems.length;j++){if(S.ordItems[j].advOrderId===a.id){alreadyAdded=true;break}}
+      out+='<div class="ir" style="background:var(--card);border-radius:8px;padding:8px 10px;margin-bottom:4px"><div><div class="in">\uD83D\uDC64 '+a.customer+'</div><div class="ic">'+a.product+' \u2022 '+a.qty+' '+a.unit+(a.notes?' \u2022 '+a.notes:'')+'</div></div><div style="display:flex;align-items:center;gap:6px">';
+      if(alreadyAdded){out+='<span style="font-size:10px;font-weight:600;color:var(--green)">\u2705 Added</span>'}
+      else{out+='<button class="ab g" data-addadvtoorder="'+i+'" style="font-size:10px;padding:4px 10px">+ Add</button>'}
+      out+='</div></div>';
+    }
+    out+='</div>';
+  }
+
   // Order list grouped by category
   var byCat={};for(var i=0;i<PCATS.length;i++)byCat[PCATS[i]]=[];
   for(var i=0;i<S.ordItems.length;i++){var o=S.ordItems[i];var cat=o.category||'Baking';if(!byCat[cat])byCat[cat]=[];byCat[cat].push({idx:i,order:o})}
@@ -1176,6 +1192,51 @@ function renderOrderingGRN(){
   if(S.grnItems.length){
     out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveGrnBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save GRN to Cloud')+'</button>';
   }
+  return out;
+}
+
+/* ===== ADVANCE CUSTOMER ORDERS ===== */
+function getAdvOrdersForDate(date,shop){
+  var result=[];
+  for(var i=0;i<S.advOrders.length;i++){
+    var a=S.advOrders[i];
+    if(a.deliveryDate===date&&(shop===undefined||a.shop==shop))result.push(a);
+  }
+  return result;
+}
+function renderAdvanceOrders(){
+  var prods=loadSavedProducts();
+  var prodDL='<datalist id="dlProducts">';for(var i=0;i<prods.length;i++)prodDL+='<option value="'+prods[i]+'">';prodDL+='</datalist>';
+
+  var out='<div class="card"><div class="ch"><div class="ci a">\uD83D\uDCCB</div><div><div class="ct">New Advance Order</div><div class="cs">Pre-orders for future dates</div></div></div>';
+  out+='<div class="fr c2"><div class="fg"><div class="fl">Customer Name</div><input class="fi" type="text" id="advCustInp" value="'+(S.advCust||'')+'" placeholder="e.g. John"></div><div class="fg"><div class="fl">Delivery Date</div><input class="fi" type="date" id="advDateInp" value="'+S.advDate+'"></div></div>';
+  out+='<div class="fr c2" style="margin-top:8px"><div class="fg"><div class="fl">Shop</div><select class="fi" id="advShopInp"><option value="0"'+(S.advShop===0?' selected':'')+'>Highway</option><option value="1"'+(S.advShop===1?' selected':'')+'>Mainroad</option></select></div><div class="fg"><div class="fl">Category</div><select class="fi" id="advCatInp">'+PCATS.map(function(c){return'<option'+(S.advCat===c?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div></div>';
+  out+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Product</div><input class="fi" type="text" id="advProdInp" value="'+(S.advProd||'')+'" placeholder="e.g. Birthday Cake" list="dlProducts" autocomplete="off"></div><div class="fg"><div class="fl">Quantity</div><input class="fi" type="number" inputmode="numeric" id="advQtyInp" value="'+(S.advQty||'')+'" placeholder="0"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="advUnitInp">'+PUNITS.map(function(u){return'<option'+(S.advUnit===u?' selected':'')+'>'+u+'</option>'}).join('')+'</select></div></div>';
+  out+='<div class="fg" style="margin-top:8px"><div class="fl">Notes</div><input class="fi" type="text" id="advNotesInp" value="'+(S.advNotes||'')+'" placeholder="e.g. Write Happy Birthday on top"></div>';
+  out+='<div style="margin-top:10px;text-align:right"><button class="ab g" id="saveAdvOrder">\uD83D\uDCCB Save Advance Order</button></div></div>';
+  out+=prodDL;
+
+  // List upcoming advance orders
+  var upcoming=[];for(var i=0;i<S.advOrders.length;i++){if(S.advOrders[i].deliveryDate>=today())upcoming.push(S.advOrders[i])}
+  upcoming.sort(function(a,b){return a.deliveryDate<b.deliveryDate?-1:a.deliveryDate>b.deliveryDate?1:0});
+
+  if(upcoming.length){
+    out+='<div class="card"><div class="ch"><div class="ci g">\uD83D\uDCC5</div><div><div class="ct">Upcoming Orders</div><div class="cs">'+upcoming.length+' pending advance order'+(upcoming.length>1?'s':'')+'</div></div></div>';
+    var curDate='';
+    for(var i=0;i<upcoming.length;i++){
+      var a=upcoming[i];
+      if(a.deliveryDate!==curDate){curDate=a.deliveryDate;var dl=new Date(curDate+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short'});var isToday=curDate===today();out+='<div style="font-size:11px;font-weight:700;color:'+(isToday?'var(--green)':'var(--text2)')+';margin:'+(i>0?'12px':'4px')+' 0 6px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCC5 '+dl+(isToday?' \u2022 TODAY':'')+'</div>'}
+      out+='<div class="ir"><div><div class="in">'+a.customer+' <span style="font-size:10px;color:var(--text3)">\u2022 '+SHOPS[a.shop]+'</span></div><div class="ic">'+a.product+(a.notes?' \u2022 '+a.notes:'')+'</div></div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+a.qty+' '+a.unit+'</div><button class="ix" data-deladvorder="'+a.id+'">\u00D7</button></div></div>';
+    }
+    out+='</div>';
+  }
+
+  // Past orders
+  var past=[];for(var i=0;i<S.advOrders.length;i++){if(S.advOrders[i].deliveryDate<today())past.push(S.advOrders[i])}
+  if(past.length){
+    out+='<div style="font-size:11px;color:var(--text3);text-align:center;margin-top:12px">'+past.length+' past advance order'+(past.length>1?'s':'')+' (completed)</div>';
+  }
+
   return out;
 }
 
@@ -2054,6 +2115,27 @@ function bindEvents(){
     var entry={id:gid(),type:'goodsInward',shop:S.grnShop,date:S.date,goodsInward:JSON.parse(JSON.stringify(S.grnItems)),totalGoodsInward:grnTotal,savedAt:new Date().toISOString(),savedBy:'ordering'};
     callApi('save',{},entry).then(function(){toast('\u2705 GRN saved!');S.grnItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveGrnBtn');if(b){b.textContent='\uD83D\uDCBE Save GRN to Cloud';b.className='save-btn'}})
   };
+
+  // Advance orders
+  var advDateInp=document.getElementById('advDateInp');if(advDateInp)advDateInp.onchange=function(e){S.advDate=e.target.value};
+  var advShopInp=document.getElementById('advShopInp');if(advShopInp)advShopInp.onchange=function(e){S.advShop=parseInt(e.target.value)};
+  var saveAdvOrder=document.getElementById('saveAdvOrder');if(saveAdvOrder)saveAdvOrder.onclick=function(){
+    var cust=document.getElementById('advCustInp'),prod=document.getElementById('advProdInp'),qty=document.getElementById('advQtyInp'),unit=document.getElementById('advUnitInp'),cat=document.getElementById('advCatInp'),notes=document.getElementById('advNotesInp'),dt=document.getElementById('advDateInp'),shop=document.getElementById('advShopInp');
+    if(!cust||!cust.value){toast('\u274C Enter customer name');return}
+    if(!prod||!prod.value){toast('\u274C Enter product name');return}
+    var q=parseInt(qty?qty.value:0)||0;if(!q){toast('\u274C Enter quantity');return}
+    if(S.saving)return;S.saving=true;saveAdvOrder.textContent='\u23F3 Saving...';
+    var entry={type:'advanceOrder',id:gid(),customer:cust.value,deliveryDate:dt?dt.value:S.advDate,shop:shop?parseInt(shop.value):S.advShop,product:prod.value,qty:q,unit:unit?unit.value:'pcs',category:cat?cat.value:'Baking',notes:notes?notes.value:'',savedAt:new Date().toISOString(),savedBy:'ordering'};
+    addProductName(prod.value);
+    callApi('save',{},entry).then(function(){toast('\u2705 Advance order saved!');S.advCust='';S.advProd='';S.advQty='';S.advNotes='';return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;render()})
+  };
+  document.querySelectorAll('[data-deladvorder]').forEach(function(b){b.onclick=function(){var id=b.dataset.deladvorder;callApi('delete',{id:id}).then(function(){toast('Deleted');doFetch()}).catch(function(e){toast('\u274C '+e.message)})}});
+  // Add advance order to production order
+  document.querySelectorAll('[data-addadvtoorder]').forEach(function(b){b.onclick=function(){
+    var advForDay=getAdvOrdersForDate(S.date,S.ordShop);var idx=parseInt(b.dataset.addadvtoorder);var a=advForDay[idx];if(!a)return;
+    S.ordItems.push({id:gid(),advOrderId:a.id,product:a.product,category:a.category||'Baking',qty:a.qty,unit:a.unit,notes:'\uD83D\uDC64 '+a.customer+(a.notes?' \u2022 '+a.notes:'')});
+    addProductName(a.product);render();
+  }});
 
   // Production orders date
   var podInp=document.getElementById('prodOrderDate');if(podInp)podInp.onchange=function(e){S.orderDate=e.target.value;render()};
