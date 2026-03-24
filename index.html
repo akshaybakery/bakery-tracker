@@ -13,7 +13,7 @@
 html,body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 input,select,textarea,button{font-family:inherit;font-size:inherit}
 .login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:linear-gradient(165deg,#0c3a2d,#1a6b4a,#2d8a63)}
-.login-logo{width:72px;height:72px;background:rgba(255,255,255,0.15);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:1.5rem;animation:float 3s ease-in-out infinite}
+.login-logo{width:120px;height:90px;background:rgba(255,255,255,0.15);border-radius:20px;display:flex;align-items:center;justify-content:center;padding:10px;margin-bottom:1.5rem;animation:float 3s ease-in-out infinite;overflow:hidden}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .login-title{font-family:'Playfair Display',serif;font-size:28px;color:#fff;margin-bottom:4px}
 .login-sub{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:2.5rem}
@@ -194,13 +194,191 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .rpt-exp-track{flex:1;height:12px;background:var(--bg);border-radius:20px;overflow:hidden}
 .rpt-exp-fill{height:100%;border-radius:20px}
 .rpt-exp-val{font-size:11px;font-weight:700;width:60px;text-align:right}
+
+/* ===== ANALYTICS TAB ===== */
+.biz-gauge{text-align:center;padding:20px 0}
+.biz-gauge-ring{position:relative;width:160px;height:160px;margin:0 auto}
+.biz-gauge-svg{transform:rotate(-90deg)}
+.biz-gauge-bg{fill:none;stroke:var(--border);stroke-width:12}
+.biz-gauge-fill{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.biz-gauge-score{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.biz-gauge-num{font-size:36px;font-weight:700;line-height:1}
+.biz-gauge-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-top:2px}
+.biz-gauge-status{font-size:12px;font-weight:700;margin-top:8px;padding:4px 14px;border-radius:20px;display:inline-block}
+.biz-sub-scores{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:16px}
+.biz-sub{background:var(--bg);border-radius:var(--rs);padding:10px 6px;text-align:center}
+.biz-sub-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:4px}
+.biz-sub-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.biz-sub-fill{height:100%;border-radius:3px}
+.biz-sub-val{font-size:11px;font-weight:700}
+.biz-section{margin-bottom:14px}
+.biz-section-title{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.biz-be-num{font-size:22px;font-weight:700;color:var(--green);text-align:center;margin:8px 0}
+.biz-be-sub{font-size:11px;color:var(--text2);text-align:center;margin-bottom:10px}
+.biz-be-bars{display:flex;align-items:flex-end;gap:2px;height:60px;margin-top:8px}
+.biz-be-bar{flex:1;border-radius:3px 3px 0 0;min-height:2px;position:relative}
+.biz-be-line{position:absolute;left:0;right:0;border-top:2px dashed var(--rose);z-index:1}
+.biz-be-lbl{font-size:7px;color:var(--text3);text-align:center;margin-top:2px;font-weight:600}
+.biz-pareto-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.biz-pareto-cat{font-size:11px;color:var(--text2);width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.biz-pareto-track{flex:1;height:16px;background:var(--bg);border-radius:8px;overflow:hidden}
+.biz-pareto-fill{height:100%;border-radius:8px;display:flex;align-items:center;padding-left:6px}
+.biz-pareto-fill span{font-size:8px;font-weight:700;color:#fff;white-space:nowrap}
+.biz-pareto-val{font-size:11px;font-weight:700;width:55px;text-align:right}
+.biz-pareto-pct{font-size:10px;color:var(--text3);width:35px;text-align:right}
+.biz-pareto-line{font-size:10px;color:var(--amber);font-weight:600;margin-top:8px;padding:6px 10px;background:var(--al);border-radius:8px}
+.biz-trend-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bg)}
+.biz-trend-row:last-child{border-bottom:none}
+.biz-trend-label{font-size:12px;font-weight:500;color:var(--text2);flex:1}
+.biz-trend-vals{display:flex;gap:10px;align-items:center}
+.biz-trend-val{font-size:13px;font-weight:700;min-width:55px;text-align:right}
+.biz-trend-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;min-width:50px;text-align:center}
+.biz-trend-badge.up{background:var(--gl);color:var(--green)}
+.biz-trend-badge.down{background:var(--rl);color:var(--rose)}
+.biz-trend-badge.flat{background:var(--bg);color:var(--text3)}
+.biz-cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.biz-cf-box{background:var(--bg);border-radius:var(--rs);padding:12px;text-align:center}
+.biz-cf-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:4px}
+.biz-cf-val{font-size:16px;font-weight:700}
+.biz-cf-sub{font-size:10px;color:var(--text3);margin-top:2px}
+.biz-rec{border-radius:var(--rs);padding:12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.biz-rec.critical{background:#fce8e6;border-left:3px solid var(--rose)}
+.biz-rec.high{background:var(--al);border-left:3px solid var(--amber)}
+.biz-rec.medium{background:var(--bl);border-left:3px solid var(--blue)}
+.biz-rec.good{background:var(--gl);border-left:3px solid var(--green)}
+.biz-rec-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.biz-rec-text{font-size:12px;line-height:1.5;color:var(--text)}
+.biz-rec-text strong{font-weight:700}
+.biz-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+.biz-dow-item{text-align:center;padding:8px 4px;border-radius:8px;background:var(--bg)}
+.biz-dow-day{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase}
+.biz-dow-val{font-size:12px;font-weight:700;margin-top:2px}
+.biz-shop-toggle{display:flex;gap:4px;margin-bottom:12px}
+.biz-shop-btn{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:11px;font-weight:600;cursor:pointer;text-align:center;background:var(--card)}
+.biz-shop-btn.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+
+/* ===== PRODUCTION TAB ===== */
+.prod-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.prod-range{display:flex;gap:4px}
+.prod-range-btn{padding:6px 12px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:10px;font-weight:700;cursor:pointer;background:var(--card);color:var(--text2)}
+.prod-range-btn.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+.prod-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.prod-today{margin-bottom:12px}
+.prod-cat-hdr{font-size:12px;font-weight:700;padding:6px 0;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.prod-cat-hdr .badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--gl);color:var(--green)}
+.prod-item{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--bg)}
+.prod-item:last-child{border-bottom:none}
+.prod-item-name{color:var(--text2)}.prod-item-qty{font-weight:700}
+.prod-cat-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:6px 0}
+.prod-cat-bar div{min-width:3px}
+.prod-legend{display:flex;gap:12px;justify-content:center;margin-bottom:8px}
+.prod-legend span{font-size:9px;font-weight:600;display:flex;align-items:center;gap:4px}
+.prod-legend span::before{content:'';width:8px;height:8px;border-radius:2px;display:inline-block}
+.prod-forecast-card{background:linear-gradient(135deg,var(--gl),#f0fdf4);border:2px solid #a7d7be;border-radius:var(--r);padding:16px;margin-bottom:12px}
+.prod-forecast-title{font-size:13px;font-weight:700;color:var(--gd);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.prod-forecast-sub{font-size:11px;color:var(--text2);margin-bottom:10px}
+.prod-forecast-bars{display:flex;align-items:flex-end;gap:3px;height:70px;margin-bottom:4px}
+.prod-forecast-bars .actual{border-radius:3px 3px 0 0}
+.prod-forecast-bars .predicted{border-radius:3px 3px 0 0;opacity:.5;border:1.5px dashed var(--green);background:var(--gl)!important}
+.prod-forecast-lbl{display:flex;justify-content:space-between;font-size:8px;color:var(--text3);font-weight:600}
+.prod-confidence{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;margin-top:8px}
+.prod-section-divider{height:1px;background:var(--border);margin:16px 0}
+
+/* ===== VENDOR TAB ===== */
+.ven-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.ven-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;cursor:pointer}
+.ven-name{font-size:14px;font-weight:700}
+.ven-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+.ven-badge.owed{background:var(--rl);color:var(--rose)}
+.ven-badge.clear{background:var(--gl);color:var(--green)}
+.ven-badge.advance{background:var(--bl);color:var(--blue)}
+.ven-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.ven-stat{background:var(--bg);border-radius:8px;padding:8px;text-align:center}
+.ven-stat-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:2px}
+.ven-stat-val{font-size:14px;font-weight:700}
+.ven-txn{padding:6px 0;border-bottom:1px solid var(--bg);display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.ven-txn:last-child{border-bottom:none}
+.ven-txn-date{color:var(--text3);font-weight:500;width:70px}
+.ven-txn-desc{flex:1;color:var(--text2);margin:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ven-txn-amt{font-weight:700;white-space:nowrap}
+.ven-txn-amt.bill{color:var(--amber)}
+.ven-txn-amt.pay{color:var(--green)}
+.ven-expand{font-size:11px;color:var(--blue);font-weight:600;cursor:pointer;background:none;border:none;padding:4px 0}
+.ven-totals{background:linear-gradient(135deg,#0c3a2d,#1a6b4a);border-radius:var(--r);padding:16px;margin-bottom:12px;color:#fff}
+.ven-totals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ven-totals-item{text-align:center}
+.ven-totals-val{font-size:18px;font-weight:700}
+.ven-totals-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;opacity:.6;margin-top:2px}
+.staff-adv-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.staff-adv-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg)}
+.staff-adv-row:last-child{border-bottom:none}
+.staff-adv-name{font-size:13px;font-weight:600}
+.staff-adv-amt{font-size:14px;font-weight:700;color:var(--rose)}
+
+/* Orders */
+.order-cat-hdr{font-size:11px;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px;display:flex;align-items:center;gap:6px}
+.order-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg);font-size:13px}
+.order-item:last-child{border-bottom:none}
+.order-qty{font-weight:700;color:var(--green);min-width:60px;text-align:right}
+.order-shop-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px;margin-left:6px}
+.order-shop-badge.s0{background:var(--gl);color:var(--green)}
+.order-shop-badge.s1{background:var(--bl);color:var(--blue)}
+.order-summary{background:linear-gradient(135deg,#0c3a2d,#1a6b4a);border-radius:var(--r);padding:16px;margin-bottom:12px;color:#fff}
+.order-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.order-summary-item{text-align:center}
+.order-summary-val{font-size:20px;font-weight:700}
+.order-summary-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;opacity:.6;margin-top:2px}
+
+/* Recipe Card */
+.rcp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;cursor:pointer;transition:box-shadow .2s}
+.rcp-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.rcp-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.rcp-name{font-size:16px;font-weight:700;font-family:'Playfair Display',serif}
+.rcp-cat-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+.rcp-cat-badge.baking{background:var(--al);color:var(--amber)}
+.rcp-cat-badge.oil{background:var(--bl);color:var(--blue)}
+.rcp-cat-badge.sweets{background:var(--pl);color:var(--purple)}
+.rcp-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.rcp-meta-item{background:var(--bg);border-radius:8px;padding:8px;text-align:center}
+.rcp-meta-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:2px}
+.rcp-meta-val{font-size:13px;font-weight:700}
+.rcp-ing-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px}
+.rcp-ing-tbl th{background:var(--gd);color:#fff;padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.rcp-ing-tbl th:last-child{text-align:right}
+.rcp-ing-tbl td{padding:6px 8px;border-bottom:1px solid var(--bg)}
+.rcp-ing-tbl td:last-child{text-align:right;color:var(--text2);font-style:italic}
+.rcp-ing-tbl tr:last-child td{border-bottom:none;font-weight:700;background:var(--bg)}
+.rcp-ing-tbl tr.flour-row{background:var(--gl)}
+.rcp-step{display:flex;gap:10px;margin-bottom:8px;font-size:12px;line-height:1.6}
+.rcp-step-num{width:24px;height:24px;background:var(--gd);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.rcp-sec-title{font-size:12px;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px;border-bottom:1.5px solid var(--border);padding-bottom:4px}
+.rcp-notes{background:var(--al);border-radius:8px;padding:10px;font-size:11px;color:var(--amber);line-height:1.5;margin-bottom:8px}
+.rcp-storage{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.rcp-storage-item{background:var(--bg);border-radius:8px;padding:8px;font-size:11px}
+.rcp-storage-lbl{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text3);margin-bottom:2px}
+.rcp-form-sec{margin-bottom:14px}
+.rcp-form-sec-title{font-size:11px;font-weight:700;color:var(--gd);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.rcp-ing-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.rcp-ing-row input,.rcp-ing-row select{font-size:12px;padding:8px}
+.rcp-ing-row .rcp-pct{width:55px;background:var(--bg);text-align:center;color:var(--text2);font-size:11px;border:1px solid var(--border);border-radius:var(--rs);padding:8px 4px}
+.rcp-step-row{display:flex;gap:6px;align-items:flex-start;margin-bottom:6px}
+.rcp-step-row textarea{flex:1;font-size:12px;padding:8px;resize:none;min-height:36px}
+.rcp-back{background:none;border:none;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;padding:8px 0;margin-bottom:8px}
+.rcp-del{background:none;border:1px solid var(--rose);color:var(--rose);font-size:11px;font-weight:600;padding:6px 14px;border-radius:var(--rs);cursor:pointer;margin-top:8px}
+.rcp-step-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.rcp-step-chip{font-size:10px;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .15s}
+.rcp-step-chip:hover{background:var(--gl);border-color:var(--green);color:var(--green)}
+.rcp-step-chip.added{background:var(--gl);border-color:var(--green);color:var(--green);opacity:.5;pointer-events:none}
+.rcp-sub-cats{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.rcp-sub-cat{font-size:10px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer}
+.rcp-sub-cat.on{background:var(--gd);color:#fff;border-color:var(--gd)}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
 var API='https://script.google.com/macros/s/AKfycbyi_H2G8ZsjwFhvUyZpQB7u1Y7EI-KNJlZiOfAhnQioxgXnMQ9oCciqFUv1NdiwPLxb/exec';
-var SHOPS=["Shop 1","Shop 2"],DL=["₹500","₹200","₹100","₹50","₹20","₹10","Coins"],DV=[500,200,100,50,20,10,1],ECATS=["Staff Food","Transport","Maintenance","Fuel","Electricity","Packaging","Misc"];
+var SHOPS=["Highway","Mainroad"],DL=["₹500","₹200","₹100","₹50","₹20","₹10","Coins"],DV=[500,200,100,50,20,10,1],ECATS=["Staff Food","Transport","Maintenance","Fuel","Electricity","Packaging","Raw Materials","Vendor Payment","Salary","Advance Salary","Rent","Misc"];
 function fmt(n){return '\u20B9'+Number(n||0).toLocaleString('en-IN')}
 function fmtD(d){return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}
 function toISO(d){var x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
@@ -211,7 +389,7 @@ function sf(a,f){var s=0;for(var i=0;i<a.length;i++)s+=(a[i][f]||0);return s}
 function af(a,f){return a.length?sf(a,f)/a.length:0}
 function pctChange(cur,prev){if(!prev)return cur>0?100:0;return((cur-prev)/prev)*100}
 
-var S={screen:'login',role:null,tab:0,shop:0,date:today(),records:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],vends:[],notes:'',pinShow:false,pinVal:'',pinErr:'',connected:false,reportDate:today()};
+var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[]};
 
 function h(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
 
@@ -231,6 +409,11 @@ function parseRecord(rec){
   if(typeof rec.closingCash==='string')try{rec.closingCash=JSON.parse(rec.closingCash)}catch(e){rec.closingCash=[0,0,0,0,0,0,0]}
   if(typeof rec.expenses==='string')try{rec.expenses=JSON.parse(rec.expenses)}catch(e){rec.expenses=[]}
   if(typeof rec.vendorPayments==='string')try{rec.vendorPayments=JSON.parse(rec.vendorPayments)}catch(e){rec.vendorPayments=[]}
+  if(typeof rec.goodsInward==='string')try{rec.goodsInward=JSON.parse(rec.goodsInward)}catch(e){rec.goodsInward=[]}
+  if(typeof rec.productOrders==='string')try{rec.productOrders=JSON.parse(rec.productOrders)}catch(e){rec.productOrders=[]}
+  if(typeof rec.ingredients==='string')try{rec.ingredients=JSON.parse(rec.ingredients)}catch(e){rec.ingredients=[]}
+  if(typeof rec.method==='string')try{rec.method=JSON.parse(rec.method)}catch(e){rec.method=[]}
+  if(typeof rec.materials==='string')try{rec.materials=JSON.parse(rec.materials)}catch(e){rec.materials=[]}
   if(typeof rec.date==='string'&&rec.date.includes('T'))rec.date=toISO(new Date(rec.date));
 }
 
@@ -240,12 +423,12 @@ function loadForm(){
     parseRecord(S.records[i]);
     if(S.records[i].shop==S.shop&&S.records[i].date===S.date){r=S.records[i];break}
   }
-  if(r){S.oc=r.openingCash?r.openingCash.slice():[0,0,0,0,0,0,0];S.cc=r.closingCash?r.closingCash.slice():[0,0,0,0,0,0,0];S.upi=r.upiReceived||0;S.billed=r.totalBilled||0;S.walk=r.walkIns||0;S.exps=(r.expenses||[]).map(function(e){return JSON.parse(JSON.stringify(e))});S.vends=(r.vendorPayments||[]).map(function(v){return JSON.parse(JSON.stringify(v))});S.notes=r.notes||''}
-  else{S.oc=[0,0,0,0,0,0,0];S.cc=[0,0,0,0,0,0,0];S.upi=0;S.billed=0;S.walk=0;S.exps=[];S.vends=[];S.notes=''}
+  if(r){S.oc=r.openingCash?r.openingCash.slice():[0,0,0,0,0,0,0];S.cc=r.closingCash?r.closingCash.slice():[0,0,0,0,0,0,0];S.upi=r.upiReceived||0;S.billed=r.totalBilled||0;S.walk=r.walkIns||0;S.exps=(r.expenses||[]).map(function(e){return JSON.parse(JSON.stringify(e))});var oldVends=r.vendorPayments||[];for(var j=0;j<oldVends.length;j++){var alreadyMigrated=false;for(var k=0;k<S.exps.length;k++){if(S.exps[k].category==='Vendor Payment'&&S.exps[k].description===oldVends[j].name&&S.exps[k].amount===oldVends[j].amount){alreadyMigrated=true;break}}if(!alreadyMigrated)S.exps.push({id:gid(),description:oldVends[j].name,amount:oldVends[j].amount,category:'Vendor Payment'})}S.goodsIn=(r.goodsInward||[]).map(function(g){return JSON.parse(JSON.stringify(g))});S.prodOrders=(r.productOrders||[]).map(function(p){return JSON.parse(JSON.stringify(p))});S.notes=r.notes||'';S.cashRetained=r.cashRetained||0}
+  else{S.oc=[0,0,0,0,0,0,0];S.cc=[0,0,0,0,0,0,0];S.upi=0;S.billed=0;S.walk=0;S.exps=[];S.goodsIn=[];S.prodOrders=[];S.notes='';S.cashRetained=0}
 }
 function doFetch(){
   S.loading=true;render();
-  callApi('getAll',{role:S.role}).then(function(res){var d=res.data||[];for(var i=0;i<d.length;i++)parseRecord(d[i]);S.records=d;S.connected=true}).catch(function(e){toast('\u274C '+e.message);S.connected=false}).then(function(){S.loading=false;loadForm();render()})
+  callApi('getAll').then(function(res){var d=res.data||[];S.records=[];S.recipes=[];S.rawMatRecords=[];for(var i=0;i<d.length;i++){parseRecord(d[i]);if(d[i].type==='recipe')S.recipes.push(d[i]);else if(d[i].type==='rawMaterial')S.rawMatRecords.push(d[i]);else S.records.push(d[i])}S.connected=true;syncKnownNames();syncProductNames()}).catch(function(e){toast('\u274C '+e.message);S.connected=false}).then(function(){S.loading=false;loadForm();render()})
 }
 function toast(msg){var old=document.querySelector('.toast');if(old)old.remove();var t=h('div','toast',msg);document.body.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove()},2500)}
 
@@ -265,45 +448,174 @@ function render(){
 }
 
 function renderLogin(){
-  return '<div class="login-screen"><div class="login-logo">\uD83C\uDF5E</div><div class="login-title">Akshay Bakery</div><div class="login-sub">Daily Business Tracker</div><button class="login-btn owner" id="btnOwner">\uD83D\uDD10 Owner Login</button><button class="login-btn staff" id="btnStaff">\uD83D\uDC64 Staff Entry</button></div>'
+  return '<div class="login-screen"><div class="login-logo"><img src="data:image/png;base64,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" style="width:auto;height:56px" alt="Akshay Bakery"></div><div class="login-title">Akshay Bakery</div><div class="login-sub">Daily Business Tracker</div><button class="login-btn owner" id="btnOwner">\uD83D\uDD10 Owner Login</button><div style="width:100%;max-width:300px"><select class="fi" id="branchSelect" style="width:100%;padding:16px;font-size:15px;font-weight:600;border-radius:var(--r);background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);appearance:none;text-align:center;cursor:pointer"><option value="" disabled selected>\uD83C\uDFEA Select Branch</option><option value="highway">Highway Branch</option><option value="mainroad">Mainroad Branch</option><option value="production">Production Staff</option><option value="ordering">Ordering Staff</option></select></div></div>'
 }
 function renderPin(){
-  return '<div class="modal"><h3>Owner PIN</h3><p>Enter 4-digit PIN</p><input class="pin-input" id="pinInp" type="password" maxlength="4" inputmode="numeric" placeholder="\u2022\u2022\u2022\u2022" value="'+S.pinVal+'">'+(S.pinErr?'<div class="pin-error">'+S.pinErr+'</div>':'')+'<div class="modal-actions"><button class="btn-cancel" id="pinCancel">Cancel</button><button class="btn-confirm" id="pinOk">Enter</button></div></div>'
+  var titles={'owner':'Owner PIN','highway':'Highway Branch PIN','mainroad':'Mainroad Branch PIN','production':'Production Staff PIN','ordering':'Ordering Staff PIN'};
+  return '<div class="modal"><h3>'+(titles[S.pinRole]||'Enter PIN')+'</h3><p>Enter 4-digit PIN</p><input class="pin-input" id="pinInp" type="password" maxlength="4" inputmode="numeric" placeholder="\u2022\u2022\u2022\u2022" value="'+S.pinVal+'">'+(S.pinErr?'<div class="pin-error">'+S.pinErr+'</div>':'')+'<div class="modal-actions"><button class="btn-cancel" id="pinCancel">Cancel</button><button class="btn-confirm" id="pinOk">Enter</button></div></div>'
 }
 
 function renderApp(){
-  var isO=S.role==='owner';
-  var tabs=isO?['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83D\uDCD1 Report','\uD83D\uDCCA Dashboard','\u2699\uFE0F Settings']:['\uD83D\uDCDD Entry','\uD83D\uDCCB History'];
+  var isO=S.role==='owner',isP=S.role==='production',isS=S.role==='staff',isOrd=S.role==='ordering';
+  var roleLabel=isO?'Owner':isP?'Production':isOrd?'Ordering':(S.staffShop===0?'Highway Branch':'Mainroad Branch');
+  var tabs;
+  if(isO)tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83C\uDFED Production','\uD83D\uDCD1 Report','\uD83D\uDCCA Dashboard','\uD83E\uDDE0 Analytics','\uD83D\uDCDA Ledger','\uD83D\uDCD6 Recipes','\u2699\uFE0F Settings'];
+  else if(isP)tabs=['\uD83D\uDCE6 Orders','\uD83E\uDDF1 Raw Materials','\uD83D\uDCD6 Recipes'];
+  else if(isOrd)tabs=['\uD83D\uDCE6 Place Order','\uD83D\uDCCB Order History'];
+  else tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83D\uDCE6 Orders'];
   var tabH='';for(var i=0;i<tabs.length;i++)tabH+='<button class="tab-btn'+(S.tab===i?' on':'')+'" data-tab="'+i+'">'+tabs[i]+'</button>';
-  var hdr='<div class="app-header"><div class="header-row"><div class="header-left"><div class="header-icon">\uD83C\uDF5E</div><div><div class="header-title">Akshay Bakery</div><div class="header-role"><span class="sync-dot '+(S.connected?'on':'off')+'"></span>'+(isO?'Owner':'Staff')+' \u2022 Cloud</div></div></div><div style="display:flex;gap:6px"><button class="logout-btn" id="btnSync">\u21BB</button><button class="logout-btn" id="btnLogout">Logout</button></div></div><div class="tab-bar">'+tabH+'</div></div>';
+  var hdr='<div class="app-header"><div class="header-row"><div class="header-left"><div class="header-icon"><img src="data:image/png;base64,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" style="width:auto;height:28px" alt="AB"></div><div><div class="header-title">Akshay Bakery</div><div class="header-role"><span class="sync-dot '+(S.connected?'on':'off')+'"></span>'+roleLabel+' \u2022 Cloud</div></div></div><div style="display:flex;gap:6px"><button class="logout-btn" id="btnSync">\u21BB</button><button class="logout-btn" id="btnLogout">Logout</button></div></div><div class="tab-bar">'+tabH+'</div></div>';
   var body='<div class="app-body">';
-  if(S.tab===0)body+=renderEntry();
-  else if(S.tab===1)body+=renderHistory();
-  else if(S.tab===2&&isO)body+=renderReport();
-  else if(S.tab===3&&isO)body+=renderDash();
-  else if(S.tab===4&&isO)body+=renderSettings();
+  if(isO){
+    if(S.tab===0)body+=renderEntry();
+    else if(S.tab===1)body+=renderHistory();
+    else if(S.tab===2)body+=renderProduction();
+    else if(S.tab===3)body+=renderReport();
+    else if(S.tab===4)body+=renderDash();
+    else if(S.tab===5)body+=renderAnalytics();
+    else if(S.tab===6)body+=renderVendors();
+    else if(S.tab===7)body+=renderRecipeBook();
+    else if(S.tab===8)body+=renderSettings();
+  }else if(isOrd){
+    if(S.tab===0)body+=renderOrderingEntry();
+    else if(S.tab===1)body+=renderOrderingHistory();
+  }else if(isP){
+    if(S.tab===0)body+=renderProductionOrders();
+    else if(S.tab===1)body+=renderRawMaterials();
+    else if(S.tab===2)body+=renderRecipeBook();
+  }else{
+    if(S.tab===0)body+=renderEntry();
+    else if(S.tab===1)body+=renderHistory();
+    else if(S.tab===2)body+=renderOrders();
+  }
   body+='</div>';
   return hdr+body;
 }
 
+function loadSavedNames(){
+  try{var v=JSON.parse(localStorage.getItem('ab_vendors')||'[]');var s=JSON.parse(localStorage.getItem('ab_staff')||'[]');return{vendors:v,staff:s}}
+  catch(e){return{vendors:[],staff:[]}}
+}
+function saveNames(vendors,staff){
+  try{localStorage.setItem('ab_vendors',JSON.stringify(vendors));localStorage.setItem('ab_staff',JSON.stringify(staff))}catch(e){}
+}
+function syncKnownNames(){
+  var saved=loadSavedNames();
+  var vSet={},sSet={};
+  for(var i=0;i<saved.vendors.length;i++)vSet[saved.vendors[i]]=1;
+  for(var i=0;i<saved.staff.length;i++)sSet[saved.staff[i]]=1;
+  for(var i=0;i<S.records.length;i++){
+    var r=S.records[i];
+    var gi=r.goodsInward||[];for(var j=0;j<gi.length;j++){if(gi[j].vendor)vSet[gi[j].vendor]=1}
+    var ex=r.expenses||[];for(var j=0;j<ex.length;j++){if(ex[j].category==='Vendor Payment'&&ex[j].description)vSet[ex[j].description]=1;if(ex[j].category==='Advance Salary'&&ex[j].description)sSet[ex[j].description]=1}
+  }
+  var vendors=Object.keys(vSet).sort(),staff=Object.keys(sSet).sort();
+  saveNames(vendors,staff);
+  return{vendors:vendors,staff:staff};
+}
+function getKnownNames(){
+  var saved=loadSavedNames();
+  var vSet={},sSet={};
+  for(var i=0;i<saved.vendors.length;i++)vSet[saved.vendors[i]]=1;
+  for(var i=0;i<saved.staff.length;i++)sSet[saved.staff[i]]=1;
+  for(var i=0;i<S.records.length;i++){
+    var r=S.records[i];
+    var gi=r.goodsInward||[];for(var j=0;j<gi.length;j++){if(gi[j].vendor)vSet[gi[j].vendor]=1}
+    var ex=r.expenses||[];for(var j=0;j<ex.length;j++){if(ex[j].category==='Vendor Payment'&&ex[j].description)vSet[ex[j].description]=1;if(ex[j].category==='Advance Salary'&&ex[j].description)sSet[ex[j].description]=1}
+  }
+  return{vendors:Object.keys(vSet).sort(),staff:Object.keys(sSet).sort()};
+}
 function renderEntry(){
-  var out='<div class="fr c2"><div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="dateInp" value="'+S.date+'"></div><div class="fg"><div class="fl">Shop</div><select class="fi" id="shopInp"><option value="0"'+(S.shop===0?' selected':'')+'>Shop 1</option><option value="1"'+(S.shop===1?' selected':'')+'>Shop 2</option></select></div></div>';
+  var isStaff=S.role==='staff';
+  var known=getKnownNames();
+  var vendorDL='<datalist id="dlVendors">';for(var i=0;i<known.vendors.length;i++)vendorDL+='<option value="'+known.vendors[i]+'">';vendorDL+='</datalist>';
+  var staffDL='<datalist id="dlStaff">';for(var i=0;i<known.staff.length;i++)staffDL+='<option value="'+known.staff[i]+'">';staffDL+='</datalist>';
+  var shopSelector=isStaff?'<input class="fi" type="text" value="'+SHOPS[S.shop]+'" disabled style="background:#f0f0f0;color:var(--text2)">':'<select class="fi" id="shopInp"><option value="0"'+(S.shop===0?' selected':'')+'>Highway</option><option value="1"'+(S.shop===1?' selected':'')+'>Mainroad</option></select>';
+  var out='<div class="fr c2"><div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="dateInp" value="'+S.date+'"></div><div class="fg"><div class="fl">Shop</div>'+shopSelector+'</div></div>';
   var ex=false;for(var i=0;i<S.records.length;i++){if(S.records[i].shop==S.shop&&S.records[i].date===S.date){ex=true;break}}
   if(ex)out+='<div class="wb"><span>\u26A0\uFE0F</span><span>Editing existing entry</span></div>';
-  out+=denomCard('Opening Cash','Cash at start','oc',S.oc);
-  out+=denomCard('Closing Cash','Cash at end','cc',S.cc);
-  out+='<div class="card"><div class="ch"><div class="ci g">\uD83D\uDCB0</div><div><div class="ct">Revenue</div><div class="cs">Sales and traffic</div></div></div><div class="fr c3"><div class="fg"><div class="fl">Total Billed</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="billedInp" value="'+(S.billed||'')+'" placeholder="0"></div></div><div class="fg"><div class="fl">UPI Received</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="upiInp" value="'+(S.upi||'')+'" placeholder="0"></div></div><div class="fg"><div class="fl">Walk-ins</div><input class="fi" type="number" inputmode="numeric" id="walkInp" value="'+(S.walk||'')+'" placeholder="0"></div></div></div>';
+  // === STEP 1: Opening Cash ===
+  out+=denomCard('Opening Cash','Cash at start of day','oc',S.oc);
+
+  // === STEP 2: UPI & Walk-ins ===
+  out+='<div class="card"><div class="ch"><div class="ci b">\uD83D\uDCF1</div><div><div class="ct">UPI & Footfall</div><div class="cs">Digital payments and customer count</div></div></div><div class="fr c2"><div class="fg"><div class="fl">UPI Received</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="upiInp" value="'+(S.upi||'')+'" placeholder="0"></div></div><div class="fg"><div class="fl">Walk-ins (Customers)</div><input class="fi" type="number" inputmode="numeric" id="walkInp" value="'+(S.walk||'')+'" placeholder="0"></div></div></div>';
+
+  // === STEP 3: Expenses ===
   var expList='';var expTot=0;
   for(var i=0;i<S.exps.length;i++){var x=S.exps[i];expTot+=x.amount;expList+='<div class="ir"><div><div class="in">'+(x.description||'\u2014')+'</div><div class="ic">'+x.category+'</div></div><div style="display:flex;align-items:center;gap:8px"><span class="ia e">'+fmt(x.amount)+'</span><button class="ix" data-delex="'+i+'">\u00D7</button></div></div>'}
   if(S.exps.length)expList+='<div class="it"><span class="itl">Total</span><span class="ia e">'+fmt(expTot)+'</span></div>';
-  out+='<div class="card"><div class="ch"><div class="ci r">\uD83D\uDCE4</div><div><div class="ct">Daily Expenses</div><div class="cs">Running costs</div></div></div>'+(S.exps.length?'<div class="il">'+expList+'</div>':'')+'<div class="fr c2"><div class="fg"><div class="fl">Description</div><input class="fi" type="text" id="expDesc" placeholder="e.g. Staff food"></div><div class="fg"><div class="fl">Amount</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="expAmt" placeholder="0"></div></div></div><div class="ar" style="margin-top:8px"><div style="flex:1"><div class="fg"><div class="fl">Category</div><select class="fi" id="expCat">'+ECATS.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select></div></div><button class="ab g" id="addExp">+ Add</button></div></div>';
-  var venList='';var venTot=0;
-  for(var i=0;i<S.vends.length;i++){var v=S.vends[i];venTot+=v.amount;venList+='<div class="ir"><div class="in">'+v.name+'</div><div style="display:flex;align-items:center;gap:8px"><span class="ia v">'+fmt(v.amount)+'</span><button class="ix" data-delven="'+i+'">\u00D7</button></div></div>'}
-  if(S.vends.length)venList+='<div class="it"><span class="itl">Total</span><span class="ia v">'+fmt(venTot)+'</span></div>';
-  out+='<div class="card"><div class="ch"><div class="ci a">\uD83C\uDFEA</div><div><div class="ct">Vendor Payments</div><div class="cs">Supplier payments</div></div></div>'+(S.vends.length?'<div class="il">'+venList+'</div>':'')+'<div class="ar"><div style="flex:1"><div class="fg"><div class="fl">Vendor</div><input class="fi" type="text" id="venName" placeholder="e.g. Sheen Veen"></div></div><div style="width:100px"><div class="fg"><div class="fl">Amount</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="venAmt" placeholder="0"></div></div></div><button class="ab a" id="addVen">+ Add</button></div></div>';
+  out+='<div class="card"><div class="ch"><div class="ci r">\uD83D\uDCE4</div><div><div class="ct">Daily Expenses</div><div class="cs">Running costs</div></div></div>'+(S.exps.length?'<div class="il">'+expList+'</div>':'')+'<div class="fr c2"><div class="fg"><div class="fl">Description</div><input class="fi" type="text" id="expDesc" placeholder="e.g. Staff food" list="dlExpNames" autocomplete="off"></div><div class="fg"><div class="fl">Amount</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="expAmt" placeholder="0"></div></div></div><div class="ar" style="margin-top:8px"><div style="flex:1"><div class="fg"><div class="fl">Category</div><select class="fi" id="expCat">'+ECATS.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select></div></div><button class="ab g" id="addExp">+ Add</button></div></div>';
+  // Goods Inward section
+  var giList='';var giTot=0;
+  for(var i=0;i<S.goodsIn.length;i++){var g=S.goodsIn[i];giTot+=(g.amount||0);var giDetail=g.entryType==='qty'?(g.qty+' '+(g.qtyUnit||'kg')+' \u2022 '+(g.items||'\u2014')):(g.items||'\u2014')+(g.billNo?' \u2022 Inv #'+g.billNo:'');var giVal=g.entryType==='qty'?('<span class="ia" style="color:var(--teal)">'+g.qty+' '+g.qtyUnit+'</span>'):('<span class="ia v">'+fmt(g.amount)+'</span>');giList+='<div class="ir"><div><div class="in">'+g.vendor+'</div><div class="ic">'+giDetail+'</div></div><div style="display:flex;align-items:center;gap:8px">'+giVal+'<button class="ix" data-delgi="'+i+'">\u00D7</button></div></div>'}
+  if(S.goodsIn.length)giList+='<div class="it"><span class="itl">Total Bills</span><span class="ia v">'+fmt(giTot)+'</span></div>';
+  var giBill=S.giType==='bill',giQty=S.giType==='qty';
+  out+='<div class="card"><div class="ch"><div class="ci t">\uD83D\uDCE6</div><div><div class="ct">Goods Inward</div><div class="cs">Stock arriving today</div></div></div>'+(S.goodsIn.length?'<div class="il">'+giList+'</div>':'');
+  out+='<div class="biz-shop-toggle" style="margin:8px 0"><button class="biz-shop-btn'+(giBill?' on':'')+'" data-gitype="bill">\u20B9 Bill Amount</button><button class="biz-shop-btn'+(giQty?' on':'')+'" data-gitype="qty">\uD83D\uDCE6 Quantity</button></div>';
+  out+='<div class="fr c2"><div class="fg"><div class="fl">Vendor Name</div><input class="fi" type="text" id="giVendor" placeholder="e.g. Flour Mill" list="dlVendors" autocomplete="off"></div>';
+  if(giBill){out+='<div class="fg"><div class="fl">Bill Amount</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="giAmount" placeholder="0"></div></div>';}
+  else{out+='<div class="fg"><div class="fl">Quantity</div><div style="display:flex;gap:6px"><input class="fi" type="number" inputmode="numeric" id="giQtyVal" placeholder="0" style="flex:2"><select class="fi" id="giQtyUnit" style="flex:1"><option>kg</option><option>g</option><option>litre</option><option>ml</option><option>nos</option><option>packets</option><option>bags</option><option>box</option><option>dozen</option></select></div></div>';}
+  out+='</div><div class="fr c2" style="margin-top:8px"><div class="fg"><div class="fl">Items / Description</div><input class="fi" type="text" id="giItems" placeholder="e.g. 50kg Maida, 20kg Sugar"></div>';
+  if(giBill){out+='<div class="fg"><div class="fl">Invoice No.</div><input class="fi" type="text" id="giBillNo" placeholder="e.g. INV-1234"></div>';}
+  else{out+='<div class="fg"></div>';}
+  out+='</div><div style="margin-top:8px;text-align:right"><button class="ab g" id="addGI">\uD83D\uDCE6 Add Goods</button></div></div>';
+
+  // === STEP 6: Notes ===
   out+='<div class="card"><div class="ch"><div class="ci b">\uD83D\uDCDD</div><div><div class="ct">Notes</div><div class="cs">Anything noteworthy</div></div></div><textarea class="fi" id="notesInp" rows="3" placeholder="Power cut, staff absent..." style="resize:none">'+S.notes+'</textarea></div>';
-  var ot=dTotal(S.oc),ct=dTotal(S.cc),diff=ct-ot;
-  out+='<div class="sc"><div class="st">\uD83D\uDCCA Today\'s Summary</div><div class="sg">'+si('Opening Cash',fmt(ot))+si('Closing Cash',fmt(ct))+si('Cash Diff',fmt(diff),diff>=0?'g':'r')+si('Total Billed',fmt(S.billed))+si('UPI',fmt(S.upi),'b')+si('Walk-ins',S.walk)+(S.walk>0?si('Expenses',fmt(expTot),'r')+si('Vendor',fmt(venTot),'a')+'<div class="sd"></div>'+si('Avg Ticket',fmt(Math.round(S.billed/S.walk)),'g'):si('Expenses',fmt(expTot),'r')+si('Vendor',fmt(venTot),'a'))+'</div></div>';
+
+  // === STEP 7: Closing Cash ===
+  out+=denomCard('Closing Cash','Count all cash at end of day','cc',S.cc);
+
+  // === STEP 8: Cash Retained at Shop ===
+  var ot=dTotal(S.oc),ct=dTotal(S.cc);
+  var cashRet=S.cashRetained||0;
+  var cashTaken=ct-cashRet;
+  out+='<div class="card"><div class="ch"><div class="ci g">\uD83C\uDFE6</div><div><div class="ct">Cash Retained at Shop</div><div class="cs">Change kept for tomorrow\'s opening</div></div></div>';
+  out+='<div class="fr c2"><div class="fg"><div class="fl">Retained Amount</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="cashRetInp" value="'+(cashRet||'')+'" placeholder="0"></div></div>';
+  out+='<div class="fg"><div class="fl">Cash Taken / Deposited</div><div class="iw"><span class="ip">\u20B9</span><input class="fi" type="text" value="'+fmt(cashTaken)+'" disabled style="background:#f0f0f0;color:var(--text2)"></div></div></div>';
+  out+='<div style="font-size:10px;color:var(--text3);margin-top:6px;padding:6px 10px;background:var(--gl);border-radius:8px">\uD83D\uDCA1 Closing ('+fmt(ct)+') \u2212 Retained ('+fmt(cashRet)+') = Taken ('+fmt(cashTaken)+')</div></div>';
+
+  // === DAILY PROFIT & LOSS (Standard Cash Reconciliation) ===
+  // Standard retail accounting: Cash Register Reconciliation
+  // Cash Sales = Closing Balance + Paid Out (Expenses) - Opening Balance
+  // Gross Revenue = Cash Sales + Non-Cash Sales (UPI)
+  // Net Profit = Gross Revenue - Total Expenses
+  var venTot=0,nonVenTot=0;for(var i=0;i<S.exps.length;i++){if(S.exps[i].category==='Vendor Payment')venTot+=S.exps[i].amount;else nonVenTot+=S.exps[i].amount}
+  var cashSales=ct-ot+expTot;
+  var grossRevenue=cashSales+S.upi;
+  var netProfit=grossRevenue-expTot;
+  var avgTicket=S.walk>0?Math.round(grossRevenue/S.walk):0;
+  var grossMargin=grossRevenue>0?Math.round(netProfit/grossRevenue*100):0;
+  // Auto-sync to state for saving
+  S.billed=grossRevenue;
+
+  out+='<div class="sc"><div class="st">\uD83D\uDCCA Daily P&L \u2022 '+SHOPS[S.shop]+'</div>';
+  out+='<div style="font-size:10px;color:var(--text2);margin-bottom:8px;text-align:center">Standard Cash Register Reconciliation</div>';
+
+  // Gross Revenue hero
+  out+='<div style="text-align:center;padding:12px 0"><div style="font-size:28px;font-weight:800;color:var(--gd)">'+fmt(grossRevenue)+'</div><div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">GROSS REVENUE (SALES)</div></div>';
+  out+='<div class="sd"></div>';
+
+  // Sales breakdown
+  out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCB0 Sales</div>';
+  out+='<div class="sg">'+si('Cash Sales',fmt(cashSales),cashSales>=0?'g':'r')+si('UPI Sales',fmt(S.upi),'b')+(S.walk>0?si('Customers',S.walk,'g'):'')+(S.walk>0?si('Avg Ticket',fmt(avgTicket)):'')+si('','')+'</div>';
+
+  // Expenses (Cost of Operations)
+  out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCE4 Expenses (Paid Out)</div>';
+  out+='<div class="sg">'+si('Operating Expenses',fmt(nonVenTot),'r')+si('Vendor Payments',fmt(venTot),'a')+si('Total Expenses',fmt(expTot),'r')+si('','')+'</div>';
+
+  // Cash Position
+  out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCB5 Cash Position</div>';
+  out+='<div class="sg">'+si('Opening Balance',fmt(ot))+si('Closing Balance',fmt(ct))+si('Petty Cash (Retained)',fmt(cashRet),'b')+si('Cash to Bank/Owner',fmt(cashTaken),cashTaken>=0?'g':'r')+'</div>';
+
+  // Net Profit
+  out+='<div class="sd"></div>';
+  out+='<div class="sg">'+si('\u2B50 Net Profit',fmt(netProfit),netProfit>=0?'g':'r')+si('Gross Margin',grossMargin+'%',grossMargin>=0?'g':'r')+'</div>';
+
+  // Standard formula reference
+  out+='<div style="font-size:9px;color:var(--text3);margin-top:8px;padding:8px;background:var(--bg);border-radius:8px;line-height:1.8;text-align:center"><strong>Cash Register Reconciliation</strong><br>Cash Sales = Closing Balance + Paid Out \u2212 Opening Balance<br>Gross Revenue = Cash Sales + UPI Sales<br>Net Profit = Gross Revenue \u2212 Total Expenses</div>';
+  out+='</div>';
+  out+=vendorDL+staffDL+'<datalist id="dlExpNames"></datalist>';
   out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save Entry')+'</button>';
   return out;
 }
@@ -498,7 +810,7 @@ function renderHistory(){
   var isO=S.role==='owner';var vis=S.records;
   var out='<div class="hh"><h2>'+(isO?'All History ('+vis.length+')':'Recent ('+vis.length+')')+'</h2>'+(isO&&vis.length?'<button class="cb" id="clearAll">Clear All</button>':'')+'</div>';
   if(!vis.length)return out+'<div class="es"><div class="esi">\uD83D\uDCCB</div><div class="est">No entries yet</div></div>';
-  for(var i=0;i<vis.length;i++){var r=vis[i];out+='<div class="card hc"><div class="ht"><div><div class="hd">'+fmtD(r.date)+'</div><div class="hb s'+r.shop+'">'+SHOPS[r.shop]+'</div></div>'+(isO?'<button class="hdel" data-delrec="'+r.id+'">Delete</button>':'')+'</div><div class="hm">'+mc('Billed',fmt(r.totalBilled))+mc('UPI',fmt(r.upiReceived),'blue')+mc('Walk-ins',r.walkIns,'green')+mc('Opening',fmt(r.openingTotal))+mc('Closing',fmt(r.closingTotal))+mc('Expenses',fmt(r.totalExpenses),'rose')+'</div>'+(r.totalVendorPayments?'<div class="hv">Vendor: '+fmt(r.totalVendorPayments)+'</div>':'')+(r.notes?'<div class="hn">"'+r.notes+'"</div>':'')+'</div>'}
+  for(var i=0;i<vis.length;i++){var r=vis[i];var rVen=r.totalVendorPayments||0;var rNonVen=r.totalExpenses-rVen;out+='<div class="card hc"><div class="ht"><div><div class="hd">'+fmtD(r.date)+'</div><div class="hb s'+r.shop+'">'+SHOPS[r.shop]+'</div></div>'+(isO?'<button class="hdel" data-delrec="'+r.id+'">Delete</button>':'')+'</div><div class="hm">'+mc('Billed',fmt(r.totalBilled))+mc('UPI',fmt(r.upiReceived),'blue')+mc('Walk-ins',r.walkIns,'green')+mc('Opening',fmt(r.openingTotal))+mc('Closing',fmt(r.closingTotal))+mc('Expenses',fmt(rNonVen),'rose')+'</div>'+(rVen?'<div class="hv">Vendor Payments: '+fmt(rVen)+'</div>':'')+(r.notes?'<div class="hn">"'+r.notes+'"</div>':'')+'</div>'}
   return out;
 }
 function mc(l,v,c){return'<div class="hmc"><div class="hml">'+l+'</div><div class="hmv"'+(c?' style="color:var(--'+c+')"':'')+'>'+v+'</div></div>'}
@@ -531,41 +843,1182 @@ function barCard(icon,title,sub,dt,key,color){
   return'<div class="card"><div class="ch"><div class="ci g">'+icon+'</div><div><div class="ct">'+title+'</div><div class="cs">'+sub+'</div></div></div><div class="bc">'+bars+'</div></div>'
 }
 
+/* ===== VENDORS TAB ===== */
+function renderVendors(){
+  var R=S.records;
+  var vMap={};
+  for(var i=0;i<R.length;i++){
+    var rec=R[i];
+    var gi=rec.goodsInward||[];
+    for(var j=0;j<gi.length;j++){
+      var vn=gi[j].vendor||'Unknown';
+      if(!vMap[vn])vMap[vn]={bills:[],payments:[]};
+      vMap[vn].bills.push({date:rec.date,shop:rec.shop,amount:gi[j].amount,items:gi[j].items||'',billNo:gi[j].billNo||''});
+    }
+    var exps=rec.expenses||[];
+    for(var j=0;j<exps.length;j++){
+      if(exps[j].category==='Vendor Payment'&&exps[j].description){
+        var vn2=exps[j].description;
+        if(!vMap[vn2])vMap[vn2]={bills:[],payments:[]};
+        vMap[vn2].payments.push({date:rec.date,shop:rec.shop,amount:exps[j].amount});
+      }
+    }
+  }
+  var advMap={};
+  for(var i=0;i<R.length;i++){
+    var exps2=R[i].expenses||[];
+    for(var j=0;j<exps2.length;j++){
+      if(exps2[j].category==='Advance Salary'&&exps2[j].description){
+        var sn=exps2[j].description;
+        if(!advMap[sn])advMap[sn]={total:0,txns:[]};
+        advMap[sn].total+=exps2[j].amount;
+        advMap[sn].txns.push({date:R[i].date,shop:R[i].shop,amount:exps2[j].amount});
+      }
+    }
+  }
+  var totalBills=0,totalPaid=0;
+  var vArr=[];
+  for(var k in vMap){
+    var bT=0,pT=0;
+    for(var i=0;i<vMap[k].bills.length;i++)bT+=vMap[k].bills[i].amount;
+    for(var i=0;i<vMap[k].payments.length;i++)pT+=vMap[k].payments[i].amount;
+    totalBills+=bT;totalPaid+=pT;
+    vArr.push({name:k,billTotal:bT,paidTotal:pT,balance:bT-pT,bills:vMap[k].bills,payments:vMap[k].payments});
+  }
+  vArr.sort(function(a,b){return b.balance-a.balance});
+  var totalBalance=totalBills-totalPaid;
+
+  var out='<div class="ven-totals"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:8px">\uD83C\uDFEA Vendor Overview</div><div class="ven-totals-grid"><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalBills)+'</div><div class="ven-totals-lbl">Total Bills</div></div><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalPaid)+'</div><div class="ven-totals-lbl">Total Paid</div></div><div class="ven-totals-item"><div class="ven-totals-val" style="color:'+(totalBalance>0?'#fca5a5':'#86efac')+'">'+fmt(totalBalance)+'</div><div class="ven-totals-lbl">'+(totalBalance>0?'Outstanding':'Overpaid')+'</div></div></div></div>';
+
+  if(!vArr.length){
+    out+='<div class="es"><div class="esi">\uD83C\uDFEA</div><div class="est">No vendor data yet.<br>Add goods inward entries and vendor payments in the Entry tab.</div></div>';
+  }
+
+  for(var i=0;i<vArr.length;i++){
+    var v=vArr[i];
+    var badgeCls=v.balance>0?'owed':v.balance<0?'advance':'clear';
+    var badgeText=v.balance>0?'Owed '+fmt(v.balance):v.balance<0?'Overpaid '+fmt(Math.abs(v.balance)):'\u2713 Settled';
+    out+='<div class="ven-card"><div class="ven-header" data-ventoggle="'+i+'"><div class="ven-name">\uD83C\uDFEA '+v.name+'</div><div class="ven-badge '+badgeCls+'">'+badgeText+'</div></div>';
+    out+='<div class="ven-summary"><div class="ven-stat"><div class="ven-stat-lbl">Bills</div><div class="ven-stat-val" style="color:var(--amber)">'+fmt(v.billTotal)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Paid</div><div class="ven-stat-val" style="color:var(--green)">'+fmt(v.paidTotal)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Balance</div><div class="ven-stat-val" style="color:'+(v.balance>0?'var(--rose)':'var(--green)')+'">'+fmt(v.balance)+'</div></div></div>';
+    var allTxns=[];
+    for(var j=0;j<v.bills.length;j++)allTxns.push({date:v.bills[j].date,type:'bill',desc:v.bills[j].items||(v.bills[j].billNo?'Bill #'+v.bills[j].billNo:'Goods received'),amount:v.bills[j].amount,shop:v.bills[j].shop});
+    for(var j=0;j<v.payments.length;j++)allTxns.push({date:v.payments[j].date,type:'pay',desc:'Payment',amount:v.payments[j].amount,shop:v.payments[j].shop});
+    allTxns.sort(function(a,b){return b.date<a.date?-1:b.date>a.date?1:0});
+    if(allTxns.length){
+      out+='<div class="ven-txn-list" id="venTxn'+i+'" style="display:none">';
+      for(var j=0;j<allTxns.length;j++){
+        var tx=allTxns[j];
+        out+='<div class="ven-txn"><span class="ven-txn-date">'+fmtD(tx.date)+'</span><span class="ven-txn-desc">'+(tx.type==='bill'?'\uD83D\uDCE6 ':'\uD83D\uDCB0 ')+tx.desc+' \u2022 '+SHOPS[tx.shop]+'</span><span class="ven-txn-amt '+(tx.type==='bill'?'bill':'pay')+'">'+(tx.type==='bill'?'+':'-')+fmt(tx.amount)+'</span></div>';
+      }
+      out+='</div>';
+      out+='<button class="ven-expand" data-venshow="'+i+'">\u25BC View '+allTxns.length+' transactions</button>';
+    }
+    out+='</div>';
+  }
+
+  var advArr=[];for(var k in advMap)advArr.push({name:k,total:advMap[k].total,txns:advMap[k].txns});
+  advArr.sort(function(a,b){return b.total-a.total});
+  if(advArr.length){
+    out+='<div class="staff-adv-card"><div class="ch"><div class="ci r">\uD83D\uDCB3</div><div><div class="ct">Advance Salary Tracker</div><div class="cs">Staff advance payments from expenses</div></div></div>';
+    var advTotal=0;
+    for(var i=0;i<advArr.length;i++){
+      advTotal+=advArr[i].total;
+      out+='<div class="staff-adv-row"><div><div class="staff-adv-name">'+advArr[i].name+'</div><div style="font-size:10px;color:var(--text3)">'+advArr[i].txns.length+' payment'+(advArr[i].txns.length>1?'s':'')+'</div></div><div class="staff-adv-amt">'+fmt(advArr[i].total)+'</div></div>';
+    }
+    out+='<div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:4px;border-top:1.5px solid var(--border)"><span style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase">Total Advances</span><span style="font-size:14px;font-weight:700;color:var(--rose)">'+fmt(advTotal)+'</span></div>';
+    out+='</div>';
+  }
+
+  out+='<div class="ins"><div class="inst">\uD83D\uDCA1 How Vendor Tracking Works</div><div class="insi">\uD83D\uDCE6 <strong>Goods Inward</strong> \u2014 Log incoming stock in the Entry tab with vendor name and bill amount. This creates a bill record.</div><div class="insi">\uD83D\uDCB0 <strong>Vendor Payments</strong> \u2014 Add an expense with category "Vendor Payment" and put the vendor name in the description. This records a payment.</div><div class="insi">\uD83D\uDCB3 <strong>Advance Salary</strong> \u2014 Add an expense with category "Advance Salary" and put the staff name in the description.</div><div class="insi">\u26A0\uFE0F Use the <strong>exact same vendor/staff name</strong> each time for accurate matching.</div></div>';
+  return out;
+}
+
+/* ===== PRODUCT & RAW MATERIAL NAME PERSISTENCE ===== */
+function loadSavedProducts(){try{return JSON.parse(localStorage.getItem('ab_products')||'[]')}catch(e){return[]}}
+function saveProductNames(arr){try{localStorage.setItem('ab_products',JSON.stringify(arr))}catch(e){}}
+function addProductName(name){if(!name)return;var arr=loadSavedProducts();if(arr.indexOf(name)===-1){arr.push(name);arr.sort();saveProductNames(arr)}}
+function syncProductNames(){var set={};var saved=loadSavedProducts();for(var i=0;i<saved.length;i++)set[saved[i]]=1;for(var i=0;i<S.records.length;i++){var po=S.records[i].productOrders||[];for(var j=0;j<po.length;j++){if(po[j].product)set[po[j].product]=1}}var arr=Object.keys(set).sort();saveProductNames(arr);return arr}
+function loadSavedRawMats(){try{return JSON.parse(localStorage.getItem('ab_rawmaterials')||'[]')}catch(e){return[]}}
+function saveRawMatNames(arr){try{localStorage.setItem('ab_rawmaterials',JSON.stringify(arr))}catch(e){}}
+function addRawMatName(name){if(!name)return;var arr=loadSavedRawMats();if(arr.indexOf(name)===-1){arr.push(name);arr.sort();saveRawMatNames(arr)}}
+
+var PCATS=['Baking','Oil Work','Sweets'];
+var PUNITS=['pcs','kg','g','dozen','batch','tray','box'];
+
+/* Standard Bakery Ingredients (categorized) */
+var BAKING_INGS=[
+  // Flours (base)
+  'All Purpose Flour (Maida)','Bread Flour','Whole Wheat Flour (Atta)','Cake Flour','Semolina (Rava)','Semolina (Sooji)','Rice Flour','Corn Flour','Besan (Gram Flour)','Oat Flour','Ragi Flour',
+  // Sugars & Sweeteners
+  'Sugar','Powdered Sugar','Brown Sugar','Jaggery','Jaggery Powder','Honey','Glucose Syrup','Invert Sugar','Condensed Milk','Sugar Syrup',
+  // Fats & Oils
+  'Butter (Unsalted)','Butter (Salted)','Oil (Vegetable)','Oil (Sunflower)','Oil (Coconut)','Ghee','Margarine','Shortening','Dalda','Cream Cheese',
+  // Leaveners
+  'Dry Yeast','Fresh Yeast','Baking Powder','Baking Soda','ENO',
+  // Dairy
+  'Milk','Milk (Warm)','Cream','Whipping Cream','Curd / Yogurt','Milk Powder','Paneer','Khoya / Mawa','Buttermilk','Cheese',
+  // Eggs
+  'Eggs (Whole)','Egg Whites','Egg Yolks',
+  // Flavorings & Extracts
+  'Vanilla Essence','Vanilla Extract','Rose Water','Kewra Water','Cardamom Powder','Cinnamon Powder','Nutmeg Powder','Cocoa Powder','Coffee Powder','Pandan Extract','Lemon Zest','Orange Zest','Lemon Juice','Food Color',
+  // Nuts & Dry Fruits
+  'Cashew','Cashew (Chopped)','Almond','Almond (Sliced)','Almond (Powder)','Pistachio','Pistachio (Chopped)','Raisin','Walnut','Coconut (Desiccated)','Coconut (Fresh Grated)','Coconut Powder','Tutti Frutti','Cherry (Glazed)','Dates',
+  // Others
+  'Salt','Water','Water (Ice Cold)','Corn Starch','Gelatin','Agar Agar','Bread Improver','Gluten','Vinegar','Citric Acid','Emulsifier (GMS)','Dough Conditioner','Jam','Chocolate (Dark)','Chocolate (Milk)','Chocolate (White)','Chocolate Chips','Sprinkles','Sesame Seeds','Poppy Seeds','Fennel Seeds','Ajwain Seeds','Saffron','Turmeric Powder','Ginger Powder','Black Pepper'
+];
+
+/* Standard Method Step Templates */
+var METHOD_STEPS={
+  'Baking':[
+    'Preheat oven to {temp}°C','Sift all dry ingredients together','Cream butter and sugar until light and fluffy','Add eggs one at a time, beating well after each','Fold in flour mixture gently in 3 additions','Alternately add flour and milk, mix until just combined','Knead dough for {min} minutes until smooth and elastic','Cover and rest dough for {min} minutes','Bulk ferment for {min} minutes at room temperature','Punch down the dough and divide into equal portions','Shape the dough and place on greased tray','Proof for {min} minutes until doubled in size','Egg wash the top before baking','Score the top with a sharp blade','Bake at {temp}°C for {min} minutes until golden','Check doneness — insert skewer, should come out clean','Cool in pan for 10 minutes, then transfer to wire rack','Dust with powdered sugar / glaze while warm','Apply icing / frosting once completely cooled','Grease and line baking tin with parchment paper','Pour batter into prepared tin and level the top','Steam bake: place water tray in bottom of oven','Laminate dough with butter using book fold method'
+  ],
+  'Oil Work':[
+    'Heat oil to {temp}°C in deep kadai','Mix all dry ingredients in a bowl','Add wet ingredients and mix to form smooth batter','Rest batter for {min} minutes','Shape / pipe into hot oil carefully','Deep fry on medium heat until golden brown','Flip halfway for even cooking','Drain on paper towels','Dip in sugar syrup for {min} seconds','Prepare sugar syrup: boil sugar and water to one-string consistency','Soak in sugar syrup for {min} minutes','Garnish with chopped nuts','Sprinkle with powdered sugar while warm','Knead dough until smooth, rest for {min} minutes','Roll out dough to {mm} thickness','Cut into desired shapes','Fry in batches — do not overcrowd','Check oil temperature with small piece of dough'
+  ],
+  'Sweets':[
+    'Roast flour/rava in ghee on low flame until fragrant','Heat milk and bring to a boil, stirring continuously','Reduce milk on low heat until thickened','Add sugar and mix until dissolved','Cook on low flame, stirring constantly to avoid burning','Add khoya/mawa and mix well','Add cardamom powder and mix','Add chopped nuts and mix gently','Grease a plate/tray with ghee','Pour mixture onto greased tray and spread evenly','Allow to set for {min} minutes at room temperature','Cut into desired shapes while still warm','Garnish with silver leaf (varak) / chopped nuts','Prepare sugar syrup to {string} consistency','Roll mixture into equal-sized balls','Soak in sugar syrup for {min} hours','Store in syrup in airtight container','Cool completely before cutting','Roll in powdered sugar / coconut','Set in refrigerator for {min} minutes'
+  ]
+};
+
+/* Storage & Shelf Life Presets */
+var STORAGE_OPTS=['Room temperature','Room temperature, airtight container','Room temperature, sealed bag','Refrigerate (2-8°C)','Refrigerate in airtight container','Freeze (-18°C)','Freeze in sealed bag','In sugar syrup, refrigerated','Cool dry place, airtight container'];
+var SHELF_OPTS=['Same day (fresh)','1 day','2 days','3 days','5 days','1 week','10 days','2 weeks','1 month','2 months','3 months','6 months'];
+
+/* ===== ORDERS TAB (Shop Staff) ===== */
+function renderOrders(){
+  var isStaff=S.role==='staff';
+  var prods=loadSavedProducts();
+  var prodDL='<datalist id="dlProducts">';for(var i=0;i<prods.length;i++)prodDL+='<option value="'+prods[i]+'">';prodDL+='</datalist>';
+
+  var out='<div class="fr c2"><div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="orderDateInp" value="'+S.date+'"></div><div class="fg"><div class="fl">Shop</div><input class="fi" type="text" value="'+SHOPS[S.shop]+'" disabled style="background:#f0f0f0;color:var(--text2)"></div></div>';
+
+  // Group orders by category
+  var byCat={};for(var i=0;i<PCATS.length;i++)byCat[PCATS[i]]=[];
+  for(var i=0;i<S.prodOrders.length;i++){var o=S.prodOrders[i];var cat=o.category||'Baking';if(!byCat[cat])byCat[cat]=[];byCat[cat].push({idx:i,order:o})}
+  var totalItems=S.prodOrders.length,totalQty=0;for(var i=0;i<S.prodOrders.length;i++)totalQty+=S.prodOrders[i].qty||0;
+
+  if(totalItems)out+='<div class="order-summary"><div class="order-summary-grid"><div class="order-summary-item"><div class="order-summary-val">'+totalItems+'</div><div class="order-summary-lbl">Items</div></div><div class="order-summary-item"><div class="order-summary-val">'+totalQty+'</div><div class="order-summary-lbl">Total Qty</div></div><div class="order-summary-item"><div class="order-summary-val">'+SHOPS[S.shop]+'</div><div class="order-summary-lbl">Shop</div></div></div></div>';
+
+  out+='<div class="card"><div class="ch"><div class="ci g">\uD83D\uDCE6</div><div><div class="ct">Product Orders</div><div class="cs">Daily production requirements</div></div></div>';
+  for(var c=0;c<PCATS.length;c++){
+    var cat=PCATS[c];var items=byCat[cat]||[];
+    var icons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
+    out+='<div class="order-cat-hdr">'+(icons[cat]||'')+' '+cat+' ('+items.length+')</div>';
+    if(items.length){for(var i=0;i<items.length;i++){var o=items[i].order;out+='<div class="order-item"><div><div style="font-weight:600">'+o.product+'</div>'+(o.notes?'<div style="font-size:10px;color:var(--text3)">'+o.notes+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+o.qty+' '+o.unit+'</div><button class="ix" data-delord="'+items[i].idx+'">\u00D7</button></div></div>'}}
+  }
+
+  // Add form
+  out+='<div style="margin-top:12px;padding-top:12px;border-top:1.5px solid var(--border)"><div class="fr c2"><div class="fg"><div class="fl">Product Name</div><input class="fi" type="text" id="ordProduct" placeholder="e.g. White Bread" list="dlProducts" autocomplete="off"></div><div class="fg"><div class="fl">Category</div><select class="fi" id="ordCat">'+PCATS.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select></div></div>';
+  out+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Quantity</div><input class="fi" type="number" inputmode="numeric" id="ordQty" placeholder="0"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="ordUnit">'+PUNITS.map(function(u){return'<option>'+u+'</option>'}).join('')+'</select></div><div class="fg"><div class="fl">Notes</div><input class="fi" type="text" id="ordNotes" placeholder="Optional"></div></div>';
+  out+='<div style="margin-top:8px;text-align:right"><button class="ab g" id="addOrder">\uD83D\uDCE6 Add Order</button></div></div></div>';
+  out+=prodDL;
+  out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save Orders')+'</button>';
+  return out;
+}
+
+/* ===== ORDERING STAFF ===== */
+function renderOrderingEntry(){
+  var prods=loadSavedProducts();
+  var prodDL='<datalist id="dlProducts">';for(var i=0;i<prods.length;i++)prodDL+='<option value="'+prods[i]+'">';prodDL+='</datalist>';
+
+  var out='<div class="fr c2"><div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="ordDateInp2" value="'+S.date+'"></div><div class="fg"><div class="fl">Shop</div><select class="fi" id="ordShopInp"><option value="0"'+(S.ordShop===0?' selected':'')+'>Highway</option><option value="1"'+(S.ordShop===1?' selected':'')+'>Mainroad</option></select></div></div>';
+
+  // Order list grouped by category
+  var byCat={};for(var i=0;i<PCATS.length;i++)byCat[PCATS[i]]=[];
+  for(var i=0;i<S.ordItems.length;i++){var o=S.ordItems[i];var cat=o.category||'Baking';if(!byCat[cat])byCat[cat]=[];byCat[cat].push({idx:i,order:o})}
+  var totalItems=S.ordItems.length,totalQty=0;for(var i=0;i<S.ordItems.length;i++)totalQty+=S.ordItems[i].qty||0;
+
+  if(totalItems)out+='<div class="order-summary"><div class="order-summary-grid"><div class="order-summary-item"><div class="order-summary-val">'+totalItems+'</div><div class="order-summary-lbl">Items</div></div><div class="order-summary-item"><div class="order-summary-val">'+totalQty+'</div><div class="order-summary-lbl">Total Qty</div></div><div class="order-summary-item"><div class="order-summary-val">'+SHOPS[S.ordShop]+'</div><div class="order-summary-lbl">Shop</div></div></div></div>';
+
+  out+='<div class="card"><div class="ch"><div class="ci g">\uD83D\uDCE6</div><div><div class="ct">Product Orders</div><div class="cs">Add items for production</div></div></div>';
+  var icons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
+  for(var c=0;c<PCATS.length;c++){
+    var cat=PCATS[c];var items=byCat[cat]||[];
+    out+='<div class="order-cat-hdr">'+(icons[cat]||'')+' '+cat+' ('+items.length+')</div>';
+    if(items.length){for(var i=0;i<items.length;i++){var o=items[i].order;out+='<div class="order-item"><div><div style="font-weight:600">'+o.product+'</div>'+(o.notes?'<div style="font-size:10px;color:var(--text3)">'+o.notes+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+o.qty+' '+o.unit+'</div><button class="ix" data-delorditem="'+items[i].idx+'">\u00D7</button></div></div>'}}
+  }
+
+  // Add form
+  out+='<div style="margin-top:12px;padding-top:12px;border-top:1.5px solid var(--border)"><div class="fr c2"><div class="fg"><div class="fl">Product Name</div><input class="fi" type="text" id="ordProduct2" placeholder="e.g. White Bread" list="dlProducts" autocomplete="off"></div><div class="fg"><div class="fl">Category</div><select class="fi" id="ordCat2">'+PCATS.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select></div></div>';
+  out+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Quantity</div><input class="fi" type="number" inputmode="numeric" id="ordQty2" placeholder="0"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="ordUnit2">'+PUNITS.map(function(u){return'<option>'+u+'</option>'}).join('')+'</select></div><div class="fg"><div class="fl">Notes</div><input class="fi" type="text" id="ordNotes2" placeholder="Optional"></div></div>';
+  out+='<div style="margin-top:8px;text-align:right"><button class="ab g" id="addOrdItem">\uD83D\uDCE6 Add Item</button></div></div></div>';
+  out+=prodDL;
+
+  // Action buttons
+  if(totalItems){
+    out+='<button class="save-btn" id="shareWhatsApp" style="background:linear-gradient(135deg,#25D366,#128C7E);margin-bottom:8px">\uD83D\uDCF2 Share via WhatsApp</button>';
+    out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveOrdBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save Order to Cloud')+'</button>';
+  }
+  return out;
+}
+
+function formatOrderForWhatsApp(){
+  var d=new Date(S.date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'short',year:'numeric'});
+  var msg='\uD83C\uDF5E *AKSHAY BAKERY - PRODUCTION ORDER*\n';
+  msg+='\uD83D\uDCC5 '+d+'\n';
+  msg+='\uD83C\uDFEA Shop: *'+SHOPS[S.ordShop]+'*\n';
+  msg+='\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n';
+  var icons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
+  var totalQty=0;
+  for(var c=0;c<PCATS.length;c++){
+    var cat=PCATS[c];
+    var items=S.ordItems.filter(function(o){return o.category===cat});
+    if(!items.length)continue;
+    msg+=(icons[cat]||'')+' *'+cat.toUpperCase()+'*\n';
+    for(var i=0;i<items.length;i++){
+      msg+='\u2022 '+items[i].product+' \u2014 *'+items[i].qty+' '+items[i].unit+'*';
+      if(items[i].notes)msg+=' ('+items[i].notes+')';
+      msg+='\n';
+      totalQty+=items[i].qty||0;
+    }
+    msg+='\n';
+  }
+  msg+='\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n';
+  msg+='\uD83D\uDCE6 *Total: '+S.ordItems.length+' items, '+totalQty+' units*\n';
+  msg+='\u23F0 Sent at '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  return msg;
+}
+
+function renderOrderingHistory(){
+  var out='<div class="fg" style="margin-bottom:12px"><div class="fl">View Date</div><input class="fi" type="date" id="ordHistDate" value="'+S.orderDate+'"></div>';
+  // Show orders from both shops for this date
+  var recs0=recsForDateShop(S.orderDate,0);
+  var recs1=recsForDateShop(S.orderDate,1);
+  var orders0=[],orders1=[];
+  for(var i=0;i<recs0.length;i++){var po=recs0[i].productOrders||[];for(var j=0;j<po.length;j++)orders0.push(po[j])}
+  for(var i=0;i<recs1.length;i++){var po=recs1[i].productOrders||[];for(var j=0;j<po.length;j++)orders1.push(po[j])}
+  var allOrders=orders0.concat(orders1);
+  if(!allOrders.length){return out+'<div class="es"><div class="esi">\uD83D\uDCCB</div><div class="est">No orders found for this date.</div></div>'}
+  var totalQty=0;for(var i=0;i<allOrders.length;i++)totalQty+=allOrders[i].qty||0;
+  out+='<div class="order-summary"><div class="order-summary-grid"><div class="order-summary-item"><div class="order-summary-val">'+allOrders.length+'</div><div class="order-summary-lbl">Items</div></div><div class="order-summary-item"><div class="order-summary-val">'+totalQty+'</div><div class="order-summary-lbl">Total Qty</div></div></div></div>';
+  var icons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
+  for(var c=0;c<PCATS.length;c++){
+    var cat=PCATS[c];
+    var catItems0=orders0.filter(function(o){return o.category===cat});
+    var catItems1=orders1.filter(function(o){return o.category===cat});
+    if(!catItems0.length&&!catItems1.length)continue;
+    out+='<div class="card"><div class="ch"><div class="ci '+(c===0?'a':c===1?'b':'p')+'">'+(icons[cat]||'\uD83D\uDCE6')+'</div><div><div class="ct">'+cat+'</div><div class="cs">'+(catItems0.length+catItems1.length)+' items</div></div></div>';
+    var combined={};
+    for(var i=0;i<catItems0.length;i++){var p=catItems0[i].product;if(!combined[p])combined[p]={s0:0,s1:0,unit:catItems0[i].unit};combined[p].s0+=catItems0[i].qty||0}
+    for(var i=0;i<catItems1.length;i++){var p=catItems1[i].product;if(!combined[p])combined[p]={s0:0,s1:0,unit:catItems1[i].unit};combined[p].s1+=catItems1[i].qty||0}
+    for(var p in combined){var item=combined[p];var total=item.s0+item.s1;out+='<div class="order-item"><div><div style="font-weight:600">'+p+'</div><div style="font-size:10px;color:var(--text3)">';if(item.s0)out+='<span class="order-shop-badge s0">Hwy: '+item.s0+'</span>';if(item.s1)out+='<span class="order-shop-badge s1">Main: '+item.s1+'</span>';out+='</div></div><div class="order-qty">'+total+' '+item.unit+'</div></div>'}
+    out+='</div>';
+  }
+  return out;
+}
+
+/* ===== PRODUCTION ORDERS (Combined View) ===== */
+function renderProductionOrders(){
+  var out='<div class="fg" style="margin-bottom:12px"><div class="fl">Date</div><input class="fi" type="date" id="prodOrderDate" value="'+S.orderDate+'"></div>';
+
+  var recs0=recsForDateShop(S.orderDate,0);
+  var recs1=recsForDateShop(S.orderDate,1);
+  var orders0=[],orders1=[];
+  for(var i=0;i<recs0.length;i++){var po=recs0[i].productOrders||[];for(var j=0;j<po.length;j++)orders0.push(po[j])}
+  for(var i=0;i<recs1.length;i++){var po=recs1[i].productOrders||[];for(var j=0;j<po.length;j++)orders1.push(po[j])}
+  var allOrders=orders0.concat(orders1);
+  var totalQty=0;for(var i=0;i<allOrders.length;i++)totalQty+=allOrders[i].qty||0;
+
+  out+='<div class="order-summary"><div class="order-summary-grid"><div class="order-summary-item"><div class="order-summary-val">'+allOrders.length+'</div><div class="order-summary-lbl">Total Items</div></div><div class="order-summary-item"><div class="order-summary-val">'+totalQty+'</div><div class="order-summary-lbl">Total Qty</div></div><div class="order-summary-item"><div class="order-summary-val">2</div><div class="order-summary-lbl">Shops</div></div></div></div>';
+
+  if(!allOrders.length){out+='<div class="es"><div class="esi">\uD83D\uDCE6</div><div class="est">No orders for this date.<br>Shop staff can add orders from their login.</div></div>';return out}
+
+  // Group by category, then show per shop
+  for(var c=0;c<PCATS.length;c++){
+    var cat=PCATS[c];
+    var icons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
+    var catItems0=orders0.filter(function(o){return o.category===cat});
+    var catItems1=orders1.filter(function(o){return o.category===cat});
+    if(!catItems0.length&&!catItems1.length)continue;
+
+    out+='<div class="card"><div class="ch"><div class="ci '+(c===0?'a':c===1?'b':'p')+'">'+(icons[cat]||'\uD83D\uDCE6')+'</div><div><div class="ct">'+cat+'</div><div class="cs">'+(catItems0.length+catItems1.length)+' items total</div></div></div>';
+
+    // Merge and show combined with shop badges
+    var combined={};
+    for(var i=0;i<catItems0.length;i++){var p=catItems0[i].product;if(!combined[p])combined[p]={s0:0,s1:0,unit:catItems0[i].unit,notes:catItems0[i].notes||''};combined[p].s0+=catItems0[i].qty||0}
+    for(var i=0;i<catItems1.length;i++){var p=catItems1[i].product;if(!combined[p])combined[p]={s0:0,s1:0,unit:catItems1[i].unit,notes:catItems1[i].notes||''};combined[p].s1+=catItems1[i].qty||0}
+
+    for(var p in combined){
+      var item=combined[p];var total=item.s0+item.s1;
+      out+='<div class="order-item"><div><div style="font-weight:600">'+p+'</div><div style="font-size:10px;color:var(--text3)">';
+      if(item.s0)out+='<span class="order-shop-badge s0">Highway: '+item.s0+'</span>';
+      if(item.s1)out+='<span class="order-shop-badge s1">Mainroad: '+item.s1+'</span>';
+      out+='</div></div><div class="order-qty">'+total+' '+item.unit+'</div></div>';
+    }
+    out+='</div>';
+  }
+  return out;
+}
+
+/* ===== RAW MATERIALS (Production Staff) ===== */
+function renderRawMaterials(){
+  var rmNames=loadSavedRawMats();
+  var rmDL='<datalist id="dlRawMats">';for(var i=0;i<rmNames.length;i++)rmDL+='<option value="'+rmNames[i]+'">';rmDL+='</datalist>';
+  var vendorNames=getKnownNames().vendors;
+  var vnDL='<datalist id="dlRMVendors">';for(var i=0;i<vendorNames.length;i++)vnDL+='<option value="'+vendorNames[i]+'">';vnDL+='</datalist>';
+
+  var out='<div class="fg" style="margin-bottom:12px"><div class="fl">Date</div><input class="fi" type="date" id="rmDateInp" value="'+S.orderDate+'"></div>';
+
+  // Load existing raw material record for this date
+  var existingRM=null;
+  for(var i=0;i<S.rawMatRecords.length;i++){if(S.rawMatRecords[i].date===S.orderDate){existingRM=S.rawMatRecords[i];break}}
+  var mats=S.rawMats.length?S.rawMats:(existingRM?(existingRM.materials||[]):[]);
+  if(!S.rawMats.length&&existingRM)S.rawMats=mats.map(function(m){return JSON.parse(JSON.stringify(m))});
+
+  var matTotal=0;for(var i=0;i<S.rawMats.length;i++)matTotal+=S.rawMats[i].amount||0;
+
+  if(S.rawMats.length)out+='<div class="order-summary"><div class="order-summary-grid"><div class="order-summary-item"><div class="order-summary-val">'+S.rawMats.length+'</div><div class="order-summary-lbl">Materials</div></div><div class="order-summary-item"><div class="order-summary-val">'+fmt(matTotal)+'</div><div class="order-summary-lbl">Est. Cost</div></div><div class="order-summary-item"><div class="order-summary-val">'+fmtD(S.orderDate)+'</div><div class="order-summary-lbl">Order Date</div></div></div></div>';
+
+  out+='<div class="card"><div class="ch"><div class="ci t">\uD83E\uDDF1</div><div><div class="ct">Raw Material Order</div><div class="cs">Production supplies needed</div></div></div>';
+
+  if(S.rawMats.length){
+    out+='<div class="il">';
+    for(var i=0;i<S.rawMats.length;i++){var m=S.rawMats[i];out+='<div class="ir"><div><div class="in">'+m.name+'</div><div class="ic">'+m.qty+' '+m.unit+(m.vendor?' \u2022 '+m.vendor:'')+'</div></div><div style="display:flex;align-items:center;gap:8px"><span class="ia e">'+fmt(m.amount)+'</span><button class="ix" data-delrm="'+i+'">\u00D7</button></div></div>'}
+    out+='<div class="it"><span class="itl">Total</span><span class="ia e">'+fmt(matTotal)+'</span></div></div>';
+  }
+
+  out+='<div style="margin-top:12px;padding-top:12px;border-top:1.5px solid var(--border)"><div class="fr c2"><div class="fg"><div class="fl">Material Name</div><input class="fi" type="text" id="rmName" placeholder="e.g. Maida" list="dlRawMats" autocomplete="off"></div><div class="fg"><div class="fl">Quantity</div><div class="fr c2" style="gap:4px"><input class="fi" type="number" inputmode="numeric" id="rmQty" placeholder="0" style="flex:2"><select class="fi" id="rmUnit" style="flex:1"><option>kg</option><option>g</option><option>litre</option><option>ml</option><option>pcs</option><option>dozen</option><option>bag</option><option>box</option></select></div></div></div>';
+  out+='<div class="fr c2" style="margin-top:8px"><div class="fg"><div class="fl">Vendor (optional)</div><input class="fi" type="text" id="rmVendor" placeholder="e.g. Flour Mill" list="dlRMVendors" autocomplete="off"></div><div class="fg"><div class="fl">Est. Cost (\u20B9)</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="rmCost" placeholder="0"></div></div></div>';
+  out+='<div style="margin-top:8px;text-align:right"><button class="ab g" id="addRM">\uD83E\uDDF1 Add Material</button></div></div></div>';
+  out+=rmDL+vnDL;
+  out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveRMBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save Raw Material Order')+'</button>';
+  return out;
+}
+
+/* ===== RECIPE BOOK ===== */
+function resetRcpForm(){S.rcpForm={name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[{name:'All Purpose Flour (Maida)',qty:'1000',unit:'g',isFlour:true},{name:'',qty:'',unit:'g',isFlour:false},{name:'',qty:'',unit:'g',isFlour:false}],steps:[''],notes:'',shelf:'',storage:''}}
+function calcBakersPct(ings){
+  var flourQty=0;for(var i=0;i<ings.length;i++){if(ings[i].isFlour)flourQty+=parseFloat(ings[i].qty)||0}
+  if(!flourQty)return ings;
+  for(var i=0;i<ings.length;i++){ings[i].pct=flourQty>0?((parseFloat(ings[i].qty)||0)/flourQty*100):0}
+  return ings;
+}
+
+function renderRecipeBook(){
+  if(S.rcpView>=0)return renderRecipeDetail(S.rcpView);
+  if(S.rcpAdding)return renderRecipeForm();
+
+  var out='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 style="font-size:18px;font-weight:700">\uD83D\uDCD6 Recipe Book</h2>'+(S.role!=='staff'?'<button class="ab g" id="addRecipeBtn">+ New Recipe</button>':'')+'</div>';
+
+  if(!S.recipes.length){out+='<div class="es"><div class="esi">\uD83D\uDCD6</div><div class="est">No recipes yet.<br>Add your first recipe card!</div></div>';return out}
+
+  // Group by category
+  for(var c=0;c<PCATS.length;c++){
+    var cat=PCATS[c];
+    var catRecipes=S.recipes.filter(function(r){return r.category===cat});
+    if(!catRecipes.length)continue;
+    var icons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
+    out+='<div class="order-cat-hdr">'+(icons[cat]||'')+' '+cat+' ('+catRecipes.length+')</div>';
+    for(var i=0;i<catRecipes.length;i++){
+      var r=catRecipes[i];var idx=-1;for(var j=0;j<S.recipes.length;j++){if(S.recipes[j]===r){idx=j;break}}
+      var ingCount=(r.ingredients||[]).length;
+      var catCls=cat==='Baking'?'baking':cat==='Oil Work'?'oil':'sweets';
+      out+='<div class="rcp-card" data-viewrcp="'+idx+'"><div class="rcp-header"><div class="rcp-name">'+r.name+'</div><div class="rcp-cat-badge '+catCls+'">'+cat+'</div></div>';
+      out+='<div style="display:flex;gap:12px;font-size:11px;color:var(--text2)">';
+      if(r.yield)out+='<span>\uD83C\uDF82 '+r.yield+' '+r.yieldUnit+'</span>';
+      if(r.prepTime)out+='<span>\u23F1 '+r.prepTime+'m prep</span>';
+      if(r.bakeTime)out+='<span>\uD83D\uDD25 '+r.bakeTime+'m bake</span>';
+      if(r.ovenTemp)out+='<span>\uD83C\uDF21 '+r.ovenTemp+'\u00B0C</span>';
+      out+='</div>';
+      out+='<div style="font-size:10px;color:var(--text3);margin-top:4px">'+ingCount+' ingredients \u2022 '+(r.method||[]).length+' steps</div></div>';
+    }
+  }
+
+  out+='<div style="text-align:center;padding:16px;font-size:10px;color:var(--text3);line-height:1.6">Recipe cards follow the <strong>Baker\'s Percentage</strong> standard<br>All ingredients expressed as % of flour weight (flour = 100%)</div>';
+  return out;
+}
+
+function renderRecipeDetail(idx){
+  var r=S.recipes[idx];if(!r)return'<div class="es">Recipe not found</div>';
+  var out='<button class="rcp-back" id="rcpBackBtn">\u276E Back to Recipe Book</button>';
+  var catCls=r.category==='Baking'?'baking':r.category==='Oil Work'?'oil':'sweets';
+  out+='<div class="card"><div class="rcp-header"><div class="rcp-name">'+r.name+'</div><div class="rcp-cat-badge '+catCls+'">'+r.category+'</div></div>';
+
+  // Meta
+  out+='<div class="rcp-meta">';
+  if(r.yield)out+='<div class="rcp-meta-item"><div class="rcp-meta-lbl">Yield</div><div class="rcp-meta-val">'+r.yield+'</div></div>';
+  if(r.yieldUnit)out+='<div class="rcp-meta-item"><div class="rcp-meta-lbl">Unit</div><div class="rcp-meta-val">'+r.yieldUnit+'</div></div>';
+  if(r.prepTime)out+='<div class="rcp-meta-item"><div class="rcp-meta-lbl">Prep</div><div class="rcp-meta-val">'+r.prepTime+' min</div></div>';
+  if(r.bakeTime)out+='<div class="rcp-meta-item"><div class="rcp-meta-lbl">Bake</div><div class="rcp-meta-val">'+r.bakeTime+' min</div></div>';
+  if(r.ovenTemp)out+='<div class="rcp-meta-item"><div class="rcp-meta-lbl">Temp</div><div class="rcp-meta-val">'+r.ovenTemp+'\u00B0C</div></div>';
+  out+='</div>';
+
+  // Ingredients table with Baker's %
+  var ings=r.ingredients||[];
+  ings=calcBakersPct(ings);
+  var totalWt=0;for(var i=0;i<ings.length;i++)totalWt+=parseFloat(ings[i].qty)||0;
+  if(ings.length){
+    out+='<div class="rcp-sec-title">Ingredients</div>';
+    out+='<table class="rcp-ing-tbl"><thead><tr><th>Ingredient</th><th>Qty</th><th>Unit</th><th>Baker\'s %</th></tr></thead><tbody>';
+    for(var i=0;i<ings.length;i++){
+      var ing=ings[i];
+      out+='<tr'+(ing.isFlour?' class="flour-row"':'')+'><td>'+(ing.isFlour?'\uD83C\uDF3E ':'')+(ing.name||'\u2014')+'</td><td>'+ing.qty+'</td><td>'+ing.unit+'</td><td>'+(ing.pct!==undefined?ing.pct.toFixed(1)+'%':'\u2014')+'</td></tr>';
+    }
+    out+='<tr><td><strong>Total</strong></td><td><strong>'+totalWt+'</strong></td><td>g</td><td></td></tr>';
+    out+='</tbody></table>';
+  }
+
+  // Method
+  var steps=r.method||[];
+  if(steps.length&&steps[0]){
+    out+='<div class="rcp-sec-title">Method</div>';
+    for(var i=0;i<steps.length;i++){if(steps[i])out+='<div class="rcp-step"><div class="rcp-step-num">'+(i+1)+'</div><div>'+steps[i]+'</div></div>'}
+  }
+
+  // Notes
+  if(r.notes)out+='<div class="rcp-sec-title">Notes</div><div class="rcp-notes">\uD83D\uDCA1 '+r.notes+'</div>';
+
+  // Storage & Shelf Life
+  if(r.shelfLife||r.storage){
+    out+='<div class="rcp-storage">';
+    if(r.storage)out+='<div class="rcp-storage-item"><div class="rcp-storage-lbl">\uD83D\uDCE6 Storage</div>'+r.storage+'</div>';
+    if(r.shelfLife)out+='<div class="rcp-storage-item"><div class="rcp-storage-lbl">\u23F3 Shelf Life</div>'+r.shelfLife+'</div>';
+    out+='</div>';
+  }
+
+  out+='</div>';
+
+  // Delete button for production staff
+  if(S.role==='production'||S.role==='owner')out+='<button class="rcp-del" data-delrcp="'+idx+'">\uD83D\uDDD1 Delete Recipe</button>';
+  return out;
+}
+
+function renderRecipeForm(){
+  var f=S.rcpForm;
+  // Ingredient datalist from standard list
+  var ingDL='<datalist id="dlBakingIngs">';for(var i=0;i<BAKING_INGS.length;i++)ingDL+='<option value="'+BAKING_INGS[i]+'">';ingDL+='</datalist>';
+
+  var out='<button class="rcp-back" id="rcpBackBtn">\u276E Cancel</button>';
+  out+='<h2 style="font-size:18px;font-weight:700;margin-bottom:4px">\uD83D\uDCD6 New Recipe Card</h2>';
+  out+='<div style="font-size:11px;color:var(--text2);margin-bottom:14px">Baker\'s Formula Card \u2022 International Standard \u2022 Baker\'s %</div>';
+
+  // ─── BASIC INFO ───
+  out+='<div class="card"><div class="rcp-form-sec"><div class="rcp-form-sec-title">\uD83D\uDCCB Recipe Info</div>';
+  out+='<div class="fg" style="margin-bottom:8px"><div class="fl">Recipe Name</div><input class="fi" type="text" id="rcpName" value="'+f.name+'" placeholder="e.g. White Bread, Butter Cake"></div>';
+  out+='<div class="fr c2"><div class="fg"><div class="fl">Category</div><select class="fi" id="rcpCat">'+PCATS.map(function(c){return'<option'+(f.cat===c?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div>';
+  out+='<div class="fg"><div class="fl">Yield</div><div class="fr c2" style="gap:4px"><input class="fi" type="number" inputmode="numeric" id="rcpYield" value="'+f.yield+'" placeholder="Qty" style="flex:1"><select class="fi" id="rcpYieldUnit" style="flex:1">'+PUNITS.map(function(u){return'<option'+(f.yieldUnit===u?' selected':'')+'>'+u+'</option>'}).join('')+'</select></div></div></div>';
+  out+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">\u23F1 Prep (min)</div><input class="fi" type="number" inputmode="numeric" id="rcpPrep" value="'+f.prep+'" placeholder="30"></div>';
+  out+='<div class="fg"><div class="fl">\uD83D\uDD25 Bake (min)</div><input class="fi" type="number" inputmode="numeric" id="rcpBake" value="'+f.bake+'" placeholder="35"></div>';
+  out+='<div class="fg"><div class="fl">\uD83C\uDF21 Temp (\u00B0C)</div><input class="fi" type="number" inputmode="numeric" id="rcpTemp" value="'+f.temp+'" placeholder="180"></div></div></div></div>';
+
+  // ─── INGREDIENTS ───
+  out+='<div class="card"><div class="rcp-form-sec"><div class="rcp-form-sec-title">\uD83C\uDF3E Ingredients \u2022 Baker\'s Percentage</div>';
+  out+='<div style="font-size:10px;color:var(--text2);margin-bottom:8px;padding:6px 8px;background:var(--bg);border-radius:6px">\uD83D\uDCA1 Tick <strong>Flour</strong> for your base ingredient (= 100%). All others auto-calculate. Select ingredients from the dropdown \u2014 type to search.</div>';
+  var flourQty=0;for(var i=0;i<f.ings.length;i++){if(f.ings[i].isFlour)flourQty+=parseFloat(f.ings[i].qty)||0}
+  for(var i=0;i<f.ings.length;i++){
+    var ing=f.ings[i];
+    var pct=flourQty>0?((parseFloat(ing.qty)||0)/flourQty*100):0;
+    out+='<div class="rcp-ing-row">';
+    out+='<label style="display:flex;align-items:center;gap:0;flex-shrink:0"><input type="checkbox" data-rcping-flour="'+i+'"'+(ing.isFlour?' checked':'')+' style="margin:0" title="Mark as flour (base)">'+(ing.isFlour?'\uD83C\uDF3E':'')+'</label>';
+    out+='<input class="fi" type="text" data-rcping-name="'+i+'" value="'+(ing.name||'').replace(/"/g,'&quot;')+'" placeholder="Select ingredient" list="dlBakingIngs" autocomplete="off" style="flex:3">';
+    out+='<input class="fi" type="number" inputmode="numeric" data-rcping-qty="'+i+'" value="'+ing.qty+'" placeholder="g" style="flex:1;min-width:55px">';
+    out+='<select class="fi" data-rcping-unit="'+i+'" style="width:45px;flex-shrink:0;padding:8px 2px;font-size:11px"><option'+(ing.unit==='g'?' selected':'')+'>g</option><option'+(ing.unit==='kg'?' selected':'')+'>kg</option><option'+(ing.unit==='ml'?' selected':'')+'>ml</option><option'+(ing.unit==='litre'?' selected':'')+'>litre</option><option'+(ing.unit==='pcs'?' selected':'')+'>pcs</option></select>';
+    out+='<div class="rcp-pct">'+(ing.isFlour?'100%':(flourQty>0?pct.toFixed(1)+'%':'\u2014'))+'</div>';
+    out+='<button class="ix" data-rcping-del="'+i+'">\u00D7</button></div>';
+  }
+  out+='<button class="ab g" id="addRcpIng" style="margin-top:6px">+ Add Ingredient</button></div></div>';
+
+  // ─── METHOD ───
+  var catSteps=METHOD_STEPS[f.cat]||METHOD_STEPS['Baking'];
+  var usedSteps={};for(var i=0;i<f.steps.length;i++){var s=f.steps[i].replace(/\d+/g,'{n}').trim();usedSteps[s]=1}
+  out+='<div class="card"><div class="rcp-form-sec"><div class="rcp-form-sec-title">\uD83D\uDC68\u200D\uD83C\uDF73 Method / Procedure</div>';
+  out+='<div style="font-size:10px;color:var(--text2);margin-bottom:6px">\uD83D\uDCA1 Tap a step below to add it, or type your own. Drag steps to reorder.</div>';
+
+  // Step template chips
+  out+='<div class="rcp-step-chips">';
+  for(var i=0;i<catSteps.length;i++){
+    var chipText=catSteps[i].replace(/\{[^}]+\}/g,'...');
+    out+='<div class="rcp-step-chip" data-addstep="'+i+'">'+chipText+'</div>';
+  }
+  out+='</div>';
+
+  // Current steps
+  for(var i=0;i<f.steps.length;i++){
+    out+='<div class="rcp-step-row"><div class="rcp-step-num">'+(i+1)+'</div><textarea class="fi" data-rcpstep="'+i+'" placeholder="Step '+(i+1)+'... (tap above or type)">'+f.steps[i]+'</textarea><button class="ix" data-rcpstep-del="'+i+'">\u00D7</button></div>';
+  }
+  out+='<button class="ab g" id="addRcpStep" style="margin-top:4px">+ Empty Step</button></div></div>';
+
+  // ─── STORAGE & NOTES ───
+  out+='<div class="card"><div class="rcp-form-sec"><div class="rcp-form-sec-title">\uD83D\uDCE6 Storage & Notes</div>';
+  out+='<div class="fr c2"><div class="fg"><div class="fl">\uD83D\uDCE6 Storage</div><select class="fi" id="rcpStorage"><option value=""'+(f.storage===''?' selected':'')+'>Select storage...</option>';
+  for(var i=0;i<STORAGE_OPTS.length;i++)out+='<option'+(f.storage===STORAGE_OPTS[i]?' selected':'')+'>'+STORAGE_OPTS[i]+'</option>';
+  out+='</select></div>';
+  out+='<div class="fg"><div class="fl">\u23F3 Shelf Life</div><select class="fi" id="rcpShelf"><option value=""'+(f.shelf===''?' selected':'')+'>Select shelf life...</option>';
+  for(var i=0;i<SHELF_OPTS.length;i++)out+='<option'+(f.shelf===SHELF_OPTS[i]?' selected':'')+'>'+SHELF_OPTS[i]+'</option>';
+  out+='</select></div></div>';
+  out+='<div class="fg" style="margin-top:8px"><div class="fl">\uD83D\uDCA1 Notes / Tips (optional)</div><textarea class="fi" id="rcpNotes" rows="2" placeholder="e.g. Use cold water in summer, do not over-mix..." style="resize:none">'+f.notes+'</textarea></div>';
+  out+='</div></div>';
+
+  out+=ingDL;
+  out+='<button class="save-btn" id="saveRecipeBtn">\uD83D\uDCD6 Save Recipe Card</button>';
+  return out;
+}
+
+/* ===== PRODUCTION TAB ===== */
+function prodDayAgg(shop,daysBack){
+  var t=new Date(today()),cutoff=new Date(t);cutoff.setDate(cutoff.getDate()-daysBack);
+  var cutStr=toISO(cutoff);
+  var map={};
+  for(var i=0;i<S.records.length;i++){
+    var r=S.records[i];if(r.date<cutStr)continue;
+    if(shop!=='all'&&r.shop!=parseInt(shop))continue;
+    var orders=r.productOrders||[];
+    if(!orders.length)continue;
+    if(!map[r.date])map[r.date]={date:r.date,totalQty:0,byCat:{Baking:0,'Oil Work':0,Sweets:0},products:{},items:0};
+    for(var j=0;j<orders.length;j++){
+      var q=parseInt(orders[j].qty)||0;
+      map[r.date].totalQty+=q;
+      map[r.date].byCat[orders[j].category]=(map[r.date].byCat[orders[j].category]||0)+q;
+      map[r.date].products[orders[j].product]=(map[r.date].products[orders[j].product]||0)+q;
+      map[r.date].items++;
+    }
+  }
+  var arr=[];for(var k in map)arr.push(map[k]);
+  arr.sort(function(a,b){return a.date<b.date?-1:1});
+  return arr;
+}
+
+function rmDayAgg(daysBack){
+  var t=new Date(today()),cutoff=new Date(t);cutoff.setDate(cutoff.getDate()-daysBack);
+  var cutStr=toISO(cutoff);var totalCost=0;var matMap={};
+  for(var i=0;i<S.rawMatRecords.length;i++){
+    var r=S.rawMatRecords[i];if(r.date<cutStr)continue;
+    var mats=r.materials||[];
+    for(var j=0;j<mats.length;j++){
+      var amt=parseFloat(mats[j].amount)||0;
+      totalCost+=amt;
+      var n=mats[j].name||'Unknown';
+      if(!matMap[n])matMap[n]={name:n,qty:0,cost:0,unit:mats[j].unit||''};
+      matMap[n].qty+=(parseFloat(mats[j].qty)||0);
+      matMap[n].cost+=amt;
+    }
+  }
+  var arr=[];for(var k in matMap)arr.push(matMap[k]);
+  arr.sort(function(a,b){return b.cost-a.cost});
+  return{totalCost:totalCost,materials:arr};
+}
+
+function smaCalc(arr,key,n){if(!arr.length)return 0;if(arr.length<n)n=arr.length;var s=0;for(var i=arr.length-n;i<arr.length;i++)s+=arr[i][key];return n>0?s/n:0}
+function wmaCalc(arr,key,n){if(!arr.length)return 0;if(arr.length<n)n=arr.length;var s=0,w=0;for(var i=arr.length-n;i<arr.length;i++){var wi=i-arr.length+n+1;s+=arr[i][key]*wi;w+=wi}return w>0?s/w:0}
+function linRegCalc(arr,key){
+  var n=arr.length;if(n<2)return{slope:0,intercept:0,r2:0};
+  var sx=0,sy=0,sxy=0,sxx=0,syy=0;
+  for(var i=0;i<n;i++){sx+=i;sy+=arr[i][key];sxy+=i*arr[i][key];sxx+=i*i;syy+=arr[i][key]*arr[i][key]}
+  var denom=n*sxx-sx*sx;if(denom===0)return{slope:0,intercept:sy/n,r2:0};
+  var slope=(n*sxy-sx*sy)/denom;
+  var intercept=(sy-slope*sx)/n;
+  var ssTot=syy-sy*sy/n;
+  var ssRes=0;for(var i=0;i<n;i++){var pred=intercept+slope*i;ssRes+=(arr[i][key]-pred)*(arr[i][key]-pred)}
+  var r2=ssTot>0?1-ssRes/ssTot:0;
+  return{slope:slope,intercept:intercept,r2:Math.max(0,r2)};
+}
+function expSmoothCalc(arr,key,alpha){
+  if(!arr.length)return{smoothed:[],forecast:0};
+  if(!alpha)alpha=0.3;
+  var s=[arr[0][key]];
+  for(var i=1;i<arr.length;i++)s.push(alpha*arr[i][key]+(1-alpha)*s[i-1]);
+  return{smoothed:s,forecast:alpha*arr[arr.length-1][key]+(1-alpha)*s[s.length-1]};
+}
+function forecastProd(arr,key,periods){
+  if(arr.length<3)return[];
+  var lr=linRegCalc(arr,key);
+  var es=expSmoothCalc(arr,key,0.3);
+  var base=es.forecast;
+  var result=[];
+  for(var i=1;i<=periods;i++){
+    result.push(Math.max(0,Math.round(base+lr.slope*i)));
+  }
+  return result;
+}
+
+function renderProduction(){
+  var shop=S.pShop,range=parseInt(S.pRange)||30;
+  var days=prodDayAgg(shop,range);
+  var rm=rmDayAgg(range);
+
+  // Controls
+  var out='<div class="prod-controls"><div class="biz-shop-toggle" style="margin-bottom:0;flex:1"><button class="biz-shop-btn'+(shop==='all'?' on':'')+'" data-pshop="all">All</button><button class="biz-shop-btn'+(shop==='0'?' on':'')+'" data-pshop="0">Highway</button><button class="biz-shop-btn'+(shop==='1'?' on':'')+'" data-pshop="1">Mainroad</button></div>';
+  out+='<div class="prod-range"><button class="prod-range-btn'+(range===7?' on':'')+'" data-prange="7">7d</button><button class="prod-range-btn'+(range===14?' on':'')+'" data-prange="14">14d</button><button class="prod-range-btn'+(range===30?' on':'')+'" data-prange="30">30d</button><button class="prod-range-btn'+(range===90?' on':'')+'" data-prange="90">90d</button></div></div>';
+
+  if(days.length<2){return out+'<div class="es"><div class="esi">\uD83C\uDFED</div><div class="est">Need at least 2 days of production data.<br>Production staff should enter daily orders.</div></div>'}
+
+  // === STAT CARDS ===
+  var totalQty=0,uniqueProds={};
+  for(var i=0;i<days.length;i++){totalQty+=days[i].totalQty;var p=days[i].products;for(var k in p)uniqueProds[k]=1}
+  var avgDaily=days.length>0?Math.round(totalQty/days.length):0;
+  var activeProd=Object.keys(uniqueProds).length;
+  // WoW comparison
+  var half=Math.floor(days.length/2);
+  var recent=days.slice(-half),older=days.slice(0,half);
+  var recentQty=0,olderQty=0;
+  for(var i=0;i<recent.length;i++)recentQty+=recent[i].totalQty;
+  for(var i=0;i<older.length;i++)olderQty+=older[i].totalQty;
+  var qtyGrowth=olderQty>0?((recentQty-olderQty)/olderQty*100):0;
+  var growthStr=(qtyGrowth>=0?'\u2191':'\u2193')+Math.abs(qtyGrowth).toFixed(1)+'% vs prev';
+
+  out+='<div class="prod-stat-grid">';
+  out+=skC('\uD83D\uDCE6','Total Produced',''+totalQty+' units',days.length+'d total','#0c3a2d','#e8f5ee');
+  out+=skC('\uD83D\uDCCA','Avg Daily',''+avgDaily+' units',growthStr,'#4a2c82','#f3e8ff');
+  out+=skC('\uD83D\uDCCB','Active Products',''+activeProd,'unique items','#7c2d12','#fff7ed');
+  out+=skC('\uD83E\uDDF1','RM Spend',fmt(rm.totalCost),rm.materials.length+' materials','#1e3a5f','#eff6ff');
+  out+='</div>';
+
+  // === TODAY'S PRODUCTION ===
+  var todayData=null;
+  for(var i=days.length-1;i>=0;i--){todayData=days[i];break;}
+  if(todayData){
+    var cats=['Baking','Oil Work','Sweets'];
+    var catColors={'Baking':'var(--green)','Oil Work':'var(--amber)','Sweets':'var(--rose)'};
+    out+='<div class="card prod-today"><div class="biz-section-title">\uD83D\uDCC5 Latest Production \u2022 '+fmtD(todayData.date)+'</div>';
+    // Category proportion bar
+    var catTotal=todayData.totalQty||1;
+    out+='<div class="prod-cat-bar">';
+    for(var c=0;c<cats.length;c++){var pct=(todayData.byCat[cats[c]]||0)/catTotal*100;if(pct>0)out+='<div style="width:'+pct+'%;background:'+catColors[cats[c]]+'"></div>'}
+    out+='</div>';
+    out+='<div class="prod-legend"><span style="--c:var(--green)">\u2022 Baking '+(todayData.byCat.Baking||0)+'</span><span style="--c:var(--amber)">\u2022 Oil Work '+(todayData.byCat['Oil Work']||0)+'</span><span style="--c:var(--rose)">\u2022 Sweets '+(todayData.byCat.Sweets||0)+'</span></div>';
+    // Product list
+    var prods=todayData.products;var prodArr=[];for(var k in prods)prodArr.push({name:k,qty:prods[k]});
+    prodArr.sort(function(a,b){return b.qty-a.qty});
+    for(var j=0;j<Math.min(prodArr.length,8);j++){
+      out+='<div class="prod-item"><span class="prod-item-name">'+prodArr[j].name+'</span><span class="prod-item-qty">'+prodArr[j].qty+'</span></div>';
+    }
+    if(prodArr.length>8)out+='<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px">+'+(prodArr.length-8)+' more items</div>';
+    out+='</div>';
+  }
+
+  // === PRODUCTION TREND (7-day bar chart) ===
+  var last7=days.slice(-7);
+  var dt7=[];for(var i=0;i<last7.length;i++){dt7.push({l:new Date(last7[i].date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short'}),b:last7[i].totalQty})}
+  if(dt7.length)out+=barCard('\uD83D\uDCC8','Production Volume','Last 7 days',dt7,'b','#1a6b4a');
+
+  // === CATEGORY BREAKDOWN (stacked bars) ===
+  if(last7.length>=3){
+    var catCols=['#1a6b4a','#b8860b','#c0392b'];
+    var mxCat=1;for(var i=0;i<last7.length;i++){if(last7[i].totalQty>mxCat)mxCat=last7[i].totalQty}
+    out+='<div class="card"><div class="biz-section-title">\uD83C\uDF70 Category Breakdown</div>';
+    out+='<div class="prod-legend"><span>\u2022 Baking</span><span>\u2022 Oil Work</span><span>\u2022 Sweets</span></div>';
+    out+='<div class="bc">';
+    for(var i=0;i<last7.length;i++){
+      var dl=new Date(last7[i].date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short'});
+      var bk=last7[i].byCat.Baking||0,ow=last7[i].byCat['Oil Work']||0,sw=last7[i].byCat.Sweets||0;
+      var tot=bk+ow+sw;var hh=Math.max(tot/mxCat*100,4);
+      var bkH=tot>0?bk/tot*hh:0,owH=tot>0?ow/tot*hh:0,swH=tot>0?sw/tot*hh:0;
+      out+='<div class="bcc"><div style="width:100%;display:flex;flex-direction:column;align-items:stretch;height:'+hh+'%">';
+      if(swH>0)out+='<div style="flex:'+swH+';background:#c0392b;border-radius:3px 3px 0 0;min-height:2px"></div>';
+      if(owH>0)out+='<div style="flex:'+owH+';background:#b8860b;min-height:2px"></div>';
+      if(bkH>0)out+='<div style="flex:'+bkH+';background:#1a6b4a;'+(swH===0&&owH===0?'border-radius:3px 3px 0 0;':'')+'min-height:2px"></div>';
+      out+='</div><span class="blb">'+dl+'</span></div>';
+    }
+    out+='</div></div>';
+  }
+
+  // === TREND ANALYSIS (Moving Averages) ===
+  out+='<div class="card"><div class="biz-section-title">\uD83D\uDCC8 Production Trends</div>';
+  out+='<div style="font-size:11px;color:var(--text2);margin-bottom:8px">Moving averages \u2022 Period-over-period change</div>';
+  var sma7=Math.round(smaCalc(days,'totalQty',7)),sma30=Math.round(smaCalc(days,'totalQty',30));
+  var wma7=Math.round(wmaCalc(days,'totalQty',7));
+  // WoW for production
+  var last7d=days.slice(-7),prev7d=days.slice(-14,-7);
+  var l7q=0,p7q=0;for(var i=0;i<last7d.length;i++)l7q+=last7d[i].totalQty;for(var i=0;i<prev7d.length;i++)p7q+=prev7d[i].totalQty;
+  function trendBadgeProd(cur,prev){var p=prev>0?((cur-prev)/prev)*100:0;if(Math.abs(p)<2)return'<div class="biz-trend-badge flat">\u2014 Stable</div>';if(p>0)return'<div class="biz-trend-badge up">\u2191 +'+p.toFixed(1)+'%</div>';return'<div class="biz-trend-badge down">\u2193 '+p.toFixed(1)+'%</div>'}
+  out+='<div class="biz-trend-row"><div class="biz-trend-label">SMA (7d) / day</div><div class="biz-trend-vals"><div class="biz-trend-val">'+sma7+'</div><div class="biz-trend-val" style="color:var(--text3);font-size:11px">'+sma30+'</div>'+trendBadgeProd(l7q,p7q)+'</div></div>';
+  out+='<div class="biz-trend-row"><div class="biz-trend-label">WMA (7d) / day</div><div class="biz-trend-vals"><div class="biz-trend-val">'+wma7+'</div></div></div>';
+  // Per-category trends
+  var cats2=['Baking','Oil Work','Sweets'];var catIcons=['\uD83C\uDF5E','\uD83C\uDF69','\uD83C\uDF6C'];
+  for(var c=0;c<cats2.length;c++){
+    var catDays=[];for(var i=0;i<days.length;i++)catDays.push({v:days[i].byCat[cats2[c]]||0});
+    var csma=Math.round(smaCalc(catDays,'v',7));
+    out+='<div class="biz-trend-row"><div class="biz-trend-label">'+catIcons[c]+' '+cats2[c]+'</div><div class="biz-trend-vals"><div class="biz-trend-val">'+csma+'/d</div></div></div>';
+  }
+  // Golden/death cross
+  if(days.length>=14){
+    if(sma7>sma30&&sma7>sma30*1.05)out+='<div style="margin-top:8px;padding:8px 12px;background:var(--gl);border-radius:8px;font-size:11px;font-weight:600;color:var(--green)">\u2705 Golden Signal: 7-day production above 30-day average. Output increasing.</div>';
+    else if(sma7<sma30&&sma7<sma30*.95)out+='<div style="margin-top:8px;padding:8px 12px;background:var(--rl);border-radius:8px;font-size:11px;font-weight:600;color:var(--rose)">\u26A0\uFE0F Warning: 7-day production dropped below 30-day average. Review demand.</div>';
+  }
+  out+='</div>';
+
+  // === DEMAND FORECAST ===
+  if(days.length>=5){
+    var fc=forecastProd(days,'totalQty',7);
+    var lr=linRegCalc(days,'totalQty');
+    var r2=lr.r2;
+    var confLabel=r2>=0.7?'High':r2>=0.4?'Medium':'Low';
+    var confColor=r2>=0.7?'var(--green)':r2>=0.4?'var(--amber)':'var(--rose)';
+    var confBg=r2>=0.7?'var(--gl)':r2>=0.4?'var(--al)':'var(--rl)';
+    var avgFc=fc.length>0?Math.round(fc.reduce(function(a,b){return a+b},0)/fc.length):0;
+    var fcChange=avgDaily>0?((avgFc-avgDaily)/avgDaily*100):0;
+
+    out+='<div class="prod-forecast-card"><div class="prod-forecast-title">\uD83D\uDD2E Demand Forecast (Next 7 Days)</div>';
+    out+='<div class="prod-forecast-sub">Predicted avg: <strong>'+avgFc+' units/day</strong> ('+(fcChange>=0?'+':'')+fcChange.toFixed(1)+'% vs current)</div>';
+
+    // Bar chart: last 7 actual + 7 predicted
+    var allBars=[];
+    var actLast=days.slice(-7);
+    for(var i=0;i<actLast.length;i++){allBars.push({v:actLast[i].totalQty,type:'actual',l:new Date(actLast[i].date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'narrow'})})}
+    var td=new Date(today());
+    for(var i=0;i<fc.length;i++){var fd=new Date(td);fd.setDate(fd.getDate()+i+1);allBars.push({v:fc[i],type:'predicted',l:fd.toLocaleDateString('en-IN',{weekday:'narrow'})})}
+    var mxF=1;for(var i=0;i<allBars.length;i++){if(allBars[i].v>mxF)mxF=allBars[i].v}
+    out+='<div class="prod-forecast-bars">';
+    for(var i=0;i<allBars.length;i++){
+      var hh=Math.max(allBars[i].v/mxF*100,3);
+      var cls=allBars[i].type==='actual'?'actual':'predicted';
+      var bg=allBars[i].type==='actual'?'background:var(--green)':'';
+      out+='<div class="bcc" style="flex:1"><div class="'+cls+'" style="width:100%;height:'+hh+'%;'+bg+'"></div><span class="blb">'+allBars[i].l+'</span></div>';
+    }
+    out+='</div>';
+    out+='<div class="prod-forecast-lbl"><span>\u2190 Actual</span><span>Forecast \u2192</span></div>';
+    out+='<div class="prod-confidence" style="background:'+confBg+';color:'+confColor+'">R\u00B2 = '+r2.toFixed(2)+' \u2022 '+confLabel+' confidence</div>';
+    out+='</div>';
+  }
+
+  // === DAY-OF-WEEK PATTERN ===
+  if(days.length>=7){
+    var dowData=[0,0,0,0,0,0,0],dowCount=[0,0,0,0,0,0,0];
+    var dowNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    for(var i=0;i<days.length;i++){var dw=new Date(days[i].date+'T00:00:00').getDay();dowData[dw]+=days[i].totalQty;dowCount[dw]++}
+    var dowAvg=[];var bestDay=0,worstDay=0,bestVal=0,worstVal=Infinity;
+    for(var i=0;i<7;i++){var avg=dowCount[i]>0?Math.round(dowData[i]/dowCount[i]):0;dowAvg.push(avg);if(avg>bestVal){bestVal=avg;bestDay=i}if(avg<worstVal&&dowCount[i]>0){worstVal=avg;worstDay=i}}
+    var mxDow=bestVal||1;
+    out+='<div class="card"><div class="biz-section-title">\uD83D\uDCC5 Production by Day of Week</div>';
+    out+='<div style="font-size:11px;color:var(--text2);margin-bottom:8px">Peak: <strong>'+dowNames[bestDay]+'</strong> ('+bestVal+' avg) \u2022 Low: <strong>'+dowNames[worstDay]+'</strong> ('+worstVal+' avg)</div>';
+    out+='<div class="biz-dow">';
+    for(var i=0;i<7;i++){var bg=i===bestDay?'var(--gl)':i===worstDay?'var(--rl)':'var(--bg)';var col=i===bestDay?'var(--green)':i===worstDay?'var(--rose)':'var(--text)';out+='<div class="biz-dow-item" style="background:'+bg+'"><div class="biz-dow-day">'+dowNames[i]+'</div><div class="biz-dow-val" style="color:'+col+'">'+dowAvg[i]+'</div></div>'}
+    out+='</div></div>';
+  }
+
+  // === TOP PRODUCTS (PARETO) ===
+  var prodMap={};
+  for(var i=0;i<days.length;i++){var p=days[i].products;for(var k in p)prodMap[k]=(prodMap[k]||0)+p[k]}
+  var prodArr2=[];for(var k in prodMap)prodArr2.push({name:k,qty:prodMap[k]});
+  prodArr2.sort(function(a,b){return b.qty-a.qty});
+  if(prodArr2.length>1){
+    var prodTotal=0;for(var i=0;i<prodArr2.length;i++)prodTotal+=prodArr2[i].qty;
+    var colors=['#1a6b4a','#2563eb','#b8860b','#6d28d9','#c0392b','#0d9488','#7c2d12','#4338ca','#be185d','#65a30d'];
+    var cumPct=0,pareto80=0;
+    out+='<div class="card"><div class="biz-section-title">\uD83C\uDFC6 Top Products (Pareto 80/20)</div>';
+    out+='<div style="font-size:11px;color:var(--text2);margin-bottom:8px">Which products dominate your production</div>';
+    var showCount=Math.min(prodArr2.length,10);
+    for(var i=0;i<showCount;i++){
+      var pct=prodTotal>0?prodArr2[i].qty/prodTotal*100:0;cumPct+=pct;
+      if(cumPct<=80||pareto80===0)pareto80=i+1;
+      var barW=prodTotal>0?Math.max(prodArr2[i].qty/prodArr2[0].qty*100,5):5;
+      out+='<div class="biz-pareto-row"><div class="biz-pareto-cat">'+prodArr2[i].name+'</div><div class="biz-pareto-track"><div class="biz-pareto-fill" style="width:'+barW+'%;background:'+colors[i%colors.length]+'"><span>'+pct.toFixed(0)+'%</span></div></div><div class="biz-pareto-val">'+prodArr2[i].qty+'</div></div>';
+    }
+    out+='<div class="biz-pareto-line">\u26A0\uFE0F <strong>'+pareto80+' of '+prodArr2.length+'</strong> products make up 80% of production volume.</div>';
+    if(prodArr2.length>showCount)out+='<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px">+'+(prodArr2.length-showCount)+' more products</div>';
+    out+='</div>';
+  }
+
+  // === RAW MATERIAL TRENDS ===
+  if(rm.materials.length){
+    out+='<div class="card"><div class="biz-section-title">\uD83E\uDDF1 Raw Material Consumption</div>';
+    out+='<div style="font-size:11px;color:var(--text2);margin-bottom:8px">Top materials by cost ('+range+'d period)</div>';
+    var showRM=Math.min(rm.materials.length,8);
+    var mxRM=rm.materials[0].cost||1;
+    for(var i=0;i<showRM;i++){
+      var barW=Math.max(rm.materials[i].cost/mxRM*100,5);
+      out+='<div class="biz-pareto-row"><div class="biz-pareto-cat">'+rm.materials[i].name+'</div><div class="biz-pareto-track"><div class="biz-pareto-fill" style="width:'+barW+'%;background:#0d9488"><span>'+fmt(rm.materials[i].cost)+'</span></div></div><div class="biz-pareto-val">'+rm.materials[i].qty+' '+rm.materials[i].unit+'</div></div>';
+    }
+    if(rm.materials.length>showRM)out+='<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px">+'+(rm.materials.length-showRM)+' more materials</div>';
+    out+='</div>';
+  }
+
+  // === PRODUCTION vs SALES CORRELATION ===
+  var salesDays=aDayAgg(aRecs(shop==='all'?shop:parseInt(shop)));
+  if(salesDays.length>=7&&days.length>=7){
+    var sl7=salesDays.slice(-7),sp7=salesDays.slice(-14,-7);
+    var slBill=0,spBill=0;for(var i=0;i<sl7.length;i++)slBill+=sl7[i].billed;for(var i=0;i<sp7.length;i++)spBill+=sp7[i].billed;
+    var salesGrowth=spBill>0?((slBill-spBill)/spBill*100):0;
+    var prodGrowth=p7q>0?((l7q-p7q)/p7q*100):0;
+    var gap=Math.abs(prodGrowth-salesGrowth);
+    var mismatch=gap>15;
+    var mismatchType=prodGrowth>salesGrowth+15?'overproduction':salesGrowth>prodGrowth+15?'underproduction':'balanced';
+
+    out+='<div class="card"><div class="biz-section-title">\u2696\uFE0F Production vs Sales</div>';
+    out+='<div class="biz-cf-grid"><div class="biz-cf-box"><div class="biz-cf-lbl">Production Trend</div><div class="biz-cf-val" style="color:'+(prodGrowth>=0?'var(--green)':'var(--rose)');+'">'+(prodGrowth>=0?'+':'')+prodGrowth.toFixed(1)+'%</div><div class="biz-cf-sub">WoW output</div></div>';
+    out+='<div class="biz-cf-box"><div class="biz-cf-lbl">Sales Trend</div><div class="biz-cf-val" style="color:'+(salesGrowth>=0?'var(--green)':'var(--rose)');+'">'+(salesGrowth>=0?'+':'')+salesGrowth.toFixed(1)+'%</div><div class="biz-cf-sub">WoW revenue</div></div></div>';
+    if(mismatch){
+      if(mismatchType==='overproduction')out+='<div style="margin-top:8px;padding:8px 12px;background:var(--al);border-radius:8px;font-size:11px;font-weight:600;color:var(--amber)">\u26A0\uFE0F Production up but sales flat \u2014 potential <strong>overproduction risk</strong>. Review stock levels and wastage.</div>';
+      else if(mismatchType==='underproduction')out+='<div style="margin-top:8px;padding:8px 12px;background:var(--bl);border-radius:8px;font-size:11px;font-weight:600;color:var(--blue)">\uD83D\uDCC8 Sales growing faster than production \u2014 potential <strong>stockout risk</strong>. Consider scaling up.</div>';
+    }else{
+      out+='<div style="margin-top:8px;padding:8px 12px;background:var(--gl);border-radius:8px;font-size:11px;font-weight:600;color:var(--green)">\u2705 Production and sales are well aligned.</div>';
+    }
+    out+='</div>';
+  }
+
+  // === RECOMMENDATIONS ===
+  var recs=[];
+  // Check for declining production
+  if(days.length>=14&&p7q>0){
+    var pGr=((l7q-p7q)/p7q*100);
+    if(pGr<-15)recs.push({p:'high',i:'\uD83D\uDCC9',m:'Production is <strong>down '+Math.abs(pGr).toFixed(1)+'%</strong> week-over-week. Verify demand hasn\u0027t dropped or check for supply issues.'});
+    if(pGr>20)recs.push({p:'medium',i:'\uD83D\uDCC8',m:'Production surged <strong>+'+pGr.toFixed(1)+'%</strong> this week. Ensure this aligns with demand to avoid wastage.'});
+  }
+  // Top product dominance
+  if(prodArr2.length>1&&prodTotal>0&&prodArr2[0].qty/prodTotal>0.5)recs.push({p:'medium',i:'\uD83C\uDFC6',m:'<strong>'+prodArr2[0].name+'</strong> is '+Math.round(prodArr2[0].qty/prodTotal*100)+'% of all production. Consider diversifying your product mix.'});
+  // RM cost check
+  if(rm.totalCost>0&&totalQty>0){
+    var costPerUnit=rm.totalCost/totalQty;
+    if(costPerUnit>50)recs.push({p:'medium',i:'\uD83E\uDDF1',m:'Raw material cost is <strong>'+fmt(Math.round(costPerUnit))+'/unit</strong>. Review supplier pricing for bulk discounts.'});
+  }
+  // Day-of-week suggestion
+  if(days.length>=14&&typeof worstVal!=='undefined'&&typeof bestVal!=='undefined'&&worstVal<bestVal*0.4){
+    recs.push({p:'medium',i:'\uD83D\uDCC5',m:'Production on the weakest day is under 40% of your peak. Consider adjusting staffing or prep schedules.'});
+  }
+  // Positive
+  if(days.length>=14&&l7q>p7q*1.1)recs.push({p:'good',i:'\uD83D\uDE80',m:'Production is <strong>growing</strong>. Great momentum \u2014 ensure raw material supply keeps up.'});
+  if(rm.materials.length>=5)recs.push({p:'good',i:'\u2705',m:'Tracking <strong>'+rm.materials.length+' raw materials</strong>. Good supply chain visibility.'});
+
+  if(recs.length){
+    out+='<div class="card"><div class="biz-section-title">\uD83D\uDCA1 Production Insights</div>';
+    for(var i=0;i<recs.length&&i<6;i++){out+='<div class="biz-rec '+recs[i].p+'"><div class="biz-rec-icon">'+recs[i].i+'</div><div class="biz-rec-text">'+recs[i].m+'</div></div>'}
+    out+='</div>';
+  }
+
+  // Method credit
+  out+='<div style="text-align:center;padding:16px;font-size:10px;color:var(--text3);line-height:1.6">Analysis: SMA \u2022 WMA \u2022 Linear Regression \u2022 Exponential Smoothing<br>Pareto 80/20 \u2022 Day-of-Week Analysis \u2022 Production-Sales Correlation</div>';
+  return out;
+}
+
+
+/* ===== ANALYTICS TAB ===== */
+function aRecs(shop){var a=[];for(var i=0;i<S.records.length;i++){if(shop==='all'||S.records[i].shop==shop)a.push(S.records[i])}return a}
+function aRecsRange(recs,from,to){var a=[];for(var i=0;i<recs.length;i++){if(recs[i].date>=from&&recs[i].date<=to)a.push(recs[i])}return a}
+function aRecsByDate(recs,d){var a=[];for(var i=0;i<recs.length;i++){if(recs[i].date===d)a.push(recs[i])}return a}
+function aDayAgg(recs){var map={};for(var i=0;i<recs.length;i++){var d=recs[i].date;if(!map[d])map[d]={date:d,billed:0,upi:0,walk:0,exp:0,ven:0,open:0,close:0};map[d].billed+=recs[i].totalBilled||0;map[d].upi+=recs[i].upiReceived||0;map[d].walk+=recs[i].walkIns||0;map[d].exp+=recs[i].totalExpenses||0;map[d].ven+=recs[i].totalVendorPayments||0;map[d].open+=recs[i].openingTotal||0;map[d].close+=recs[i].closingTotal||0}var arr=[];for(var k in map)arr.push(map[k]);arr.sort(function(a,b){return a.date<b.date?-1:1});return arr}
+
+function calcHealthScore(days){
+  if(days.length<3)return null;
+  var last7=days.slice(-7),prev7=days.slice(-14,-7);
+  // 1. Profitability (0-20)
+  var tBill=0,tCost=0;for(var i=0;i<last7.length;i++){tBill+=last7[i].billed;tCost+=last7[i].exp}
+  var margin=tBill>0?(tBill-tCost)/tBill:0;
+  var profitScore=margin>=.20?20:margin>=.15?16:margin>=.10?12:margin>=.05?8:margin>=0?4:0;
+  // 2. Revenue Trend (0-20)
+  var cur7=0,prv7=0;for(var i=0;i<last7.length;i++)cur7+=last7[i].billed;for(var i=0;i<prev7.length;i++)prv7+=prev7[i].billed;
+  var revGrowth=prv7>0?((cur7-prv7)/prv7)*100:0;
+  var revScore=revGrowth>10?20:revGrowth>5?16:revGrowth>-5?12:revGrowth>-10?6:0;
+  // 3. Cash Flow Health (0-20)
+  var totalDisc=0,totalBillCash=0;
+  for(var i=0;i<last7.length;i++){var cashIn=last7[i].billed-last7[i].upi;var expected=last7[i].open+cashIn-last7[i].exp;var disc=Math.abs(last7[i].close-expected);totalDisc+=disc;totalBillCash+=last7[i].billed}
+  var discPct=totalBillCash>0?totalDisc/totalBillCash:0;
+  var cashScore=discPct<.01?20:discPct<.02?15:discPct<.05?10:discPct<.10?5:0;
+  // 4. Expense Control (0-20)
+  var cur7Ratio=cur7>0?tCost/cur7:1;
+  var all30Cost=0,all30Bill=0;for(var i=0;i<days.length;i++){all30Cost+=days[i].exp;all30Bill+=days[i].billed}
+  var avg30Ratio=all30Bill>0?all30Cost/all30Bill:1;
+  var expDiff=avg30Ratio>0?((cur7Ratio-avg30Ratio)/avg30Ratio)*100:0;
+  var expScore=expDiff<-5?20:Math.abs(expDiff)<=5?14:expDiff<=15?8:0;
+  // 5. Customer Traffic (0-20)
+  var curWalk=0,prvWalk=0;for(var i=0;i<last7.length;i++)curWalk+=last7[i].walk;for(var i=0;i<prev7.length;i++)prvWalk+=prev7[i].walk;
+  var walkGrowth=prvWalk>0?((curWalk-prvWalk)/prvWalk)*100:0;
+  var walkScore=walkGrowth>10?20:walkGrowth>5?16:walkGrowth>-5?12:walkGrowth>-10?6:0;
+  var total=profitScore+revScore+cashScore+expScore+walkScore;
+  return{total:total,profit:{score:profitScore,margin:margin},revenue:{score:revScore,growth:revGrowth},cash:{score:cashScore,disc:discPct},expense:{score:expScore,diff:expDiff},traffic:{score:walkScore,growth:walkGrowth}};
+}
+
+function renderAnalytics(){
+  var shop=S.aShop;
+  var allRecs=aRecs(shop==='all'?shop:parseInt(shop));
+  var days=aDayAgg(allRecs);
+  // Shop toggle
+  var out='<div class="biz-shop-toggle"><button class="biz-shop-btn'+(shop==='all'?' on':'')+'" data-ashop="all">All Shops</button><button class="biz-shop-btn'+(shop==='0'?' on':'')+'" data-ashop="0">Highway</button><button class="biz-shop-btn'+(shop==='1'?' on':'')+'" data-ashop="1">Mainroad</button></div>';
+
+  if(days.length<3){return out+'<div class="es"><div class="esi">\uD83E\uDDE0</div><div class="est">Need at least 3 days of data for analytics.<br>Keep entering daily records!</div></div>'}
+
+  // === HEALTH SCORE ===
+  var hs=calcHealthScore(days);
+  var scoreColor=hs.total>=70?'var(--green)':hs.total>=40?'var(--amber)':'var(--rose)';
+  var statusText=hs.total>=80?'Excellent':hs.total>=70?'Healthy':hs.total>=50?'Fair':hs.total>=30?'Needs Attention':'Critical';
+  var statusBg=hs.total>=70?'var(--gl)':hs.total>=40?'var(--al)':'var(--rl)';
+  var circ=2*Math.PI*68;var offset=circ-(hs.total/100)*circ;
+  out+='<div class="card"><div class="biz-gauge"><svg class="biz-gauge-svg" width="160" height="160" viewBox="0 0 160 160"><circle class="biz-gauge-bg" cx="80" cy="80" r="68"/><circle class="biz-gauge-fill" cx="80" cy="80" r="68" stroke="'+scoreColor+'" stroke-dasharray="'+circ+'" stroke-dashoffset="'+offset+'"/></svg><div class="biz-gauge-score" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="biz-gauge-num" style="color:'+scoreColor+'">'+hs.total+'</div><div class="biz-gauge-label">Health Score</div></div></div>';
+  out+='<div class="biz-gauge-status" style="background:'+statusBg+';color:'+scoreColor+'">'+statusText+'</div>';
+  // Sub-scores
+  var subs=[{l:'Profit',s:hs.profit.score,c:'var(--green)'},{l:'Revenue',s:hs.revenue.score,c:'var(--blue)'},{l:'Cash',s:hs.cash.score,c:'var(--amber)'},{l:'Expense',s:hs.expense.score,c:'var(--purple)'},{l:'Traffic',s:hs.traffic.score,c:'var(--teal)'}];
+  out+='<div class="biz-sub-scores">';
+  for(var i=0;i<subs.length;i++){out+='<div class="biz-sub"><div class="biz-sub-label">'+subs[i].l+'</div><div class="biz-sub-bar"><div class="biz-sub-fill" style="width:'+(subs[i].s/20*100)+'%;background:'+subs[i].c+'"></div></div><div class="biz-sub-val">'+subs[i].s+'/20</div></div>'}
+  out+='</div></div>';
+
+  // === BREAK-EVEN ANALYSIS ===
+  var last30=days.slice(-30);
+  var avgExp=0,avgVen=0,avgBill=0;for(var i=0;i<last30.length;i++){avgExp+=last30[i].exp;avgVen+=last30[i].ven;avgBill+=last30[i].billed}
+  var dailyFixed=last30.length>0?(avgExp-avgVen)/last30.length:0;if(dailyFixed<0)dailyFixed=avgExp/last30.length;
+  var varRatio=avgBill>0?avgVen/avgBill:0;
+  var contribMargin=1-varRatio;
+  var breakEven=contribMargin>0?Math.round(dailyFixed/contribMargin):0;
+  var daysAbove=0;for(var i=0;i<last30.length;i++){if(last30[i].billed>=breakEven)daysAbove++}
+  out+='<div class="card"><div class="biz-section-title">\uD83D\uDCC9 Break-Even Analysis</div>';
+  out+='<div class="biz-be-sub">Daily revenue needed to cover costs</div>';
+  out+='<div class="biz-be-num">'+fmt(breakEven)+' / day</div>';
+  out+='<div class="biz-be-sub">Above break-even: <strong>'+daysAbove+'/'+last30.length+' days</strong> (last 30 days)</div>';
+  // Mini bar chart
+  var last14=days.slice(-14);var mx14=breakEven;for(var i=0;i<last14.length;i++){if(last14[i].billed>mx14)mx14=last14[i].billed}
+  out+='<div style="position:relative"><div class="biz-be-bars">';
+  for(var i=0;i<last14.length;i++){var hh=Math.max(last14[i].billed/mx14*100,2);var col=last14[i].billed>=breakEven?'var(--green)':'var(--rose)';out+='<div class="biz-be-bar" style="height:'+hh+'%;background:'+col+'"></div>'}
+  out+='</div>';
+  var beLine=breakEven/mx14*100;
+  out+='<div style="position:absolute;bottom:'+beLine+'%;left:0;right:0;border-top:2px dashed var(--amber);z-index:1"><span style="font-size:8px;color:var(--amber);font-weight:700;position:absolute;right:0;top:-14px">BE</span></div>';
+  out+='<div style="display:flex;justify-content:space-between;margin-top:4px"><span style="font-size:8px;color:var(--text3)">14 days ago</span><span style="font-size:8px;color:var(--text3)">Today</span></div></div></div>';
+
+  // === PARETO ANALYSIS (80/20) ===
+  var catMap={};
+  for(var i=0;i<allRecs.length;i++){var exps=allRecs[i].expenses||[];for(var j=0;j<exps.length;j++){var c=exps[j].category||'Misc';catMap[c]=(catMap[c]||0)+(exps[j].amount||0)}}
+  var catArr=[];for(var k in catMap)catArr.push({cat:k,amt:catMap[k]});
+  catArr.sort(function(a,b){return b.amt-a.amt});
+  var catTotal=0;for(var i=0;i<catArr.length;i++)catTotal+=catArr[i].amt;
+  if(catArr.length){
+    var cumPct=0,pareto80=0;
+    var colors=['#1a6b4a','#2563eb','#b8860b','#6d28d9','#c0392b','#0d9488','#7c2d12','#4338ca','#be185d','#65a30d'];
+    out+='<div class="card"><div class="biz-section-title">\uD83D\uDCCA Pareto Analysis (80/20 Rule)</div>';
+    out+='<div style="font-size:11px;color:var(--text2);margin-bottom:10px">Which expense categories consume most of your money</div>';
+    for(var i=0;i<catArr.length;i++){
+      var pct=catTotal>0?catArr[i].amt/catTotal*100:0;cumPct+=pct;
+      if(cumPct<=80||pareto80===0)pareto80=i+1;
+      var barW=catTotal>0?Math.max(catArr[i].amt/catArr[0].amt*100,5):5;
+      out+='<div class="biz-pareto-row"><div class="biz-pareto-cat">'+catArr[i].cat+'</div><div class="biz-pareto-track"><div class="biz-pareto-fill" style="width:'+barW+'%;background:'+colors[i%colors.length]+'"><span>'+pct.toFixed(0)+'%</span></div></div><div class="biz-pareto-val">'+fmt(catArr[i].amt)+'</div></div>';
+    }
+    out+='<div class="biz-pareto-line">\u26A0\uFE0F <strong>'+pareto80+' out of '+catArr.length+'</strong> categories make up 80% of your expenses. Focus cost-cutting here.</div>';
+    if(catArr[0]&&catTotal>0&&catArr[0].amt/catTotal>.4){out+='<div class="biz-pareto-line" style="background:var(--rl);color:var(--rose)">\uD83D\uDEA8 <strong>'+catArr[0].cat+'</strong> alone is '+Math.round(catArr[0].amt/catTotal*100)+'% of expenses. Consider negotiating rates or alternatives.</div>'}
+    out+='</div>';
+  }
+
+  // === TREND ANALYSIS ===
+  out+='<div class="card"><div class="biz-section-title">\uD83D\uDCC8 Trend Analysis (Moving Averages)</div>';
+  var sma7=function(arr,key,n){if(arr.length<n)n=arr.length;var s=0;for(var i=arr.length-n;i<arr.length;i++)s+=arr[i][key];return n>0?s/n:0};
+  var rev7=Math.round(sma7(days,'billed',7)),rev30=Math.round(sma7(days,'billed',30));
+  var walk7=Math.round(sma7(days,'walk',7)),walk30=Math.round(sma7(days,'walk',30));
+  var exp7=Math.round(sma7(days,'exp',7)),exp30=Math.round(sma7(days,'exp',30));
+  var ticket7=walk7>0?Math.round(rev7*7/(walk7*7||1)):0;// approx
+  var last7d=days.slice(-7),prev7d=days.slice(-14,-7);
+  var l7bill=0,p7bill=0,l7walk=0,p7walk=0,l7exp=0,p7exp=0;
+  for(var i=0;i<last7d.length;i++){l7bill+=last7d[i].billed;l7walk+=last7d[i].walk;l7exp+=last7d[i].exp}
+  for(var i=0;i<prev7d.length;i++){p7bill+=prev7d[i].billed;p7walk+=prev7d[i].walk;p7exp+=prev7d[i].exp}
+  function trendBadge(cur,prev){var p=prev>0?((cur-prev)/prev)*100:0;if(Math.abs(p)<2)return'<div class="biz-trend-badge flat">\u2014 Stable</div>';if(p>0)return'<div class="biz-trend-badge up">\u2191 +'+p.toFixed(1)+'%</div>';return'<div class="biz-trend-badge down">\u2193 '+p.toFixed(1)+'%</div>'}
+  out+='<div style="font-size:11px;color:var(--text2);margin-bottom:8px">7-Day Avg vs 30-Day Avg (Week-over-Week change)</div>';
+  out+='<div class="biz-trend-row"><div class="biz-trend-label">Revenue / day</div><div class="biz-trend-vals"><div class="biz-trend-val">'+fmt(rev7)+'</div><div class="biz-trend-val" style="color:var(--text3);font-size:11px">'+fmt(rev30)+'</div>'+trendBadge(l7bill,p7bill)+'</div></div>';
+  out+='<div class="biz-trend-row"><div class="biz-trend-label">Walk-ins / day</div><div class="biz-trend-vals"><div class="biz-trend-val">'+walk7+'</div><div class="biz-trend-val" style="color:var(--text3);font-size:11px">'+walk30+'</div>'+trendBadge(l7walk,p7walk)+'</div></div>';
+  out+='<div class="biz-trend-row"><div class="biz-trend-label">Expenses / day</div><div class="biz-trend-vals"><div class="biz-trend-val" style="color:var(--rose)">'+fmt(exp7)+'</div><div class="biz-trend-val" style="color:var(--text3);font-size:11px">'+fmt(exp30)+'</div>'+trendBadge(l7exp,p7exp)+'</div></div>';
+  out+='<div class="biz-trend-row"><div class="biz-trend-label">Avg Ticket</div><div class="biz-trend-vals"><div class="biz-trend-val">'+fmt(ticket7)+'</div></div></div>';
+  // Golden/Death cross signal
+  if(days.length>=14){
+    if(rev7>rev30&&rev7>rev30*1.05)out+='<div style="margin-top:8px;padding:8px 12px;background:var(--gl);border-radius:8px;font-size:11px;font-weight:600;color:var(--green)">\u2705 Golden Signal: 7-day average is above 30-day average. Upward trend forming.</div>';
+    else if(rev7<rev30&&rev7<rev30*.95)out+='<div style="margin-top:8px;padding:8px 12px;background:var(--rl);border-radius:8px;font-size:11px;font-weight:600;color:var(--rose)">\u26A0\uFE0F Warning Signal: 7-day average dropped below 30-day average. Investigate.</div>';
+  }
+  out+='</div>';
+
+  // === DAY-OF-WEEK PATTERN ===
+  if(days.length>=7){
+    var dowData=[0,0,0,0,0,0,0],dowCount=[0,0,0,0,0,0,0];
+    var dowNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    for(var i=0;i<days.length;i++){var dw=new Date(days[i].date+'T00:00:00').getDay();dowData[dw]+=days[i].billed;dowCount[dw]++}
+    var dowAvg=[];var bestDay=0,worstDay=0,bestVal=0,worstVal=Infinity;
+    for(var i=0;i<7;i++){var avg=dowCount[i]>0?Math.round(dowData[i]/dowCount[i]):0;dowAvg.push(avg);if(avg>bestVal){bestVal=avg;bestDay=i}if(avg<worstVal&&dowCount[i]>0){worstVal=avg;worstDay=i}}
+    var mxDow=bestVal||1;
+    out+='<div class="card"><div class="biz-section-title">\uD83D\uDCC5 Day-of-Week Pattern</div>';
+    out+='<div style="font-size:11px;color:var(--text2);margin-bottom:8px">Best day: <strong>'+dowNames[bestDay]+'</strong> ('+fmt(bestVal)+') \u2022 Weakest: <strong>'+dowNames[worstDay]+'</strong> ('+fmt(worstVal)+')</div>';
+    out+='<div class="biz-dow">';
+    for(var i=0;i<7;i++){var bg=i===bestDay?'var(--gl)':i===worstDay?'var(--rl)':'var(--bg)';var col=i===bestDay?'var(--green)':i===worstDay?'var(--rose)':'var(--text)';out+='<div class="biz-dow-item" style="background:'+bg+'"><div class="biz-dow-day">'+dowNames[i]+'</div><div class="biz-dow-val" style="color:'+col+'">'+fmt(dowAvg[i])+'</div></div>'}
+    out+='</div></div>';
+  }
+
+  // === CASH FLOW HEALTH ===
+  out+='<div class="card"><div class="biz-section-title">\uD83D\uDCB5 Cash Flow Health</div>';
+  var last7d2=days.slice(-7);
+  var totBill7=0,totUpi7=0,totExp7=0,totVen7=0,totClose7=0;
+  for(var i=0;i<last7d2.length;i++){totBill7+=last7d2[i].billed;totUpi7+=last7d2[i].upi;totExp7+=last7d2[i].exp;totVen7+=last7d2[i].ven;totClose7+=last7d2[i].close}
+  var upiPct=totBill7>0?Math.round(totUpi7/totBill7*100):0;
+  var cashDep=100-upiPct;
+  var netCF=totBill7-totExp7;
+  var opMargin=totBill7>0?Math.round((totBill7-totExp7)/totBill7*100):0;
+  out+='<div class="biz-cf-grid"><div class="biz-cf-box"><div class="biz-cf-lbl">Net Cash Flow (7d)</div><div class="biz-cf-val" style="color:'+(netCF>=0?'var(--green)':'var(--rose)')+'">'+fmt(netCF)+'</div></div>';
+  out+='<div class="biz-cf-box"><div class="biz-cf-lbl">Operating Margin</div><div class="biz-cf-val" style="color:'+(opMargin>=10?'var(--green)':'var(--rose)')+'">'+opMargin+'%</div></div>';
+  out+='<div class="biz-cf-box"><div class="biz-cf-lbl">UPI Adoption</div><div class="biz-cf-val" style="color:var(--blue)">'+upiPct+'%</div><div class="biz-cf-sub">'+(upiPct>=50?'Good digital mix':'Encourage UPI')+'</div></div>';
+  out+='<div class="biz-cf-box"><div class="biz-cf-lbl">Cash Dependency</div><div class="biz-cf-val" style="color:'+(cashDep>70?'var(--amber)':'var(--green)')+'">'+cashDep+'%</div><div class="biz-cf-sub">'+(cashDep>70?'High risk':'Balanced')+'</div></div></div></div>';
+
+  // === SHOP COMPARISON ===
+  if(shop==='all'){
+    var s0=aDayAgg(aRecs(0)),s1=aDayAgg(aRecs(1));
+    if(s0.length>=3&&s1.length>=3){
+      var s0bill=0,s1bill=0,s0walk=0,s1walk=0,s0exp=0,s1exp=0;
+      var s0last=s0.slice(-7),s1last=s1.slice(-7);
+      for(var i=0;i<s0last.length;i++){s0bill+=s0last[i].billed;s0walk+=s0last[i].walk;s0exp+=s0last[i].exp}
+      for(var i=0;i<s1last.length;i++){s1bill+=s1last[i].billed;s1walk+=s1last[i].walk;s1exp+=s1last[i].exp}
+      var better=s0bill>=s1bill?'Highway':'Mainroad';var diff=Math.abs(s0bill-s1bill);
+      out+='<div class="card"><div class="biz-section-title">\uD83C\uDFEA Shop Comparison (Last 7 Days)</div>';
+      out+='<div class="biz-cf-grid"><div class="biz-cf-box" style="border:2px solid var(--green)"><div class="biz-cf-lbl">Highway Revenue</div><div class="biz-cf-val">'+fmt(s0bill)+'</div><div class="biz-cf-sub">Walk-ins: '+s0walk+'</div></div>';
+      out+='<div class="biz-cf-box" style="border:2px solid var(--blue)"><div class="biz-cf-lbl">Mainroad Revenue</div><div class="biz-cf-val">'+fmt(s1bill)+'</div><div class="biz-cf-sub">Walk-ins: '+s1walk+'</div></div></div>';
+      out+='<div style="text-align:center;font-size:12px;color:var(--text2);margin-top:8px"><strong>'+better+'</strong> leads by '+fmt(diff)+' this week</div></div>';
+    }
+  }
+
+  // === ACTIONABLE RECOMMENDATIONS ===
+  var recs=[];
+  // Critical: negative margin
+  if(hs.profit.margin<0)recs.push({p:'critical',i:'\uD83D\uDEA8',m:'Business is <strong>losing money</strong>. Revenue does not cover expenses. Review all cost categories immediately.'});
+  // Critical: cash discrepancy
+  if(hs.cash.disc>.05)recs.push({p:'critical',i:'\uD83D\uDCB8',m:'<strong>Cash discrepancy above 5%.</strong> Possible leakage of '+fmt(Math.round(hs.cash.disc*l7bill))+' over 7 days. Audit cash handling process.'});
+  // High: revenue declining
+  if(hs.revenue.growth<-10)recs.push({p:'high',i:'\uD83D\uDCC9',m:'Revenue is <strong>down '+Math.abs(hs.revenue.growth).toFixed(1)+'%</strong> week-over-week. Consider promotions, new products, or marketing push.'});
+  // High: break-even not met
+  if(last7d.length>0){var beCount=0;for(var i=0;i<last7d.length;i++){if(last7d[i].billed<breakEven)beCount++}if(beCount>=5)recs.push({p:'high',i:'\u26A0\uFE0F',m:'Below break-even <strong>'+beCount+' of last 7 days</strong>. Daily shortfall averaging '+fmt(Math.round((breakEven*last7d.length-l7bill)/last7d.length))+'. Urgently review pricing or costs.'})}
+  // High: single expense >40%
+  if(catArr.length&&catTotal>0&&catArr[0].amt/catTotal>.4)recs.push({p:'high',i:'\uD83D\uDCCA',m:'<strong>'+catArr[0].cat+'</strong> is '+Math.round(catArr[0].amt/catTotal*100)+'% of all expenses. Negotiate better rates or find alternatives.'});
+  // Medium: walk-ins down but ticket up
+  if(hs.traffic.growth<-10&&ticket7>0){var prevTicket=p7walk>0?Math.round(p7bill/p7walk):0;if(prevTicket>0&&ticket7>prevTicket*1.1)recs.push({p:'medium',i:'\uD83D\uDEB6',m:'Fewer customers but <strong>higher spending per visit</strong>. Short-term OK, but customer retention may be at risk. Consider loyalty offers.'})}
+  // Medium: walk-ins up but revenue flat
+  if(hs.traffic.growth>10&&Math.abs(hs.revenue.growth)<5)recs.push({p:'medium',i:'\uD83E\uDD14',m:'Walk-ins are <strong>up '+hs.traffic.growth.toFixed(1)+'%</strong> but revenue is flat. Check if discounting is too aggressive or avg ticket is dropping.'});
+  // Medium: UPI low
+  if(upiPct<30&&totBill7>0)recs.push({p:'medium',i:'\uD83D\uDCF1',m:'Only <strong>'+upiPct+'% digital payments</strong>. Encouraging UPI reduces cash handling errors and theft risk. Display QR codes prominently.'});
+  // Good: positive trends
+  if(hs.revenue.growth>10)recs.push({p:'good',i:'\uD83D\uDE80',m:'Revenue is <strong>up '+hs.revenue.growth.toFixed(1)+'%</strong> this week. Great momentum \u2014 keep doing what works!'});
+  if(hs.profit.margin>.15)recs.push({p:'good',i:'\u2B50',m:'Healthy profit margin of <strong>'+Math.round(hs.profit.margin*100)+'%</strong>. Business is in a strong position.'});
+  // Day-of-week suggestion
+  if(days.length>=14&&worstVal<bestVal*.5)recs.push({p:'medium',i:'\uD83D\uDCC5',m:'<strong>'+dowNames[worstDay]+'</strong> averages '+Math.round(worstVal/bestVal*100)+'% of your best day. Consider promotions or reduced staffing on slow days.'});
+
+  if(recs.length){
+    out+='<div class="card"><div class="biz-section-title">\uD83D\uDCA1 Recommendations</div>';
+    out+='<div style="font-size:11px;color:var(--text2);margin-bottom:10px">Data-driven actions based on your business patterns</div>';
+    for(var i=0;i<recs.length&&i<8;i++){out+='<div class="biz-rec '+recs[i].p+'"><div class="biz-rec-icon">'+recs[i].i+'</div><div class="biz-rec-text">'+recs[i].m+'</div></div>'}
+    out+='</div>';
+  }
+
+  // Method credit
+  out+='<div style="text-align:center;padding:16px;font-size:10px;color:var(--text3);line-height:1.6">Analysis methods: Composite KPI Scoring \u2022 Pareto 80/20 Rule<br>Break-Even Analysis \u2022 Simple Moving Averages \u2022 Cash Flow Reconciliation</div>';
+  return out;
+}
+
 function renderSettings(){
-  return'<h2 style="font-size:18px;font-weight:700;margin-bottom:16px">Settings</h2><div class="card"><div class="ch"><div class="ci g">\uD83D\uDD10</div><div><div class="ct">Change PIN</div></div></div><div class="fg"><div class="fl">Current PIN</div><input class="fi" type="password" inputmode="numeric" maxlength="4" id="curPin" placeholder="\u2022\u2022\u2022\u2022"></div><div style="height:8px"></div><div class="fg"><div class="fl">New PIN</div><input class="fi" type="password" inputmode="numeric" maxlength="4" id="newPin" placeholder="\u2022\u2022\u2022\u2022"></div><div style="height:8px"></div><div class="fg"><div class="fl">Confirm</div><input class="fi" type="password" inputmode="numeric" maxlength="4" id="confPin" placeholder="\u2022\u2022\u2022\u2022"></div><div id="pinMsg" style="font-size:12px;margin-top:8px"></div><button class="save-btn" id="changePin" style="margin-top:10px">Update PIN</button></div><div class="card"><div class="ch"><div class="ci b">\uD83D\uDCF1</div><div><div class="ct">Install as App</div></div></div><div style="font-size:12px;color:var(--text2);line-height:1.8"><strong>iPhone:</strong> Safari \u2192 Share \u2192 Add to Home Screen<br><strong>Android:</strong> Chrome \u2192 \u22EE \u2192 Add to Home Screen</div></div><div class="card"><div class="ch"><div class="ci g">\uD83D\uDCCA</div><div><div class="ct">Data Stats</div></div></div><div style="font-size:13px;color:var(--text2);line-height:1.8">Total: <strong>'+S.records.length+'</strong> entries</div></div>'
+  return'<h2 style="font-size:18px;font-weight:700;margin-bottom:16px">Settings</h2><div class="card"><div class="ch"><div class="ci g">\uD83D\uDD10</div><div><div class="ct">Change Owner PIN</div></div></div><div class="fg"><div class="fl">Current PIN</div><input class="fi" type="password" inputmode="numeric" maxlength="4" id="curPin" placeholder="\u2022\u2022\u2022\u2022"></div><div style="height:8px"></div><div class="fg"><div class="fl">New PIN</div><input class="fi" type="password" inputmode="numeric" maxlength="4" id="newPin" placeholder="\u2022\u2022\u2022\u2022"></div><div style="height:8px"></div><div class="fg"><div class="fl">Confirm</div><input class="fi" type="password" inputmode="numeric" maxlength="4" id="confPin" placeholder="\u2022\u2022\u2022\u2022"></div><div id="pinMsg" style="font-size:12px;margin-top:8px"></div><button class="save-btn" id="changePin" style="margin-top:10px">Update Owner PIN</button></div><div class="card"><div class="ch"><div class="ci a">\uD83C\uDFEA</div><div><div class="ct">Change Staff PINs</div></div></div><div class="fg"><div class="fl">Role</div><select class="fi" id="staffPinRole"><option value="highway">Highway Branch</option><option value="mainroad">Mainroad Branch</option><option value="production">Production Staff</option><option value="ordering">Ordering Staff</option></select></div><div style="height:8px"></div><div class="fg"><div class="fl">Owner PIN (verify)</div><input class="fi" type="password" inputmode="numeric" maxlength="4" id="staffCurPin" placeholder="\u2022\u2022\u2022\u2022"></div><div style="height:8px"></div><div class="fg"><div class="fl">New Staff PIN</div><input class="fi" type="password" inputmode="numeric" maxlength="4" id="staffNewPin" placeholder="\u2022\u2022\u2022\u2022"></div><div id="staffPinMsg" style="font-size:12px;margin-top:8px"></div><button class="save-btn" id="changeStaffPin" style="margin-top:10px">Update Staff PIN</button></div><div class="card"><div class="ch"><div class="ci b">\uD83D\uDCF1</div><div><div class="ct">Install as App</div></div></div><div style="font-size:12px;color:var(--text2);line-height:1.8"><strong>iPhone:</strong> Safari \u2192 Share \u2192 Add to Home Screen<br><strong>Android:</strong> Chrome \u2192 \u22EE \u2192 Add to Home Screen</div></div><div class="card"><div class="ch"><div class="ci g">\uD83D\uDCCA</div><div><div class="ct">Data Stats</div></div></div><div style="font-size:13px;color:var(--text2);line-height:1.8">Total: <strong>'+S.records.length+'</strong> entries<br>Shops: Highway, Mainroad</div></div>'
 }
 
 function bindEvents(){
-  var bo=document.getElementById('btnOwner');if(bo)bo.onclick=function(){S.pinShow=true;S.pinVal='';S.pinErr='';render()};
-  var bs=document.getElementById('btnStaff');if(bs)bs.onclick=function(){S.role='staff';S.screen='app';S.tab=0;doFetch()};
+  var bo=document.getElementById('btnOwner');if(bo)bo.onclick=function(){S.pinShow=true;S.pinVal='';S.pinErr='';S.pinRole='owner';render()};
+  var bs=document.getElementById('branchSelect');if(bs)bs.onchange=function(){S.pinShow=true;S.pinVal='';S.pinErr='';S.pinRole=bs.value;render()};
   var pi=document.getElementById('pinInp');if(pi)pi.oninput=function(e){S.pinVal=e.target.value};
   var pc=document.getElementById('pinCancel');if(pc)pc.onclick=function(){S.pinShow=false;render()};
-  var pk=document.getElementById('pinOk');if(pk)pk.onclick=function(){callApi('verifyPin',{pin:S.pinVal}).then(function(r){if(r.valid){S.pinShow=false;S.role='owner';S.screen='app';S.tab=0;doFetch()}else{S.pinErr='Wrong PIN';render()}}).catch(function(e){S.pinErr=e.message;render()})};
+  var pk=document.getElementById('pinOk');if(pk)pk.onclick=function(){callApi('verifyPin',{pin:S.pinVal,role:S.pinRole}).then(function(r){if(r.valid){S.pinShow=false;if(S.pinRole==='owner'){S.role='owner';S.staffShop=-1;S.shop=0}else if(S.pinRole==='highway'){S.role='staff';S.staffShop=0;S.shop=0}else if(S.pinRole==='mainroad'){S.role='staff';S.staffShop=1;S.shop=1}else if(S.pinRole==='production'){S.role='production';S.staffShop=-1;S.shop=0}else if(S.pinRole==='ordering'){S.role='ordering';S.staffShop=-1;S.shop=0}S.screen='app';S.tab=0;doFetch()}else{S.pinErr='Wrong PIN';render()}}).catch(function(e){S.pinErr=e.message;render()})};
   document.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){S.tab=parseInt(b.dataset.tab);if(S.tab===0)loadForm();render()}});
   var sy=document.getElementById('btnSync');if(sy)sy.onclick=function(){doFetch()};
-  var lo=document.getElementById('btnLogout');if(lo)lo.onclick=function(){S.screen='login';S.role=null;S.tab=0;S.records=[];render()};
+  var lo=document.getElementById('btnLogout');if(lo)lo.onclick=function(){S.screen='login';S.role=null;S.staffShop=-1;S.tab=0;S.records=[];render()};
   var di=document.getElementById('dateInp');if(di)di.onchange=function(e){S.date=e.target.value;loadForm();render()};
   var si2=document.getElementById('shopInp');if(si2)si2.onchange=function(e){S.shop=parseInt(e.target.value);loadForm();render()};
-  var bi=document.getElementById('billedInp');if(bi)bi.oninput=function(e){S.billed=parseInt(e.target.value)||0};
-  var ui=document.getElementById('upiInp');if(ui)ui.oninput=function(e){S.upi=parseInt(e.target.value)||0};
-  var wi=document.getElementById('walkInp');if(wi)wi.oninput=function(e){S.walk=parseInt(e.target.value)||0};
+  var ui=document.getElementById('upiInp');if(ui)ui.oninput=function(e){S.upi=parseInt(e.target.value)||0;render()};
+  var wi=document.getElementById('walkInp');if(wi)wi.oninput=function(e){S.walk=parseInt(e.target.value)||0;render()};
+  var cri=document.getElementById('cashRetInp');if(cri)cri.oninput=function(e){S.cashRetained=parseInt(e.target.value)||0;render()};
   document.querySelectorAll('[data-denom]').forEach(function(inp){inp.oninput=function(e){var parts=inp.dataset.denom.split('-');S[parts[0]][parseInt(parts[1])]=parseInt(e.target.value)||0;render()}});
-  var ae=document.getElementById('addExp');if(ae)ae.onclick=function(){var d=document.getElementById('expDesc'),a=document.getElementById('expAmt'),c=document.getElementById('expCat');var amt=parseInt(a.value)||0;if(!amt)return;S.exps.push({id:gid(),description:d.value,amount:amt,category:c.value});render()};
+  // Update expense description suggestions based on category
+  var ec=document.getElementById('expCat');if(ec){var updateExpDL=function(){var dl=document.getElementById('dlExpNames');if(!dl)return;var cat=ec.value;dl.innerHTML='';var known=getKnownNames();var names=cat==='Vendor Payment'?known.vendors:cat==='Advance Salary'?known.staff:[];for(var i=0;i<names.length;i++)dl.innerHTML+='<option value="'+names[i]+'">';};ec.addEventListener('change',updateExpDL);updateExpDL()}
+  var ae=document.getElementById('addExp');if(ae)ae.onclick=function(){var d=document.getElementById('expDesc'),a=document.getElementById('expAmt'),c=document.getElementById('expCat');var amt=parseInt(a.value)||0;if(!amt)return;S.exps.push({id:gid(),description:d.value,amount:amt,category:c.value});if(d.value){var saved=loadSavedNames();if(c.value==='Vendor Payment'&&saved.vendors.indexOf(d.value)===-1){saved.vendors.push(d.value);saved.vendors.sort();saveNames(saved.vendors,saved.staff)}if(c.value==='Advance Salary'&&saved.staff.indexOf(d.value)===-1){saved.staff.push(d.value);saved.staff.sort();saveNames(saved.vendors,saved.staff)}}render()};
   document.querySelectorAll('[data-delex]').forEach(function(b){b.onclick=function(){S.exps.splice(parseInt(b.dataset.delex),1);render()}});
-  var av=document.getElementById('addVen');if(av)av.onclick=function(){var n=document.getElementById('venName'),a=document.getElementById('venAmt');var amt=parseInt(a.value)||0;if(!amt||!n.value)return;S.vends.push({id:gid(),name:n.value,amount:amt});render()};
-  document.querySelectorAll('[data-delven]').forEach(function(b){b.onclick=function(){S.vends.splice(parseInt(b.dataset.delven),1);render()}});
+  // Goods Inward
+  document.querySelectorAll('[data-gitype]').forEach(function(b){b.onclick=function(){S.giType=b.dataset.gitype;render()}});
+  var agi=document.getElementById('addGI');if(agi)agi.onclick=function(){var v=document.getElementById('giVendor'),it=document.getElementById('giItems');if(!v||!v.value)return;var entry={id:gid(),vendor:v.value,items:it?it.value:'',entryType:S.giType};if(S.giType==='bill'){var a=document.getElementById('giAmount'),bn=document.getElementById('giBillNo');var amt=parseInt(a?a.value:0)||0;if(!amt)return;entry.amount=amt;entry.billNo=bn?bn.value:''}else{var q=document.getElementById('giQtyVal'),u=document.getElementById('giQtyUnit');var qty=parseFloat(q?q.value:0)||0;if(!qty)return;entry.qty=qty;entry.qtyUnit=u?u.value:'kg';entry.amount=0}S.goodsIn.push(entry);var saved=loadSavedNames();if(saved.vendors.indexOf(v.value)===-1){saved.vendors.push(v.value);saved.vendors.sort();saveNames(saved.vendors,saved.staff)}render()};
+  document.querySelectorAll('[data-delgi]').forEach(function(b){b.onclick=function(){S.goodsIn.splice(parseInt(b.dataset.delgi),1);render()}});
   var ni=document.getElementById('notesInp');if(ni)ni.oninput=function(e){S.notes=e.target.value};
   // SAVE
   var sb=document.getElementById('saveBtn');
   if(sb)sb.onclick=function(){
     if(S.saving)return;
     S.saving=true;sb.textContent='\u23F3 Saving...';sb.className='save-btn off';
-    var entry={id:gid(),shop:S.shop,date:S.date,openingCash:S.oc.slice(),closingCash:S.cc.slice(),openingTotal:dTotal(S.oc),closingTotal:dTotal(S.cc),upiReceived:S.upi,totalBilled:S.billed,walkIns:S.walk,expenses:JSON.parse(JSON.stringify(S.exps)),vendorPayments:JSON.parse(JSON.stringify(S.vends)),totalExpenses:S.exps.reduce(function(s,e){return s+e.amount},0),totalVendorPayments:S.vends.reduce(function(s,v){return s+v.amount},0),notes:S.notes,savedAt:new Date().toISOString(),savedBy:S.role};
-    callApi('save',{},entry).then(function(){toast('\u2705 Saved to cloud!');return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveBtn');if(b){b.textContent='\uD83D\uDCBE Save Entry';b.className='save-btn'}})
+    var allExps=JSON.parse(JSON.stringify(S.exps));var venTotal=0,expTotal=0;for(var ei=0;ei<allExps.length;ei++){expTotal+=allExps[ei].amount;if(allExps[ei].category==='Vendor Payment')venTotal+=allExps[ei].amount}
+    var giData=JSON.parse(JSON.stringify(S.goodsIn));var giTotal=0;for(var gi=0;gi<giData.length;gi++)giTotal+=giData[gi].amount;
+    var entry={id:gid(),shop:S.shop,date:S.date,openingCash:S.oc.slice(),closingCash:S.cc.slice(),openingTotal:dTotal(S.oc),closingTotal:dTotal(S.cc),upiReceived:S.upi,totalBilled:S.billed,walkIns:S.walk,expenses:allExps,vendorPayments:[],totalExpenses:expTotal,totalVendorPayments:venTotal,goodsInward:giData,totalGoodsInward:giTotal,productOrders:JSON.parse(JSON.stringify(S.prodOrders)),cashRetained:S.cashRetained||0,notes:S.notes,savedAt:new Date().toISOString(),savedBy:S.role};
+    callApi('save',{},entry).then(function(){toast('\u2705 Saved to cloud!');syncKnownNames();return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveBtn');if(b){b.textContent='\uD83D\uDCBE Save Entry';b.className='save-btn'}})
   };
   document.querySelectorAll('[data-delrec]').forEach(function(b){b.onclick=function(){callApi('delete',{id:b.dataset.delrec}).then(function(){toast('Deleted');doFetch()}).catch(function(e){toast('\u274C '+e.message)})}});
   var ca=document.getElementById('clearAll');if(ca)ca.onclick=function(){if(!confirm('Delete ALL?'))return;var pin=prompt('Owner PIN:');callApi('deleteAll',{pin:pin}).then(function(){toast('Deleted');doFetch()}).catch(function(e){toast('\u274C '+e.message)})};
-  var cp=document.getElementById('changePin');if(cp)cp.onclick=function(){var c=document.getElementById('curPin').value,n=document.getElementById('newPin').value,cn=document.getElementById('confPin').value,m=document.getElementById('pinMsg');if(n!==cn){m.textContent='\u274C PINs dont match';m.style.color='var(--rose)';return}callApi('changePin',{},{currentPin:c,newPin:n}).then(function(){m.textContent='\u2705 PIN changed!';m.style.color='var(--green)'}).catch(function(e){m.textContent='\u274C '+e.message;m.style.color='var(--rose)'})};
+  var cp=document.getElementById('changePin');if(cp)cp.onclick=function(){var c=document.getElementById('curPin').value,n=document.getElementById('newPin').value,cn=document.getElementById('confPin').value,m=document.getElementById('pinMsg');if(n!==cn){m.textContent='\u274C PINs dont match';m.style.color='var(--rose)';return}callApi('changePin',{},{currentPin:c,newPin:n,role:'owner'}).then(function(){m.textContent='\u2705 Owner PIN changed!';m.style.color='var(--green)'}).catch(function(e){m.textContent='\u274C '+e.message;m.style.color='var(--rose)'})};
+  var csp=document.getElementById('changeStaffPin');if(csp)csp.onclick=function(){var role=document.getElementById('staffPinRole').value,ownerPin=document.getElementById('staffCurPin').value,newPin=document.getElementById('staffNewPin').value,m=document.getElementById('staffPinMsg');if(!newPin||newPin.length!==4){m.textContent='\u274C Enter a 4-digit PIN';m.style.color='var(--rose)';return}callApi('changePin',{},{currentPin:ownerPin,newPin:newPin,role:role}).then(function(){m.textContent='\u2705 '+role+' staff PIN updated!';m.style.color='var(--green)'}).catch(function(e){m.textContent='\u274C '+e.message;m.style.color='var(--rose)'})};
+  // Vendor transaction toggle
+  document.querySelectorAll('[data-venshow]').forEach(function(b){b.onclick=function(){var idx=b.dataset.venshow;var el=document.getElementById('venTxn'+idx);if(el){if(el.style.display==='none'){el.style.display='block';b.innerHTML='\u25B2 Hide transactions'}else{el.style.display='none';b.innerHTML='\u25BC View transactions'}}}});
+  // Orders tab
+  var ordDateInp=document.getElementById('orderDateInp');if(ordDateInp)ordDateInp.onchange=function(e){S.date=e.target.value;loadForm();render()};
+  var addOrd=document.getElementById('addOrder');if(addOrd)addOrd.onclick=function(){var p=document.getElementById('ordProduct'),q=document.getElementById('ordQty'),u=document.getElementById('ordUnit'),c=document.getElementById('ordCat'),n=document.getElementById('ordNotes');var qty=parseInt(q.value)||0;if(!qty||!p.value)return;S.prodOrders.push({id:gid(),product:p.value,category:c.value,qty:qty,unit:u.value,notes:n.value});addProductName(p.value);render()};
+  document.querySelectorAll('[data-delord]').forEach(function(b){b.onclick=function(){S.prodOrders.splice(parseInt(b.dataset.delord),1);render()}});
+
+  // Ordering staff
+  var ordDateInp2=document.getElementById('ordDateInp2');if(ordDateInp2)ordDateInp2.onchange=function(e){S.date=e.target.value;render()};
+  var ordShopInp=document.getElementById('ordShopInp');if(ordShopInp)ordShopInp.onchange=function(e){S.ordShop=parseInt(e.target.value);render()};
+  var addOrdItem=document.getElementById('addOrdItem');if(addOrdItem)addOrdItem.onclick=function(){var p=document.getElementById('ordProduct2'),q=document.getElementById('ordQty2'),u=document.getElementById('ordUnit2'),c=document.getElementById('ordCat2'),n=document.getElementById('ordNotes2');var qty=parseInt(q.value)||0;if(!qty||!p.value)return;S.ordItems.push({id:gid(),product:p.value,category:c.value,qty:qty,unit:u.value,notes:n.value||''});addProductName(p.value);render()};
+  document.querySelectorAll('[data-delorditem]').forEach(function(b){b.onclick=function(){S.ordItems.splice(parseInt(b.dataset.delorditem),1);render()}});
+  var shareWA=document.getElementById('shareWhatsApp');if(shareWA)shareWA.onclick=function(){var msg=formatOrderForWhatsApp();var url='https://wa.me/?text='+encodeURIComponent(msg);window.open(url,'_blank')};
+  var saveOrdBtn=document.getElementById('saveOrdBtn');if(saveOrdBtn)saveOrdBtn.onclick=function(){
+    if(S.saving||!S.ordItems.length)return;S.saving=true;saveOrdBtn.textContent='\u23F3 Saving...';saveOrdBtn.className='save-btn off';
+    var entry={id:gid(),shop:S.ordShop,date:S.date,openingCash:[0,0,0,0,0,0,0],closingCash:[0,0,0,0,0,0,0],openingTotal:0,closingTotal:0,upiReceived:0,totalBilled:0,walkIns:0,expenses:[],vendorPayments:[],totalExpenses:0,totalVendorPayments:0,goodsInward:[],totalGoodsInward:0,productOrders:JSON.parse(JSON.stringify(S.ordItems)),cashRetained:0,notes:'Order placed by ordering staff',savedAt:new Date().toISOString(),savedBy:'ordering'};
+    callApi('save',{},entry).then(function(){toast('\u2705 Order saved!');S.ordItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveOrdBtn');if(b){b.textContent='\uD83D\uDCBE Save Order to Cloud';b.className='save-btn'}})
+  };
+  var ordHistDate=document.getElementById('ordHistDate');if(ordHistDate)ordHistDate.onchange=function(e){S.orderDate=e.target.value;render()};
+
+  // Production orders date
+  var podInp=document.getElementById('prodOrderDate');if(podInp)podInp.onchange=function(e){S.orderDate=e.target.value;render()};
+
+  // Raw materials
+  var rmDateInp=document.getElementById('rmDateInp');if(rmDateInp)rmDateInp.onchange=function(e){S.orderDate=e.target.value;S.rawMats=[];render()};
+  var addRMBtn=document.getElementById('addRM');if(addRMBtn)addRMBtn.onclick=function(){var n=document.getElementById('rmName'),q=document.getElementById('rmQty'),u=document.getElementById('rmUnit'),v=document.getElementById('rmVendor'),c=document.getElementById('rmCost');var qty=parseFloat(q.value)||0;if(!qty||!n.value)return;S.rawMats.push({id:gid(),name:n.value,qty:qty,unit:u.value,vendor:v.value,amount:parseInt(c.value)||0});addRawMatName(n.value);render()};
+  document.querySelectorAll('[data-delrm]').forEach(function(b){b.onclick=function(){S.rawMats.splice(parseInt(b.dataset.delrm),1);render()}});
+  var saveRMBtn=document.getElementById('saveRMBtn');if(saveRMBtn)saveRMBtn.onclick=function(){
+    if(S.saving)return;S.saving=true;saveRMBtn.textContent='\u23F3 Saving...';saveRMBtn.className='save-btn off';
+    var entry={type:'rawMaterial',id:gid(),date:S.orderDate,materials:JSON.parse(JSON.stringify(S.rawMats)),savedAt:new Date().toISOString(),savedBy:'production'};
+    callApi('save',{},entry).then(function(){toast('\u2705 Raw material order saved!');return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveRMBtn');if(b){b.textContent='\uD83D\uDCBE Save Raw Material Order';b.className='save-btn'}})
+  };
+
+  // Recipe book
+  var addRcpBtn=document.getElementById('addRecipeBtn');if(addRcpBtn)addRcpBtn.onclick=function(){S.rcpAdding=true;resetRcpForm();render()};
+  var rcpBack=document.getElementById('rcpBackBtn');if(rcpBack)rcpBack.onclick=function(){S.rcpAdding=false;S.rcpView=-1;render()};
+  document.querySelectorAll('[data-viewrcp]').forEach(function(b){b.onclick=function(){S.rcpView=parseInt(b.dataset.viewrcp);render()}});
+  document.querySelectorAll('[data-delrcp]').forEach(function(b){b.onclick=function(){if(!confirm('Delete this recipe?'))return;var r=S.recipes[parseInt(b.dataset.delrcp)];if(r&&r.id)callApi('delete',{id:r.id}).then(function(){toast('Recipe deleted');S.rcpView=-1;doFetch()}).catch(function(e){toast('\u274C '+e.message)})}});
+
+  // Recipe form fields
+  var rcpName=document.getElementById('rcpName');if(rcpName)rcpName.oninput=function(e){S.rcpForm.name=e.target.value};
+  var rcpCat=document.getElementById('rcpCat');if(rcpCat)rcpCat.onchange=function(e){S.rcpForm.cat=e.target.value;render()};
+  var rcpYield=document.getElementById('rcpYield');if(rcpYield)rcpYield.oninput=function(e){S.rcpForm.yield=e.target.value};
+  var rcpYieldUnit=document.getElementById('rcpYieldUnit');if(rcpYieldUnit)rcpYieldUnit.onchange=function(e){S.rcpForm.yieldUnit=e.target.value};
+  var rcpPrep=document.getElementById('rcpPrep');if(rcpPrep)rcpPrep.oninput=function(e){S.rcpForm.prep=e.target.value};
+  var rcpBake=document.getElementById('rcpBake');if(rcpBake)rcpBake.oninput=function(e){S.rcpForm.bake=e.target.value};
+  var rcpTemp=document.getElementById('rcpTemp');if(rcpTemp)rcpTemp.oninput=function(e){S.rcpForm.temp=e.target.value};
+  var rcpNotes=document.getElementById('rcpNotes');if(rcpNotes)rcpNotes.oninput=function(e){S.rcpForm.notes=e.target.value};
+  var rcpStorage=document.getElementById('rcpStorage');if(rcpStorage)rcpStorage.onchange=function(e){S.rcpForm.storage=e.target.value};
+  var rcpShelf=document.getElementById('rcpShelf');if(rcpShelf)rcpShelf.onchange=function(e){S.rcpForm.shelf=e.target.value};
+
+  // Method step template chips — tap to add
+  document.querySelectorAll('[data-addstep]').forEach(function(chip){chip.onclick=function(){
+    var catSteps=METHOD_STEPS[S.rcpForm.cat]||METHOD_STEPS['Baking'];
+    var stepText=catSteps[parseInt(chip.dataset.addstep)]||'';
+    // Replace first empty step, or add new one
+    var added=false;
+    for(var i=0;i<S.rcpForm.steps.length;i++){if(!S.rcpForm.steps[i].trim()){S.rcpForm.steps[i]=stepText;added=true;break}}
+    if(!added)S.rcpForm.steps.push(stepText);
+    render();
+  }});
+
+  // (rcpCat onchange already set above with render)
+
+  // Recipe ingredient rows
+  document.querySelectorAll('[data-rcping-name]').forEach(function(inp){inp.oninput=function(e){S.rcpForm.ings[parseInt(inp.dataset.rcpingName)].name=e.target.value}});
+  document.querySelectorAll('[data-rcping-qty]').forEach(function(inp){inp.oninput=function(e){S.rcpForm.ings[parseInt(inp.dataset.rcpingQty)].qty=e.target.value;render()}});
+  document.querySelectorAll('[data-rcping-unit]').forEach(function(inp){inp.onchange=function(e){S.rcpForm.ings[parseInt(inp.dataset.rcpingUnit)].unit=e.target.value}});
+  document.querySelectorAll('[data-rcping-flour]').forEach(function(inp){inp.onchange=function(e){S.rcpForm.ings[parseInt(inp.dataset.rcpingFlour)].isFlour=e.target.checked;render()}});
+  document.querySelectorAll('[data-rcping-del]').forEach(function(b){b.onclick=function(){S.rcpForm.ings.splice(parseInt(b.dataset.rcpingDel),1);if(!S.rcpForm.ings.length)S.rcpForm.ings.push({name:'',qty:'',unit:'g',isFlour:true});render()}});
+  var addRcpIng=document.getElementById('addRcpIng');if(addRcpIng)addRcpIng.onclick=function(){S.rcpForm.ings.push({name:'',qty:'',unit:'g',isFlour:false});render()};
+
+  // Recipe method steps
+  document.querySelectorAll('[data-rcpstep]').forEach(function(inp){inp.oninput=function(e){S.rcpForm.steps[parseInt(inp.dataset.rcpstep)]=e.target.value}});
+  document.querySelectorAll('[data-rcpstep-del]').forEach(function(b){b.onclick=function(){S.rcpForm.steps.splice(parseInt(b.dataset.rcpstepDel),1);if(!S.rcpForm.steps.length)S.rcpForm.steps.push('');render()}});
+  var addRcpStep=document.getElementById('addRcpStep');if(addRcpStep)addRcpStep.onclick=function(){S.rcpForm.steps.push('');render()};
+
+  // Save recipe
+  var saveRcp=document.getElementById('saveRecipeBtn');if(saveRcp)saveRcp.onclick=function(){
+    var f=S.rcpForm;if(!f.name){toast('\u274C Enter recipe name');return}
+    if(S.saving)return;S.saving=true;
+    var entry={type:'recipe',id:gid(),name:f.name,category:f.cat,yield:f.yield,yieldUnit:f.yieldUnit,prepTime:f.prep,bakeTime:f.bake,ovenTemp:f.temp,ingredients:JSON.parse(JSON.stringify(f.ings)),method:f.steps.filter(function(s){return s.trim()}),notes:f.notes,shelfLife:f.shelf,storage:f.storage,savedAt:new Date().toISOString(),savedBy:S.role};
+    callApi('save',{},entry).then(function(){toast('\u2705 Recipe saved!');S.rcpAdding=false;resetRcpForm();return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;render()})
+  };
+
+  // Analytics shop toggle
+  document.querySelectorAll('[data-ashop]').forEach(function(b){b.onclick=function(){S.aShop=b.dataset.ashop;render()}});
+  document.querySelectorAll('[data-pshop]').forEach(function(b){b.onclick=function(){S.pShop=b.dataset.pshop;render()}});
+  document.querySelectorAll('[data-prange]').forEach(function(b){b.onclick=function(){S.pRange=b.dataset.prange;render()}});
   // Report date nav
   var rp=document.getElementById('rptPrev');if(rp)rp.onclick=function(){S.reportDate=dateOffset(S.reportDate,-1);render()};
   var rn=document.getElementById('rptNext');if(rn)rn.onclick=function(){if(S.reportDate<today()){S.reportDate=dateOffset(S.reportDate,1);render()}};
