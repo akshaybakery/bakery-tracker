@@ -1,9 +1,9 @@
-const CACHE_NAME = 'akshay-bakery-v3';
+const CACHE_NAME = 'akshay-bakery-v4';
 const ASSETS = [
-  '/bakery-tracker/',
-  '/bakery-tracker/index.html',
-  '/bakery-tracker/icon-192.png',
-  '/bakery-tracker/icon-512.png',
+  './',
+  './index.html',
+  './icon-192.png',
+  './icon-512.png',
   'https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:wght@700&display=swap'
 ];
 
