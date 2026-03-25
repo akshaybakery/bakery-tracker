@@ -1389,11 +1389,26 @@ function renderOrderingEntry(){
     out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveOrdBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save '+SHOPS[S.ordShop]+' Order')+'</button>';
   }
 
+  // Saved orders for selected shop+date (from prodOrderRecords and daily records)
+  var savedOrds=[];
+  for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.shop==S.ordShop&&por.date===S.date){var po=por.productOrders||[];for(var j=0;j<po.length;j++)savedOrds.push(po[j])}}
+  for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.shop==S.ordShop&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup=false;for(var k=0;k<savedOrds.length;k++){if(savedOrds[k].id===po[j].id){dup=true;break}}if(!dup)savedOrds.push(po[j])}}}
+  if(savedOrds.length){
+    var sByCat={};for(var i=0;i<PCATS.length;i++)sByCat[PCATS[i]]=[];
+    for(var i=0;i<savedOrds.length;i++){var o=savedOrds[i];var cat=o.category||'Baking';if(!sByCat[cat])sByCat[cat]=[];sByCat[cat].push(o)}
+    var sTotalQty=0;for(var i=0;i<savedOrds.length;i++)sTotalQty+=savedOrds[i].qty||0;
+    var sIcons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
+    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--green)"><div class="ch"><div class="ci g">\u2705</div><div><div class="ct">Saved Orders \u2022 '+SHOPS[S.ordShop]+'</div><div class="cs">'+savedOrds.length+' items \u2022 '+sTotalQty+' total qty \u2022 '+fmtD(S.date)+'</div></div></div>';
+    for(var c=0;c<PCATS.length;c++){var cat=PCATS[c];var items=sByCat[cat]||[];if(!items.length)continue;
+      out+='<div style="font-size:11px;font-weight:700;color:var(--text2);margin:8px 0 4px;text-transform:uppercase">'+(sIcons[cat]||'')+' '+cat+' ('+items.length+')</div>';
+      for(var i=0;i<items.length;i++){var o=items[i];out+='<div class="ir"><div><div class="in">'+o.product+'</div>'+(o.notes?'<div class="ic">'+o.notes+'</div>':'')+'</div><div class="order-qty">'+o.qty+' '+o.unit+'</div></div>'}}
+    out+='</div>';
+  }
+
   // Shop order status & WhatsApp share
-  var recs0=recsForDateShop(S.date,0),recs1=recsForDateShop(S.date,1);
   var has0=false,has1=false,time0='',time1='';
-  for(var i=0;i<recs0.length;i++){var po=recs0[i].productOrders||[];if(po.length){has0=true;time0=recs0[i].savedAt||'';break}}
-  for(var i=0;i<recs1.length;i++){var po=recs1[i].productOrders||[];if(po.length){has1=true;time1=recs1[i].savedAt||'';break}}
+  for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.date===S.date){var po=por.productOrders||[];if(po.length){if(por.shop==0){has0=true;time0=por.savedAt||''}if(por.shop==1){has1=true;time1=por.savedAt||''}}}}
+  for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.date===S.date){var po=r.productOrders||[];if(po.length){if(r.shop==0&&!has0){has0=true;time0=r.savedAt||''}if(r.shop==1&&!has1){has1=true;time1=r.savedAt||''}}}}
   var fmtTime=function(t){if(!t)return'';try{var d=new Date(t);return d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
 
   out+='<div class="card" style="margin-top:12px"><div class="ch"><div class="ci '+(has0&&has1?'g':'a')+'">\uD83C\uDFEA</div><div><div class="ct">Order Status</div><div class="cs">Both shops must be saved before sharing</div></div></div>';
@@ -1414,11 +1429,12 @@ function renderOrderingEntry(){
 
 function formatOrderForWhatsApp(){
   var d=new Date(S.date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'short',year:'numeric'});
-  // Get orders from both shops
+  // Get orders from both shops (check prodOrderRecords and daily records)
+  var orders0=[],orders1=[],seen={};
+  for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.date===S.date){var po=por.productOrders||[];for(var j=0;j<po.length;j++){if(por.shop==0)orders0.push(po[j]);if(por.shop==1)orders1.push(po[j]);if(po[j].id)seen[po[j].id]=1}}}
   var recs0=recsForDateShop(S.date,0),recs1=recsForDateShop(S.date,1);
-  var orders0=[],orders1=[];
-  for(var i=0;i<recs0.length;i++){var po=recs0[i].productOrders||[];for(var j=0;j<po.length;j++)orders0.push(po[j])}
-  for(var i=0;i<recs1.length;i++){var po=recs1[i].productOrders||[];for(var j=0;j<po.length;j++)orders1.push(po[j])}
+  for(var i=0;i<recs0.length;i++){var po=recs0[i].productOrders||[];for(var j=0;j<po.length;j++){if(!seen[po[j].id])orders0.push(po[j])}}
+  for(var i=0;i<recs1.length;i++){var po=recs1[i].productOrders||[];for(var j=0;j<po.length;j++){if(!seen[po[j].id])orders1.push(po[j])}}
 
   // Combine into product map: {product: {cat, unit, s0, s1, notes}}
   var prodMap={};
