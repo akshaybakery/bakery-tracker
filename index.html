@@ -389,6 +389,12 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .rcp-sub-cats{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
 .rcp-sub-cat{font-size:10px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer}
 .rcp-sub-cat.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+.ac-wrap{position:relative}
+.ac-drop{position:absolute;left:0;right:0;top:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);box-shadow:0 4px 16px rgba(0,0,0,.12);max-height:180px;overflow-y:auto;z-index:999;display:none}
+.ac-drop.show{display:block}
+.ac-opt{padding:10px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border)}
+.ac-opt:last-child{border-bottom:none}
+.ac-opt:active,.ac-opt:hover{background:var(--gl);color:var(--green)}
 </style>
 </head>
 <body>
@@ -402,6 +408,21 @@ function toISO(d){var x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth
 function today(){return toISO(new Date())}
 function gid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function dTotal(a){var s=0;for(var i=0;i<a.length;i++)s+=a[i]*DV[i];return s}
+function acInput(id,opts,el){
+  var inp=el||document.getElementById(id);if(!inp)return;
+  var wrap=inp.parentElement;if(!wrap.classList.contains('ac-wrap')){var w=document.createElement('div');w.className='ac-wrap';inp.parentNode.insertBefore(w,inp);w.appendChild(inp);wrap=w}
+  var drop=wrap.querySelector('.ac-drop');if(drop)drop.remove();
+  drop=document.createElement('div');drop.className='ac-drop';wrap.appendChild(drop);
+  function show(){
+    var v=inp.value.toLowerCase();var items=opts.filter(function(o){return o.toLowerCase().indexOf(v)>=0});
+    if(!items.length||(!v&&!items.length)){drop.classList.remove('show');return}
+    drop.innerHTML='';for(var i=0;i<items.length&&i<15;i++){var d=document.createElement('div');d.className='ac-opt';d.textContent=items[i];d.onmousedown=d.ontouchstart=function(e){e.preventDefault();inp.value=this.textContent;drop.classList.remove('show');inp.dispatchEvent(new Event('input',{bubbles:true}));inp.dispatchEvent(new Event('change',{bubbles:true}))};drop.appendChild(d)}
+    drop.classList.add('show')
+  }
+  inp.addEventListener('focus',show);inp.addEventListener('input',show);
+  inp.addEventListener('blur',function(){setTimeout(function(){drop.classList.remove('show')},200)});
+  inp.removeAttribute('list')
+}
 function sf(a,f){var s=0;for(var i=0;i<a.length;i++)s+=(a[i][f]||0);return s}
 function af(a,f){return a.length?sf(a,f)/a.length:0}
 function pctChange(cur,prev){if(!prev)return cur>0?100:0;return((cur-prev)/prev)*100}
@@ -2828,8 +2849,18 @@ function bindEvents(){
   var wi=document.getElementById('walkInp');if(wi)wi.oninput=function(e){S.walk=parseInt(e.target.value)||0};
   var cri=document.getElementById('cashRetInp');if(cri)cri.oninput=function(e){S.cashRetained=parseInt(e.target.value)||0;var ct=dTotal(S.cc),ot=dTotal(S.oc),cr=S.cashRetained,tk=ct-cr;var opEx=0;for(var i=0;i<S.exps.length;i++){if(S.exps[i].category!=='Vendor Payment')opEx+=S.exps[i].amount||0}var cashSales=ct-ot+opEx;var gross=cashSales+S.upi;S.billed=gross;var tkEl=document.getElementById('cashTakenDisp');if(tkEl)tkEl.value=fmt(tk);var retTip=document.getElementById('retainTip');if(retTip)retTip.innerHTML='\uD83D\uDCA1 Closing ('+fmt(ct)+') \u2212 Retained ('+fmt(cr)+') = Taken ('+fmt(tk)+')';var plSec=document.getElementById('plSection');if(plSec){var np=gross-opEx;var gm=gross>0?((gross-opEx)/gross*100).toFixed(1):'0.0';plSec.innerHTML='<div class="fr c2"><div class="fg"><div class="fl">Cash Sales</div><div style=\"font-size:18px;font-weight:700;color:var(--text1)\">'+fmt(cashSales)+'</div></div><div class="fg"><div class="fl">UPI Sales</div><div style=\"font-size:18px;font-weight:700;color:var(--text1)\">'+fmt(S.upi)+'</div></div></div><div class="fr c2"><div class="fg"><div class="fl">Gross Revenue</div><div style=\"font-size:22px;font-weight:800;color:var(--pr)\">'+fmt(gross)+'</div></div><div class="fg"><div class="fl">Operating Expenses</div><div style=\"font-size:18px;font-weight:700;color:var(--dn)\">'+fmt(opEx)+'</div></div></div><div style=\"text-align:center;padding:12px;background:'+(np>=0?'#e8f5e9':'#fbe9e7')+';border-radius:12px;margin-top:8px\"><div style=\"font-size:11px;color:var(--text3)\">NET PROFIT</div><div style=\"font-size:28px;font-weight:800;color:'+(np>=0?'var(--up)':'var(--dn)')+'\">'+fmt(np)+'</div><div style=\"font-size:11px;color:var(--text3)\">Gross Margin: '+gm+'%</div></div>';}};
   document.querySelectorAll('[data-denom]').forEach(function(inp){inp.oninput=function(e){var parts=inp.dataset.denom.split('-');var key=parts[0];var idx=parseInt(parts[1]);S[key][idx]=parseInt(e.target.value)||0;var tot=dTotal(S[key]);var card=inp.closest('.card');if(card){var dt=card.querySelector('.dt');if(dt)dt.textContent=fmt(tot)}}});
-  // Update expense description suggestions based on category
-  var ec=document.getElementById('expCat');if(ec){var updateExpDL=function(){var dl=document.getElementById('dlExpNames');if(!dl)return;var cat=ec.value;dl.innerHTML='';var known=getKnownNames();var names=cat==='Vendor Payment'?known.vendors:cat==='Advance Salary'?known.staff:[];for(var i=0;i<names.length;i++)dl.innerHTML+='<option value="'+names[i]+'">';};ec.addEventListener('change',updateExpDL);updateExpDL()}
+  // Custom autocomplete for expense description
+  var ec=document.getElementById('expCat');if(ec){var updateExpAC=function(){var known=getKnownNames();var cat=ec.value;var names=cat==='Vendor Payment'?known.vendors:cat==='Advance Salary'?known.staff:[];acInput('expDesc',names)};ec.addEventListener('change',updateExpAC);updateExpAC()}
+  // Custom autocomplete for vendor fields
+  var known=getKnownNames();
+  acInput('giVendor',known.vendors);
+  acInput('grnVendor',known.vendors);
+  acInput('rmVendor',known.vendors);
+  acInput('rmName',typeof loadSavedRawMats==='function'?loadSavedRawMats():[]);
+  // Custom autocomplete for product fields
+  var prods=loadSavedProducts();
+  acInput('ordProduct',prods);
+  acInput('ordProduct2',prods);
   var ae=document.getElementById('addExp');if(ae)ae.onclick=function(){var d=document.getElementById('expDesc'),a=document.getElementById('expAmt'),c=document.getElementById('expCat');var amt=parseInt(a.value)||0;if(!amt)return;S.exps.push({id:gid(),description:d.value,amount:amt,category:c.value});if(d.value){var saved=loadSavedNames();if(c.value==='Vendor Payment'&&saved.vendors.indexOf(d.value)===-1){saved.vendors.push(d.value);saved.vendors.sort();saveNames(saved.vendors,saved.staff)}if(c.value==='Advance Salary'&&saved.staff.indexOf(d.value)===-1){saved.staff.push(d.value);saved.staff.sort();saveNames(saved.vendors,saved.staff)}}render()};
   document.querySelectorAll('[data-delex]').forEach(function(b){b.onclick=function(){S.exps.splice(parseInt(b.dataset.delex),1);render()}});
   // Goods Inward
@@ -3073,7 +3104,7 @@ function bindEvents(){
   // (rcpCat onchange already set above with render)
 
   // Recipe ingredient rows
-  document.querySelectorAll('[data-rcping-name]').forEach(function(inp){inp.oninput=function(e){S.rcpForm.ings[parseInt(inp.dataset.rcpingName)].name=e.target.value}});
+  document.querySelectorAll('[data-rcping-name]').forEach(function(inp){inp.oninput=function(e){S.rcpForm.ings[parseInt(inp.dataset.rcpingName)].name=e.target.value};acInput(null,BAKING_INGS,inp)});
   document.querySelectorAll('[data-rcping-qty]').forEach(function(inp){inp.oninput=function(e){S.rcpForm.ings[parseInt(inp.dataset.rcpingQty)].qty=e.target.value;render()}});
   document.querySelectorAll('[data-rcping-unit]').forEach(function(inp){inp.onchange=function(e){S.rcpForm.ings[parseInt(inp.dataset.rcpingUnit)].unit=e.target.value}});
   document.querySelectorAll('[data-rcping-flour]').forEach(function(inp){inp.onchange=function(e){S.rcpForm.ings[parseInt(inp.dataset.rcpingFlour)].isFlour=e.target.checked;render()}});
