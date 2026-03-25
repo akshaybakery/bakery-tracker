@@ -621,14 +621,6 @@ function renderEntry(){
   out+='<div class="sg">'+si('\u2B50 Net Profit',fmt(netProfit),netProfit>=0?'g':'r')+si('Gross Margin',grossMargin+'%',grossMargin>=0?'g':'r')+'</div>';
   out+='<div style="font-size:9px;color:var(--text3);margin-top:8px;padding:8px;background:var(--bg);border-radius:8px;line-height:1.8;text-align:center"><strong>Daily Business Calculation</strong><br>Cash Sales = Closing \u2212 Opening<br>Gross Revenue = Total Expenses + UPI + Cash Sales<br>Net Profit = UPI + Cash Sales</div>';
   out+='</div>';
-  }else{
-  // Staff: show today's entry log (read-only summary)
-  out+='<div class="sc"><div class="st">\uD83D\uDCCB Today\'s Entry Log \u2022 '+SHOPS[S.shop]+'</div>';
-  out+='<div id="plSection">';
-  out+='<div class="sg">'+si('Opening Cash',fmt(ot))+si('Closing Cash',fmt(ct))+si('UPI Received',fmt(S.upi),'b')+si('Walk-ins',S.walk||0,'g')+si('Total Expenses',fmt(expTot),'r')+si('Goods Inward',fmt(giTot),'a')+si('Cash Retained',fmt(cashRet),'b')+si('Cash Taken',fmt(cashTaken),cashTaken>=0?'g':'r')+'</div>';
-  if(S.exps.length){out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px">Expenses Logged</div>';for(var ei=0;ei<S.exps.length;ei++){out+='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">'+S.exps[ei].category+(S.exps[ei].description?' \u2022 '+S.exps[ei].description:'')+'</span><span style="font-weight:600;color:var(--dn)">'+fmt(S.exps[ei].amount)+'</span></div>'}}
-  if(S.goodsIn.length){out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px">Goods Inward Logged</div>';for(var gi2=0;gi2<S.goodsIn.length;gi2++){var g2=S.goodsIn[gi2];out+='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">'+g2.vendor+(g2.items?' \u2022 '+g2.items:'')+'</span><span style="font-weight:600;color:var(--teal)">'+fmt(g2.amount||0)+'</span></div>'}}
-  out+='</div></div>';
   }
   out+=vendorDL+staffDL+'<datalist id="dlExpNames"></datalist>';
   out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save Entry')+'</button>';
