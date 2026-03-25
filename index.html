@@ -316,6 +316,21 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .staff-adv-row:last-child{border-bottom:none}
 .staff-adv-name{font-size:13px;font-weight:600}
 .staff-adv-amt{font-size:14px;font-weight:700;color:var(--rose)}
+.ldg-view-toggle{display:flex;gap:4px;margin-bottom:12px;background:var(--bg);border-radius:10px;padding:3px}
+.ldg-view-btn{flex:1;text-align:center;padding:7px 4px;border-radius:8px;font-size:11px;font-weight:600;border:none;background:none;color:var(--text3);cursor:pointer}
+.ldg-view-btn.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.ldg-date-nav{display:flex;align-items:center;gap:6px;margin-bottom:12px}
+.ldg-date-nav input[type=date]{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;background:var(--card);color:var(--text)}
+.ldg-date-btn{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ldg-date-btn:active{background:var(--bg)}
+.ldg-period-toggle{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.ldg-period-btn{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1.5px solid var(--border);background:var(--card);color:var(--text3);cursor:pointer}
+.ldg-period-btn.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+.ldg-print-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;margin-top:12px}
+.ldg-print-btn:active{background:var(--bg)}
+.ldg-day-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.ldg-day-title{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ldg-running-bal{font-size:11px;font-weight:700;white-space:nowrap;min-width:70px;text-align:right}
 
 /* Orders */
 .order-cat-hdr{font-size:11px;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px;display:flex;align-items:center;gap:6px}
@@ -405,7 +420,7 @@ else if(/Mac/.test(ua))msg='<b>Mac:</b><br>1. Open in <b>Chrome</b><br>2. Click 
 else msg='Open this page in <b>Chrome</b> or <b>Edge</b> and look for the <b>install icon</b> in the address bar.';
 S.installMsg=msg;render()
 }
-var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],grnRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:'',ledgerShop:'all'};
+var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],grnRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:'',ledgerShop:'all',ledgerDate:today(),ledgerView:'daily',ledgerPeriod:'thisMonth',ledgerFrom:'',ledgerTo:'',ledgerVendor:''};
 
 function h(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
 
@@ -564,12 +579,13 @@ function renderEntry(){
 
   // === STEP 3: Expenses ===
   var expList='';var expTot=0;
-  for(var i=0;i<S.exps.length;i++){var x=S.exps[i];expTot+=x.amount;expList+='<div class="ir"><div><div class="in">'+(x.description||'\u2014')+'</div><div class="ic">'+x.category+'</div></div><div style="display:flex;align-items:center;gap:8px"><span class="ia e">'+fmt(x.amount)+'</span><button class="ix" data-delex="'+i+'">\u00D7</button></div></div>'}
+  var isO=S.role==='owner';
+  for(var i=0;i<S.exps.length;i++){var x=S.exps[i];expTot+=x.amount;expList+='<div class="ir"><div><div class="in">'+(x.description||'\u2014')+'</div><div class="ic">'+x.category+'</div></div><div style="display:flex;align-items:center;gap:8px"><span class="ia e">'+fmt(x.amount)+'</span>'+(isO?'<button style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;cursor:pointer;color:var(--text2)" data-editexp="'+i+'">\u270E</button>':'')+'<button class="ix" data-delex="'+i+'">\u00D7</button></div></div>'}
   if(S.exps.length)expList+='<div class="it"><span class="itl">Total</span><span class="ia e">'+fmt(expTot)+'</span></div>';
   out+='<div class="card"><div class="ch"><div class="ci r">\uD83D\uDCE4</div><div><div class="ct">Daily Expenses</div><div class="cs">Running costs</div></div></div>'+(S.exps.length?'<div class="il">'+expList+'</div>':'')+'<div class="fr c2"><div class="fg"><div class="fl">Description</div><input class="fi" type="text" id="expDesc" placeholder="e.g. Staff food" list="dlExpNames" autocomplete="off"></div><div class="fg"><div class="fl">Amount</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="expAmt" placeholder="0"></div></div></div><div class="ar" style="margin-top:8px"><div style="flex:1"><div class="fg"><div class="fl">Category</div><select class="fi" id="expCat">'+ECATS.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select></div></div><button class="ab g" id="addExp">+ Add</button></div></div>';
   // Goods Inward section
   var giList='';var giTot=0;
-  for(var i=0;i<S.goodsIn.length;i++){var g=S.goodsIn[i];giTot+=(g.amount||0);var giDetail,giVal;if(g.entryType==='qty'){giDetail=g.qty+' '+(g.qtyUnit||'kg')+(g.rate?' @ '+fmt(g.rate)+'/'+g.qtyUnit:'')+(g.items?' \u2022 '+g.items:'');giVal=g.rate?'<span class="ia v">'+fmt(g.amount)+'</span>':'<div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:var(--text3)">\u20B9</span><input class="fi" type="number" inputmode="numeric" data-girate="'+i+'" value="'+(g.rate||'')+'" placeholder="Rate" style="width:60px;padding:4px 6px;font-size:12px"></div>'}else{giDetail=(g.items||'\u2014')+(g.billNo?' \u2022 Inv #'+g.billNo:'');giVal='<span class="ia v">'+fmt(g.amount)+'</span>'}giList+='<div class="ir"><div><div class="in">'+g.vendor+'</div><div class="ic">'+giDetail+'</div></div><div style="display:flex;align-items:center;gap:8px">'+giVal+'<button class="ix" data-delgi="'+i+'">\u00D7</button></div></div>'}
+  for(var i=0;i<S.goodsIn.length;i++){var g=S.goodsIn[i];giTot+=(g.amount||0);var giDetail,giVal;if(g.entryType==='qty'){giDetail=g.qty+' '+(g.qtyUnit||'kg')+(g.rate?' @ '+fmt(g.rate)+'/'+g.qtyUnit:'')+(g.items?' \u2022 '+g.items:'');giVal=g.rate?'<span class="ia v">'+fmt(g.amount)+'</span>':'<div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:var(--text3)">\u20B9</span><input class="fi" type="number" inputmode="numeric" data-girate="'+i+'" value="'+(g.rate||'')+'" placeholder="Rate" style="width:60px;padding:4px 6px;font-size:12px"></div>'}else{giDetail=(g.items||'\u2014')+(g.billNo?' \u2022 Inv #'+g.billNo:'');giVal='<span class="ia v">'+fmt(g.amount)+'</span>'}giList+='<div class="ir"><div><div class="in">'+g.vendor+'</div><div class="ic">'+giDetail+'</div></div><div style="display:flex;align-items:center;gap:8px">'+giVal+(isO?'<button style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;cursor:pointer;color:var(--text2)" data-editgi="'+i+'">\u270E</button>':'')+'<button class="ix" data-delgi="'+i+'">\u00D7</button></div></div>'}
   if(S.goodsIn.length)giList+='<div class="it"><span class="itl">Total Bills</span><span class="ia v">'+fmt(giTot)+'</span></div>';
   var giBill=S.giType==='bill',giQty=S.giType==='qty';
   out+='<div class="card"><div class="ch"><div class="ci t">\uD83D\uDCE6</div><div><div class="ct">Goods Inward</div><div class="cs">Stock arriving today</div></div></div>'+(S.goodsIn.length?'<div class="il">'+giList+'</div>':'');
@@ -885,26 +901,8 @@ function barCard(icon,title,sub,dt,key,color){
 }
 
 /* ===== VENDORS TAB ===== */
-function renderVendors(){
-  var R=S.records;var isO=S.role==='owner';
-  var shopF=S.ledgerShop;// 'all', 0, 1
-  var shopMatch=function(sh){return shopF==='all'||sh==shopF};
-
-  // Shop toggle
-  var out='<div class="biz-shop-toggle" style="margin-bottom:12px"><button class="biz-shop-btn'+(shopF==='all'?' on':'')+'" data-ledgershop="all">\uD83C\uDFE2 All Shops</button><button class="biz-shop-btn'+(shopF===0?' on':'')+'" data-ledgershop="0">\uD83D\uDE80 Highway</button><button class="biz-shop-btn'+(shopF===1?' on':'')+'" data-ledgershop="1">\uD83D\uDEE3\uFE0F Mainroad</button></div>';
-
-  // Today's Goods Inward summary
-  var todayGI=[];var todayDate=today();
-  for(var i=0;i<R.length;i++){if(R[i].date===todayDate&&shopMatch(R[i].shop)){var gi0=R[i].goodsInward||[];for(var j=0;j<gi0.length;j++)todayGI.push({vendor:gi0[j].vendor||'Unknown',items:gi0[j].items||'',amount:gi0[j].amount||0,shop:R[i].shop})}}
-  for(var i=0;i<(S.grnRecords||[]).length;i++){var gr0=S.grnRecords[i];if(gr0.date===todayDate&&shopMatch(gr0.shop)){var gi0b=gr0.goodsInward||[];for(var j=0;j<gi0b.length;j++){var dup0=false;for(var m=0;m<todayGI.length;m++){if(todayGI[m].id===gi0b[j].id){dup0=true;break}}if(!dup0)todayGI.push({id:gi0b[j].id,vendor:gi0b[j].vendor||'Unknown',items:gi0b[j].items||'',amount:gi0b[j].amount||0,shop:gr0.shop})}}}
-  if(todayGI.length){
-    var giDayTot=0;for(var i=0;i<todayGI.length;i++)giDayTot+=todayGI[i].amount;
-    out+='<div class="card"><div class="ch"><div class="ci t">\uD83D\uDCE6</div><div><div class="ct">Today\'s Goods Inward</div><div class="cs">'+todayGI.length+' item'+(todayGI.length>1?'s':'')+' \u2022 '+fmt(giDayTot)+'</div></div></div><div class="il">';
-    for(var i=0;i<todayGI.length;i++){var tg=todayGI[i];out+='<div class="ir"><div><div class="in">'+tg.vendor+'</div><div class="ic">'+(tg.items||'\u2014')+' \u2022 '+SHOPS[tg.shop]+'</div></div><span class="ia v">'+fmt(tg.amount)+'</span></div>'}
-    out+='<div class="it"><span class="itl">Total</span><span class="ia v">'+fmt(giDayTot)+'</span></div></div></div>';
-  }
-
-  var vMap={};
+function ldgBuildVMap(shopMatch){
+  var R=S.records;var vMap={};
   for(var i=0;i<R.length;i++){
     var rec=R[i];
     var gi=rec.goodsInward||[];
@@ -922,7 +920,6 @@ function renderVendors(){
       }
     }
   }
-  // Include GRN records from ordering staff
   for(var i=0;i<(S.grnRecords||[]).length;i++){
     var gr=S.grnRecords[i];var gi2=gr.goodsInward||[];
     for(var j=0;j<gi2.length;j++){
@@ -932,25 +929,13 @@ function renderVendors(){
       if(!dup)vMap[vn3].bills.push({id:gi2[j].id,date:gr.date,shop:gr.shop,amount:gi2[j].amount,items:gi2[j].items||'',billNo:gi2[j].billNo||'',entryType:gi2[j].entryType||'bill',qty:gi2[j].qty||0,qtyUnit:gi2[j].qtyUnit||'',source:'grn',recId:gr.id,giIdx:j});
     }
   }
-  var staffMap={};
-  for(var i=0;i<R.length;i++){
-    var exps2=R[i].expenses||[];
-    for(var j=0;j<exps2.length;j++){
-      if((exps2[j].category==='Salary'||exps2[j].category==='Advance Salary')&&exps2[j].description){
-        var sn=exps2[j].description;
-        if(!staffMap[sn])staffMap[sn]={salary:0,advance:0,txns:[]};
-        if(exps2[j].category==='Salary'){staffMap[sn].salary+=exps2[j].amount}else{staffMap[sn].advance+=exps2[j].amount}
-        staffMap[sn].txns.push({date:R[i].date,shop:R[i].shop,amount:exps2[j].amount,type:exps2[j].category});
-      }
-    }
-  }
-
-  // Filter by shop and build vendor array
-  var totalBills=0,totalPaid=0;
-  var vArr=[];
+  return vMap;
+}
+function ldgFilterVArr(vMap,shopMatch,dateFrom,dateTo){
+  var totalBills=0,totalPaid=0;var vArr=[];
   for(var k in vMap){
-    var fBills=vMap[k].bills.filter(function(b){return shopMatch(b.shop)});
-    var fPays=vMap[k].payments.filter(function(p){return shopMatch(p.shop)});
+    var fBills=vMap[k].bills.filter(function(b){return shopMatch(b.shop)&&(!dateFrom||b.date>=dateFrom)&&(!dateTo||b.date<=dateTo)});
+    var fPays=vMap[k].payments.filter(function(p){return shopMatch(p.shop)&&(!dateFrom||p.date>=dateFrom)&&(!dateTo||p.date<=dateTo)});
     if(!fBills.length&&!fPays.length)continue;
     var bT=0,pT=0;
     for(var i=0;i<fBills.length;i++)bT+=fBills[i].amount;
@@ -959,13 +944,111 @@ function renderVendors(){
     vArr.push({name:k,billTotal:bT,paidTotal:pT,balance:bT-pT,bills:fBills,payments:fPays});
   }
   vArr.sort(function(a,b){return b.balance-a.balance});
-  var totalBalance=totalBills-totalPaid;
+  return{vArr:vArr,totalBills:totalBills,totalPaid:totalPaid,totalBalance:totalBills-totalPaid};
+}
+function ldgTxnDesc(bl){var bDesc=bl.items||(bl.billNo?'Inv #'+bl.billNo:'Goods received');if(bl.entryType==='qty'&&bl.qty)bDesc=bl.qty+' '+bl.qtyUnit+(bl.items?' \u2022 '+bl.items:'');if(bl.billNo&&bl.entryType!=='qty')bDesc+=(bDesc?' \u2022 ':'')+'Inv #'+bl.billNo;if(bl.source==='grn')bDesc+=' (GRN)';return bDesc}
+function ldgDateRange(period){
+  var t=new Date(),y=t.getFullYear(),m=t.getMonth(),d=t.getDate();
+  if(period==='thisWeek'){var dow=t.getDay()||7;return{from:toISO(new Date(y,m,d-dow+1)),to:today(),label:'This Week'}}
+  if(period==='thisMonth')return{from:y+'-'+String(m+1).padStart(2,'0')+'-01',to:today(),label:'This Month'};
+  if(period==='thisYear')return{from:y+'-01-01',to:today(),label:'This Year'};
+  return{from:S.ledgerFrom||today(),to:S.ledgerTo||today(),label:'Custom'};
+}
+function ldgStaffData(shopMatch,dateFrom,dateTo){
+  var R=S.records;var fStaffMap={};
+  for(var i=0;i<R.length;i++){
+    if(!shopMatch(R[i].shop))continue;
+    if(dateFrom&&R[i].date<dateFrom)continue;
+    if(dateTo&&R[i].date>dateTo)continue;
+    var exps3=R[i].expenses||[];
+    for(var j=0;j<exps3.length;j++){
+      if((exps3[j].category==='Salary'||exps3[j].category==='Advance Salary')&&exps3[j].description){
+        var sn2=exps3[j].description;
+        if(!fStaffMap[sn2])fStaffMap[sn2]={salary:0,advance:0,txns:[]};
+        if(exps3[j].category==='Salary'){fStaffMap[sn2].salary+=exps3[j].amount}else{fStaffMap[sn2].advance+=exps3[j].amount}
+        fStaffMap[sn2].txns.push({date:R[i].date,shop:R[i].shop,amount:exps3[j].amount,type:exps3[j].category});
+      }
+    }
+  }
+  var staffArr=[];for(var k in fStaffMap)staffArr.push({name:k,salary:fStaffMap[k].salary,advance:fStaffMap[k].advance,total:fStaffMap[k].salary+fStaffMap[k].advance,txns:fStaffMap[k].txns});
+  staffArr.sort(function(a,b){return b.total-a.total});
+  return staffArr;
+}
+function ldgStaffHTML(staffArr){
+  if(!staffArr.length)return'';
+  var salTotal=0,advTotal=0;
+  for(var i=0;i<staffArr.length;i++){salTotal+=staffArr[i].salary;advTotal+=staffArr[i].advance}
+  var out='<div class="staff-adv-card"><div class="ch"><div class="ci r">\uD83D\uDCB3</div><div><div class="ct">Staff Payroll</div><div class="cs">Salary disbursements &amp; advance payments</div></div></div>';
+  out+='<div style="display:flex;gap:8px;margin-bottom:10px">';
+  out+='<div style="flex:1;text-align:center;padding:8px;background:var(--gl);border-radius:8px"><div style="font-size:14px;font-weight:700;color:var(--green)">'+fmt(salTotal)+'</div><div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Salary Paid</div></div>';
+  out+='<div style="flex:1;text-align:center;padding:8px;background:var(--al);border-radius:8px"><div style="font-size:14px;font-weight:700;color:var(--amber)">'+fmt(advTotal)+'</div><div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Advances Given</div></div>';
+  out+='<div style="flex:1;text-align:center;padding:8px;background:var(--rl);border-radius:8px"><div style="font-size:14px;font-weight:700;color:var(--rose)">'+fmt(salTotal+advTotal)+'</div><div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Total Payroll</div></div>';
+  out+='</div>';
+  for(var i=0;i<staffArr.length;i++){
+    var st=staffArr[i];
+    out+='<div class="staff-adv-row"><div><div class="staff-adv-name">'+st.name+'</div><div style="font-size:10px;color:var(--text3)">';
+    if(st.salary)out+='Salary: '+fmt(st.salary);
+    if(st.salary&&st.advance)out+=' \u2022 ';
+    if(st.advance)out+='Advance: '+fmt(st.advance);
+    out+=' \u2022 '+st.txns.length+' payment'+(st.txns.length>1?'s':'')+'</div></div><div class="staff-adv-amt">'+fmt(st.total)+'</div></div>';
+  }
+  out+='<div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:4px;border-top:1.5px solid var(--border)"><span style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase">Total Payroll</span><span style="font-size:14px;font-weight:700;color:var(--rose)">'+fmt(salTotal+advTotal)+'</span></div>';
+  out+='</div>';
+  return out;
+}
+function renderLedgerDaily(shopMatch,shopLabel){
+  var isO=S.role==='owner';var dt=S.ledgerDate;
+  var out='<div class="ldg-date-nav"><button class="ldg-date-btn" id="ldgDatePrev">\u276E</button><input type="date" id="ldgDateInp" value="'+dt+'"><button class="ldg-date-btn" id="ldgDateNext">\u276F</button><button class="ldg-date-btn" id="ldgDateToday" style="font-size:11px;width:auto;padding:0 10px">\uD83D\uDCC5 Today</button></div>';
 
-  var shopLabel=shopF==='all'?'All Shops':SHOPS[shopF];
-  out+='<div class="ven-totals"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:8px">\uD83D\uDCCB Vendor Payables \u2022 '+shopLabel+'</div><div class="ven-totals-grid"><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalBills)+'</div><div class="ven-totals-lbl">Total Invoiced</div></div><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalPaid)+'</div><div class="ven-totals-lbl">Total Paid</div></div><div class="ven-totals-item"><div class="ven-totals-val" style="color:'+(totalBalance>0?'#fca5a5':'#86efac')+'">'+fmt(totalBalance)+'</div><div class="ven-totals-lbl">'+(totalBalance>0?'Outstanding':'Overpaid')+'</div></div></div></div>';
+  // Goods Inward for selected date
+  var R=S.records;var dayGI=[];
+  for(var i=0;i<R.length;i++){if(R[i].date===dt&&shopMatch(R[i].shop)){var gi0=R[i].goodsInward||[];for(var j=0;j<gi0.length;j++)dayGI.push({vendor:gi0[j].vendor||'Unknown',items:gi0[j].items||'',amount:gi0[j].amount||0,shop:R[i].shop,billNo:gi0[j].billNo||'',entryType:gi0[j].entryType||'bill',qty:gi0[j].qty||0,qtyUnit:gi0[j].qtyUnit||''})}}
+  for(var i=0;i<(S.grnRecords||[]).length;i++){var gr0=S.grnRecords[i];if(gr0.date===dt&&shopMatch(gr0.shop)){var gi0b=gr0.goodsInward||[];for(var j=0;j<gi0b.length;j++){var dup0=false;for(var m=0;m<dayGI.length;m++){if(dayGI[m].id===gi0b[j].id){dup0=true;break}}if(!dup0)dayGI.push({id:gi0b[j].id,vendor:gi0b[j].vendor||'Unknown',items:gi0b[j].items||'',amount:gi0b[j].amount||0,shop:gr0.shop,billNo:gi0b[j].billNo||'',entryType:gi0b[j].entryType||'bill',qty:gi0b[j].qty||0,qtyUnit:gi0b[j].qtyUnit||''})}}}
+
+  var giDayTot=0;for(var i=0;i<dayGI.length;i++)giDayTot+=dayGI[i].amount;
+  if(dayGI.length){
+    out+='<div class="card"><div class="ch"><div class="ci t">\uD83D\uDCE6</div><div><div class="ct">Goods Inward</div><div class="cs">'+fmtD(dt)+' \u2022 '+dayGI.length+' item'+(dayGI.length>1?'s':'')+'</div></div></div><div class="il">';
+    for(var i=0;i<dayGI.length;i++){var tg=dayGI[i];var det=tg.entryType==='qty'&&tg.qty?tg.qty+' '+tg.qtyUnit+(tg.items?' \u2022 '+tg.items:''):(tg.items||'\u2014')+(tg.billNo?' \u2022 Inv #'+tg.billNo:'');out+='<div class="ir"><div><div class="in">'+tg.vendor+'</div><div class="ic">'+det+' \u2022 '+SHOPS[tg.shop]+'</div></div><span class="ia v">'+fmt(tg.amount)+'</span></div>'}
+    out+='<div class="it"><span class="itl">Total Goods Inward</span><span class="ia v">'+fmt(giDayTot)+'</span></div></div></div>';
+  }
+
+  // Vendor Payments for selected date
+  var dayPays=[];
+  for(var i=0;i<R.length;i++){if(R[i].date===dt&&shopMatch(R[i].shop)){var exps=R[i].expenses||[];for(var j=0;j<exps.length;j++){if(exps[j].category==='Vendor Payment'&&exps[j].description)dayPays.push({vendor:exps[j].description,amount:exps[j].amount,shop:R[i].shop})}}}
+  var payDayTot=0;for(var i=0;i<dayPays.length;i++)payDayTot+=dayPays[i].amount;
+  if(dayPays.length){
+    out+='<div class="card"><div class="ch"><div class="ci g">\uD83D\uDCB0</div><div><div class="ct">Vendor Payments</div><div class="cs">'+fmtD(dt)+' \u2022 '+dayPays.length+' payment'+(dayPays.length>1?'s':'')+'</div></div></div><div class="il">';
+    for(var i=0;i<dayPays.length;i++){var dp=dayPays[i];out+='<div class="ir"><div><div class="in">'+dp.vendor+'</div><div class="ic">'+SHOPS[dp.shop]+'</div></div><span class="ia e">'+fmt(dp.amount)+'</span></div>'}
+    out+='<div class="it"><span class="itl">Total Payments</span><span class="ia e">'+fmt(payDayTot)+'</span></div></div></div>';
+  }
+
+  // Staff payroll for the day
+  var dayStaff=ldgStaffData(shopMatch,dt,dt);
+  out+=ldgStaffHTML(dayStaff);
+
+  // Daily summary
+  var net=giDayTot-payDayTot;
+  out+='<div class="ven-totals"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:8px">\uD83D\uDCCB Daily Summary \u2022 '+fmtD(dt)+' \u2022 '+shopLabel+'</div><div class="ven-totals-grid"><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(giDayTot)+'</div><div class="ven-totals-lbl">Goods Received</div></div><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(payDayTot)+'</div><div class="ven-totals-lbl">Payments Made</div></div><div class="ven-totals-item"><div class="ven-totals-val" style="color:'+(net>0?'#fca5a5':'#86efac')+'">'+fmt(Math.abs(net))+'</div><div class="ven-totals-lbl">'+(net>0?'Net Payable':'Net Overpaid')+'</div></div></div></div>';
+
+  if(!dayGI.length&&!dayPays.length&&!dayStaff.length){
+    out+='<div class="es"><div class="esi">\uD83D\uDCC5</div><div class="est">No ledger entries for '+fmtD(dt)+'.<br>Use the date picker to check another day.</div></div>';
+  }
+  return out;
+}
+function renderLedgerSummary(shopMatch,shopLabel,vMap){
+  var isO=S.role==='owner';
+  var range=ldgDateRange(S.ledgerPeriod);
+  var out='<div class="ldg-period-toggle"><button class="ldg-period-btn'+(S.ledgerPeriod==='thisWeek'?' on':'')+'" data-ldgperiod="thisWeek">This Week</button><button class="ldg-period-btn'+(S.ledgerPeriod==='thisMonth'?' on':'')+'" data-ldgperiod="thisMonth">This Month</button><button class="ldg-period-btn'+(S.ledgerPeriod==='thisYear'?' on':'')+'" data-ldgperiod="thisYear">This Year</button><button class="ldg-period-btn'+(S.ledgerPeriod==='custom'?' on':'')+'" data-ldgperiod="custom">Custom</button></div>';
+  if(S.ledgerPeriod==='custom'){
+    out+='<div class="fr c2" style="margin-bottom:12px"><div class="fg"><div class="fl">From</div><input class="fi" type="date" id="ldgFromInp" value="'+(S.ledgerFrom||range.from)+'"></div><div class="fg"><div class="fl">To</div><input class="fi" type="date" id="ldgToInp" value="'+(S.ledgerTo||range.to)+'"></div></div>';
+  }
+  var res=ldgFilterVArr(vMap,shopMatch,range.from,range.to);
+  var vArr=res.vArr;
+
+  out+='<div class="ven-totals"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:8px">\uD83D\uDCCB Vendor Payables \u2022 '+range.label+' \u2022 '+shopLabel+'</div><div class="ven-totals-grid"><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(res.totalBills)+'</div><div class="ven-totals-lbl">Total Invoiced</div></div><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(res.totalPaid)+'</div><div class="ven-totals-lbl">Total Paid</div></div><div class="ven-totals-item"><div class="ven-totals-val" style="color:'+(res.totalBalance>0?'#fca5a5':'#86efac')+'">'+fmt(res.totalBalance)+'</div><div class="ven-totals-lbl">'+(res.totalBalance>0?'Outstanding':'Overpaid')+'</div></div></div></div>';
 
   if(!vArr.length){
-    out+='<div class="es"><div class="esi">\uD83C\uDFEA</div><div class="est">No vendor data yet.<br>Add goods inward entries and vendor payments in the Entry tab.</div></div>';
+    out+='<div class="es"><div class="esi">\uD83C\uDFEA</div><div class="est">No vendor data for this period.</div></div>';
   }
 
   for(var i=0;i<vArr.length;i++){
@@ -975,9 +1058,9 @@ function renderVendors(){
     out+='<div class="ven-card"><div class="ven-header" data-ventoggle="'+i+'"><div class="ven-name">\uD83C\uDFEA '+v.name+'</div><div class="ven-badge '+badgeCls+'">'+badgeText+'</div></div>';
     out+='<div class="ven-summary"><div class="ven-stat"><div class="ven-stat-lbl">Bills</div><div class="ven-stat-val" style="color:var(--amber)">'+fmt(v.billTotal)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Paid</div><div class="ven-stat-val" style="color:var(--green)">'+fmt(v.paidTotal)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Balance</div><div class="ven-stat-val" style="color:'+(v.balance>0?'var(--rose)':'var(--green)')+'">'+fmt(v.balance)+'</div></div></div>';
     var allTxns=[];
-    for(var j=0;j<v.bills.length;j++){var bl=v.bills[j];var bDesc=bl.items||(bl.billNo?'Inv #'+bl.billNo:'Goods received');if(bl.entryType==='qty'&&bl.qty)bDesc=bl.qty+' '+bl.qtyUnit+(bl.items?' \u2022 '+bl.items:'');if(bl.billNo&&bl.entryType!=='qty')bDesc+=(bDesc?' \u2022 ':'')+'Inv #'+bl.billNo;if(bl.source==='grn')bDesc+=' (GRN)';allTxns.push({date:bl.date,type:'bill',desc:bDesc,amount:bl.amount,shop:bl.shop,recId:bl.recId,giIdx:bl.giIdx,source:bl.source,vendor:v.name,items:bl.items||'',billNo:bl.billNo||''})}
+    for(var j=0;j<v.bills.length;j++){var bl=v.bills[j];allTxns.push({date:bl.date,type:'bill',desc:ldgTxnDesc(bl),amount:bl.amount,shop:bl.shop,recId:bl.recId,giIdx:bl.giIdx,source:bl.source,vendor:v.name,items:bl.items||'',billNo:bl.billNo||''})}
     for(var j=0;j<v.payments.length;j++){var py=v.payments[j];allTxns.push({date:py.date,type:'pay',desc:'Payment',amount:py.amount,shop:py.shop,recId:py.recId,expIdx:py.expIdx,vendor:v.name})}
-    allTxns.sort(function(a,b){return b.date<a.date?-1:b.date>a.date?1:0});
+    allTxns.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
     if(allTxns.length){
       out+='<div class="ven-txn-list" id="venTxn'+i+'" style="display:none">';
       for(var j=0;j<allTxns.length;j++){
@@ -992,44 +1075,163 @@ function renderVendors(){
     out+='</div>';
   }
 
-  // Filter staff payroll by shop too
-  var fStaffMap={};
-  for(var i=0;i<R.length;i++){
-    if(!shopMatch(R[i].shop))continue;
-    var exps3=R[i].expenses||[];
-    for(var j=0;j<exps3.length;j++){
-      if((exps3[j].category==='Salary'||exps3[j].category==='Advance Salary')&&exps3[j].description){
-        var sn2=exps3[j].description;
-        if(!fStaffMap[sn2])fStaffMap[sn2]={salary:0,advance:0,txns:[]};
-        if(exps3[j].category==='Salary'){fStaffMap[sn2].salary+=exps3[j].amount}else{fStaffMap[sn2].advance+=exps3[j].amount}
-        fStaffMap[sn2].txns.push({date:R[i].date,shop:R[i].shop,amount:exps3[j].amount,type:exps3[j].category});
-      }
-    }
-  }
-  var staffArr=[];for(var k in fStaffMap)staffArr.push({name:k,salary:fStaffMap[k].salary,advance:fStaffMap[k].advance,total:fStaffMap[k].salary+fStaffMap[k].advance,txns:fStaffMap[k].txns});
-  staffArr.sort(function(a,b){return b.total-a.total});
-  if(staffArr.length){
-    var salTotal=0,advTotal=0;
-    for(var i=0;i<staffArr.length;i++){salTotal+=staffArr[i].salary;advTotal+=staffArr[i].advance}
-    out+='<div class="staff-adv-card"><div class="ch"><div class="ci r">\uD83D\uDCB3</div><div><div class="ct">Staff Payroll</div><div class="cs">Salary disbursements &amp; advance payments</div></div></div>';
-    out+='<div style="display:flex;gap:8px;margin-bottom:10px">';
-    out+='<div style="flex:1;text-align:center;padding:8px;background:var(--gl);border-radius:8px"><div style="font-size:14px;font-weight:700;color:var(--green)">'+fmt(salTotal)+'</div><div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Salary Paid</div></div>';
-    out+='<div style="flex:1;text-align:center;padding:8px;background:var(--al);border-radius:8px"><div style="font-size:14px;font-weight:700;color:var(--amber)">'+fmt(advTotal)+'</div><div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Advances Given</div></div>';
-    out+='<div style="flex:1;text-align:center;padding:8px;background:var(--rl);border-radius:8px"><div style="font-size:14px;font-weight:700;color:var(--rose)">'+fmt(salTotal+advTotal)+'</div><div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Total Payroll</div></div>';
-    out+='</div>';
-    for(var i=0;i<staffArr.length;i++){
-      var st=staffArr[i];
-      out+='<div class="staff-adv-row"><div><div class="staff-adv-name">'+st.name+'</div><div style="font-size:10px;color:var(--text3)">';
-      if(st.salary)out+='Salary: '+fmt(st.salary);
-      if(st.salary&&st.advance)out+=' \u2022 ';
-      if(st.advance)out+='Advance: '+fmt(st.advance);
-      out+=' \u2022 '+st.txns.length+' payment'+(st.txns.length>1?'s':'')+'</div></div><div class="staff-adv-amt">'+fmt(st.total)+'</div></div>';
-    }
-    out+='<div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:4px;border-top:1.5px solid var(--border)"><span style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase">Total Payroll</span><span style="font-size:14px;font-weight:700;color:var(--rose)">'+fmt(salTotal+advTotal)+'</span></div>';
-    out+='</div>';
+  var staffArr=ldgStaffData(shopMatch,range.from,range.to);
+  out+=ldgStaffHTML(staffArr);
+
+  out+='<button class="ldg-print-btn" id="btnPrintLedgerSummary">\uD83D\uDDA8\uFE0F Print Period Summary</button>';
+  return out;
+}
+function renderLedgerVendorHistory(shopMatch,shopLabel,vMap){
+  var isO=S.role==='owner';
+  var vendorNames=[];for(var k in vMap){var hasShop=false;for(var i=0;i<vMap[k].bills.length;i++){if(shopMatch(vMap[k].bills[i].shop)){hasShop=true;break}}if(!hasShop)for(var i=0;i<vMap[k].payments.length;i++){if(shopMatch(vMap[k].payments[i].shop)){hasShop=true;break}}if(hasShop)vendorNames.push(k)}
+  vendorNames.sort();
+  var out='<div class="fg" style="margin-bottom:12px"><div class="fl">Select Vendor</div><select class="fi" id="ldgVendorSel"><option value="">-- Choose Vendor --</option>';
+  for(var i=0;i<vendorNames.length;i++){out+='<option value="'+vendorNames[i]+'"'+(S.ledgerVendor===vendorNames[i]?' selected':'')+'>'+vendorNames[i]+'</option>'}
+  out+='</select></div>';
+
+  if(!S.ledgerVendor||!vMap[S.ledgerVendor]||vendorNames.indexOf(S.ledgerVendor)===-1){
+    out+='<div class="es"><div class="esi">\uD83C\uDFEA</div><div class="est">Select a vendor to view payment history'+(shopLabel!=='All Shops'?' for '+shopLabel:'')+'.</div></div>';
+    return out;
   }
 
-  out+='<div class="ins"><div class="inst">\uD83D\uDCA1 How Ledger Tracking Works</div><div class="insi">\uD83D\uDCE6 <strong>Goods Inward</strong> \u2014 Log incoming stock (Entry tab or Ordering Staff GRN) with vendor name and bill amount. Creates an invoice record under Vendor Payables.</div><div class="insi">\uD83D\uDCB0 <strong>Vendor Payments</strong> \u2014 Add expense with category "Vendor Payment" and vendor name in description. Records payment against vendor payables.</div><div class="insi">\uD83D\uDCB3 <strong>Salary</strong> \u2014 Add expense with category "Salary" and staff name in description. Tracks regular salary disbursements.</div><div class="insi">\uD83D\uDCB3 <strong>Advance Salary</strong> \u2014 Add expense with category "Advance Salary" and staff name. Tracks advance payments separately.</div><div class="insi">\u26A0\uFE0F Use the <strong>exact same vendor/staff name</strong> each time for accurate matching.</div></div>';
+  var v=vMap[S.ledgerVendor];
+  var fBills=v.bills.filter(function(b){return shopMatch(b.shop)});
+  var fPays=v.payments.filter(function(p){return shopMatch(p.shop)});
+  var bT=0,pT=0;for(var i=0;i<fBills.length;i++)bT+=fBills[i].amount;for(var i=0;i<fPays.length;i++)pT+=fPays[i].amount;
+  var bal=bT-pT;
+
+  // Summary card
+  var badgeCls=bal>0?'owed':bal<0?'advance':'clear';
+  var badgeText=bal>0?'Owed '+fmt(bal):bal<0?'Overpaid '+fmt(Math.abs(bal)):'\u2713 Settled';
+  out+='<div class="ven-card"><div class="ven-header"><div class="ven-name">\uD83C\uDFEA '+S.ledgerVendor+'</div><div class="ven-badge '+badgeCls+'">'+badgeText+'</div></div>';
+  out+='<div class="ven-summary"><div class="ven-stat"><div class="ven-stat-lbl">Total Bills</div><div class="ven-stat-val" style="color:var(--amber)">'+fmt(bT)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Total Paid</div><div class="ven-stat-val" style="color:var(--green)">'+fmt(pT)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Balance</div><div class="ven-stat-val" style="color:'+(bal>0?'var(--rose)':'var(--green)')+'">'+fmt(bal)+'</div></div></div>';
+
+  // All transactions chronologically with running balance
+  var allTxns=[];
+  for(var j=0;j<fBills.length;j++){var bl=fBills[j];allTxns.push({date:bl.date,type:'bill',desc:ldgTxnDesc(bl),amount:bl.amount,shop:bl.shop,recId:bl.recId,giIdx:bl.giIdx,source:bl.source,vendor:S.ledgerVendor,items:bl.items||'',billNo:bl.billNo||''})}
+  for(var j=0;j<fPays.length;j++){var py=fPays[j];allTxns.push({date:py.date,type:'pay',desc:'Payment',amount:py.amount,shop:py.shop,recId:py.recId,expIdx:py.expIdx,vendor:S.ledgerVendor})}
+  allTxns.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
+
+  if(allTxns.length){
+    out+='<div class="ldg-day-title">\uD83D\uDCC3 Transaction History \u2022 '+shopLabel+'</div>';
+    var runBal=0;
+    for(var j=0;j<allTxns.length;j++){
+      var tx=allTxns[j];
+      if(tx.type==='bill')runBal+=tx.amount;else runBal-=tx.amount;
+      var editData=JSON.stringify({recId:tx.recId,type:tx.type,giIdx:tx.giIdx,expIdx:tx.expIdx,source:tx.source||'',amount:tx.amount,vendor:tx.vendor,items:tx.items||'',billNo:tx.billNo||''}).replace(/'/g,'&#39;');
+      var editBtn=isO?'<button style="margin-left:6px;background:none;border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:10px;cursor:pointer;color:var(--text2)" data-edittxn=\''+editData+'\'>\u270E</button>':'';
+      out+='<div class="ven-txn"><span class="ven-txn-date">'+fmtD(tx.date)+'</span><span class="ven-txn-desc">'+(tx.type==='bill'?'\uD83D\uDCE6 ':'\uD83D\uDCB0 ')+tx.desc+' \u2022 '+SHOPS[tx.shop]+'</span><span class="ven-txn-amt '+(tx.type==='bill'?'bill':'pay')+'">'+(tx.type==='bill'?'+':'-')+fmt(tx.amount)+editBtn+'</span><span class="ldg-running-bal" style="color:'+(runBal>0?'var(--rose)':'var(--green)')+'">'+fmt(runBal)+'</span></div>';
+    }
+  }else{
+    out+='<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px">No transactions found for '+S.ledgerVendor+(shopLabel!=='All Shops'?' at '+shopLabel:'')+'</div>';
+  }
+  out+='</div>';
+
+  out+='<button class="ldg-print-btn" id="btnPrintVendorHistory">\uD83D\uDDA8\uFE0F Print Vendor Statement</button>';
+  return out;
+}
+function generateLedgerSummaryReport(){
+  var shopF=S.ledgerShop;var shopMatch=function(sh){return shopF==='all'||sh==shopF};
+  var shopLabel=shopF==='all'?'All Shops':SHOPS[shopF];
+  var range=ldgDateRange(S.ledgerPeriod);
+  var vMap=ldgBuildVMap(shopMatch);
+  var res=ldgFilterVArr(vMap,shopMatch,range.from,range.to);
+  var vArr=res.vArr;
+  if(!vArr.length){toast('No data for selected period');return}
+  var genDate=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ledger Summary - Akshay Bakery</title><style>';
+  html+='*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1a1a1a;font-size:12px;line-height:1.5}';
+  html+='.page{max-width:800px;margin:0 auto;padding:30px}';
+  html+='.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0c3a2d;padding-bottom:16px;margin-bottom:20px}';
+  html+='.hdr h1{font-size:22px;color:#0c3a2d;margin-bottom:2px}.hdr h2{font-size:13px;color:#666;font-weight:400}';
+  html+='.hdr-right{text-align:right;font-size:11px;color:#666}.period{font-size:14px;font-weight:700;color:#0c3a2d;margin-bottom:4px}';
+  html+='.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}';
+  html+='.tot-item{text-align:center;padding:14px;background:#f8f9fa;border-radius:8px;border:1px solid #e5e5e5}';
+  html+='.tot-val{font-size:20px;font-weight:700}.tot-lbl{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}';
+  html+='table{width:100%;border-collapse:collapse;margin-bottom:16px}th{background:#0c3a2d;color:#fff;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px}';
+  html+='td{padding:7px 10px;border-bottom:1px solid #e5e5e5;font-size:12px}.text-right{text-align:right}';
+  html+='tr:nth-child(even){background:#f8f9fa}.owed{color:#dc2626;font-weight:600}.settled{color:#16a34a;font-weight:600}';
+  html+='.footer{margin-top:30px;padding-top:12px;border-top:1px solid #d1d5db;text-align:center;font-size:9px;color:#999;line-height:1.8}';
+  html+='@media print{body{font-size:11px}.page{padding:15px}@page{margin:10mm 12mm;size:A4}}';
+  html+='</style></head><body><div class="page">';
+  html+='<div class="hdr"><div><h1>AKSHAY BAKERY</h1><h2>Ledger Summary Report</h2></div><div class="hdr-right"><div class="period">'+range.label+' \u2022 '+shopLabel+'</div>'+fmtD(range.from)+' \u2014 '+fmtD(range.to)+'<br>Generated: '+genDate+'</div></div>';
+  html+='<div class="totals"><div class="tot-item"><div class="tot-val">'+fmt(res.totalBills)+'</div><div class="tot-lbl">Total Invoiced</div></div><div class="tot-item"><div class="tot-val">'+fmt(res.totalPaid)+'</div><div class="tot-lbl">Total Paid</div></div><div class="tot-item"><div class="tot-val" style="color:'+(res.totalBalance>0?'#dc2626':'#16a34a')+'">'+fmt(res.totalBalance)+'</div><div class="tot-lbl">'+(res.totalBalance>0?'Outstanding':'Overpaid')+'</div></div></div>';
+  html+='<table><thead><tr><th>Vendor</th><th class="text-right">Invoiced</th><th class="text-right">Paid</th><th class="text-right">Balance</th></tr></thead><tbody>';
+  for(var i=0;i<vArr.length;i++){var v=vArr[i];html+='<tr><td>'+v.name+'</td><td class="text-right">'+fmt(v.billTotal)+'</td><td class="text-right">'+fmt(v.paidTotal)+'</td><td class="text-right '+(v.balance>0?'owed':'settled')+'">'+fmt(v.balance)+'</td></tr>'}
+  html+='<tr style="font-weight:700;border-top:2px solid #0c3a2d"><td>TOTAL</td><td class="text-right">'+fmt(res.totalBills)+'</td><td class="text-right">'+fmt(res.totalPaid)+'</td><td class="text-right '+(res.totalBalance>0?'owed':'settled')+'">'+fmt(res.totalBalance)+'</td></tr>';
+  html+='</tbody></table>';
+
+  // Staff payroll
+  var staffArr=ldgStaffData(shopMatch,range.from,range.to);
+  if(staffArr.length){
+    var salT=0,advT=0;for(var i=0;i<staffArr.length;i++){salT+=staffArr[i].salary;advT+=staffArr[i].advance}
+    html+='<h3 style="font-size:14px;color:#0c3a2d;margin:16px 0 8px">Staff Payroll</h3>';
+    html+='<table><thead><tr><th>Staff</th><th class="text-right">Salary</th><th class="text-right">Advance</th><th class="text-right">Total</th></tr></thead><tbody>';
+    for(var i=0;i<staffArr.length;i++){var st=staffArr[i];html+='<tr><td>'+st.name+'</td><td class="text-right">'+fmt(st.salary)+'</td><td class="text-right">'+fmt(st.advance)+'</td><td class="text-right">'+fmt(st.total)+'</td></tr>'}
+    html+='<tr style="font-weight:700;border-top:2px solid #0c3a2d"><td>TOTAL</td><td class="text-right">'+fmt(salT)+'</td><td class="text-right">'+fmt(advT)+'</td><td class="text-right">'+fmt(salT+advT)+'</td></tr>';
+    html+='</tbody></table>';
+  }
+
+  html+='<div class="footer">CONFIDENTIAL \u2014 For Internal Use Only<br>Akshay Bakery \u2022 Ledger Summary \u2022 '+genDate+'</div></div></body></html>';
+  var w=window.open('','_blank');if(!w){toast('Please allow pop-ups');return}w.document.write(html);w.document.close();
+}
+function generateVendorHistoryReport(){
+  if(!S.ledgerVendor){toast('Select a vendor first');return}
+  var shopF=S.ledgerShop;var shopMatch=function(sh){return shopF==='all'||sh==shopF};
+  var shopLabel=shopF==='all'?'All Shops':SHOPS[shopF];
+  var vMap=ldgBuildVMap(shopMatch);
+  if(!vMap[S.ledgerVendor]){toast('No data for '+S.ledgerVendor);return}
+  var v=vMap[S.ledgerVendor];
+  var fBills=v.bills.filter(function(b){return shopMatch(b.shop)});
+  var fPays=v.payments.filter(function(p){return shopMatch(p.shop)});
+  var bT=0,pT=0;for(var i=0;i<fBills.length;i++)bT+=fBills[i].amount;for(var i=0;i<fPays.length;i++)pT+=fPays[i].amount;
+  var bal=bT-pT;
+  var allTxns=[];
+  for(var j=0;j<fBills.length;j++){var bl=fBills[j];allTxns.push({date:bl.date,type:'bill',desc:ldgTxnDesc(bl),amount:bl.amount,shop:bl.shop})}
+  for(var j=0;j<fPays.length;j++){var py=fPays[j];allTxns.push({date:py.date,type:'pay',desc:'Payment',amount:py.amount,shop:py.shop})}
+  allTxns.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
+  var genDate=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vendor Statement - '+S.ledgerVendor+'</title><style>';
+  html+='*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1a1a1a;font-size:12px;line-height:1.5}';
+  html+='.page{max-width:800px;margin:0 auto;padding:30px}';
+  html+='.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0c3a2d;padding-bottom:16px;margin-bottom:20px}';
+  html+='.hdr h1{font-size:22px;color:#0c3a2d;margin-bottom:2px}.hdr h2{font-size:13px;color:#666;font-weight:400}';
+  html+='.hdr-right{text-align:right;font-size:11px;color:#666}';
+  html+='.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}';
+  html+='.tot-item{text-align:center;padding:14px;background:#f8f9fa;border-radius:8px;border:1px solid #e5e5e5}';
+  html+='.tot-val{font-size:20px;font-weight:700}.tot-lbl{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}';
+  html+='table{width:100%;border-collapse:collapse;margin-bottom:16px}th{background:#0c3a2d;color:#fff;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px}';
+  html+='td{padding:7px 10px;border-bottom:1px solid #e5e5e5;font-size:12px}.text-right{text-align:right}';
+  html+='tr:nth-child(even){background:#f8f9fa}.bill{color:#b8860b}.pay{color:#16a34a}.owed{color:#dc2626;font-weight:600}.settled{color:#16a34a;font-weight:600}';
+  html+='.footer{margin-top:30px;padding-top:12px;border-top:1px solid #d1d5db;text-align:center;font-size:9px;color:#999;line-height:1.8}';
+  html+='@media print{body{font-size:11px}.page{padding:15px}@page{margin:10mm 12mm;size:A4}}';
+  html+='</style></head><body><div class="page">';
+  html+='<div class="hdr"><div><h1>AKSHAY BAKERY</h1><h2>Vendor Statement \u2014 '+S.ledgerVendor+'</h2></div><div class="hdr-right">'+shopLabel+'<br>Generated: '+genDate+'<br>'+allTxns.length+' transaction'+(allTxns.length!==1?'s':'')+'</div></div>';
+  html+='<div class="totals"><div class="tot-item"><div class="tot-val" style="color:#b8860b">'+fmt(bT)+'</div><div class="tot-lbl">Total Invoiced</div></div><div class="tot-item"><div class="tot-val" style="color:#16a34a">'+fmt(pT)+'</div><div class="tot-lbl">Total Paid</div></div><div class="tot-item"><div class="tot-val" style="color:'+(bal>0?'#dc2626':'#16a34a')+'">'+fmt(bal)+'</div><div class="tot-lbl">'+(bal>0?'Outstanding':'Settled')+'</div></div></div>';
+  html+='<table><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Shop</th><th class="text-right">Amount</th><th class="text-right">Balance</th></tr></thead><tbody>';
+  var runBal=0;
+  for(var j=0;j<allTxns.length;j++){var tx=allTxns[j];if(tx.type==='bill')runBal+=tx.amount;else runBal-=tx.amount;html+='<tr><td>'+fmtD(tx.date)+'</td><td class="'+(tx.type==='bill'?'bill':'pay')+'">'+(tx.type==='bill'?'Invoice':'Payment')+'</td><td>'+tx.desc+'</td><td>'+SHOPS[tx.shop]+'</td><td class="text-right '+(tx.type==='bill'?'bill':'pay')+'">'+(tx.type==='bill'?'+':'-')+fmt(tx.amount)+'</td><td class="text-right '+(runBal>0?'owed':'settled')+'">'+fmt(runBal)+'</td></tr>'}
+  html+='</tbody></table>';
+  html+='<div class="footer">CONFIDENTIAL \u2014 For Internal Use Only<br>Akshay Bakery \u2022 Vendor Statement: '+S.ledgerVendor+' \u2022 '+genDate+'</div></div></body></html>';
+  var w=window.open('','_blank');if(!w){toast('Please allow pop-ups');return}w.document.write(html);w.document.close();
+}
+function renderVendors(){
+  var shopF=S.ledgerShop;
+  var shopMatch=function(sh){return shopF==='all'||sh==shopF};
+  var shopLabel=shopF==='all'?'All Shops':SHOPS[shopF];
+
+  var out='<div class="biz-shop-toggle" style="margin-bottom:8px"><button class="biz-shop-btn'+(shopF==='all'?' on':'')+'" data-ledgershop="all">\uD83C\uDFE2 All Shops</button><button class="biz-shop-btn'+(shopF===0?' on':'')+'" data-ledgershop="0">\uD83D\uDE80 Highway</button><button class="biz-shop-btn'+(shopF===1?' on':'')+'" data-ledgershop="1">\uD83D\uDEE3\uFE0F Mainroad</button></div>';
+
+  var v=S.ledgerView;
+  out+='<div class="ldg-view-toggle"><button class="ldg-view-btn'+(v==='daily'?' on':'')+'" data-ldgview="daily">\uD83D\uDCC5 Daily</button><button class="ldg-view-btn'+(v==='summary'?' on':'')+'" data-ldgview="summary">\uD83D\uDCCA Summary</button><button class="ldg-view-btn'+(v==='vendor'?' on':'')+'" data-ldgview="vendor">\uD83C\uDFEA Vendor</button></div>';
+
+  if(v==='summary'){var vMap=ldgBuildVMap(shopMatch);out+=renderLedgerSummary(shopMatch,shopLabel,vMap)}
+  else if(v==='vendor'){var vMap=ldgBuildVMap(shopMatch);out+=renderLedgerVendorHistory(shopMatch,shopLabel,vMap)}
+  else{out+=renderLedgerDaily(shopMatch,shopLabel)}
+
+  out+='<div class="ins"><div class="inst">\uD83D\uDCA1 How Ledger Tracking Works</div><div class="insi">\uD83D\uDCE6 <strong>Goods Inward</strong> \u2014 Log incoming stock (Entry tab or Ordering Staff GRN) with vendor name and bill amount.</div><div class="insi">\uD83D\uDCB0 <strong>Vendor Payments</strong> \u2014 Add expense with category "Vendor Payment" and vendor name in description.</div><div class="insi">\uD83D\uDCB3 <strong>Salary / Advance</strong> \u2014 Add expense with category "Salary" or "Advance Salary" and staff name.</div><div class="insi">\u26A0\uFE0F Use the <strong>exact same vendor/staff name</strong> each time for accurate matching.</div></div>';
   return out;
 }
 
@@ -2632,6 +2834,51 @@ function bindEvents(){
   document.querySelectorAll('[data-gitype]').forEach(function(b){b.onclick=function(){S.giType=b.dataset.gitype;render()}});
   var agi=document.getElementById('addGI');if(agi)agi.onclick=function(){var v=document.getElementById('giVendor'),it=document.getElementById('giItems');if(!v||!v.value)return;var entry={id:gid(),vendor:v.value,items:it?it.value:'',entryType:S.giType};if(S.giType==='bill'){var a=document.getElementById('giAmount'),bn=document.getElementById('giBillNo');var amt=parseInt(a?a.value:0)||0;if(!amt)return;entry.amount=amt;entry.billNo=bn?bn.value:''}else{var q=document.getElementById('giQtyVal'),u=document.getElementById('giQtyUnit');var qty=parseFloat(q?q.value:0)||0;if(!qty)return;entry.qty=qty;entry.qtyUnit=u?u.value:'kg';entry.amount=0}S.goodsIn.push(entry);var saved=loadSavedNames();if(saved.vendors.indexOf(v.value)===-1){saved.vendors.push(v.value);saved.vendors.sort();saveNames(saved.vendors,saved.staff)}render()};
   document.querySelectorAll('[data-delgi]').forEach(function(b){b.onclick=function(){S.goodsIn.splice(parseInt(b.dataset.delgi),1);render()}});
+  // Edit goods inward item (owner)
+  document.querySelectorAll('[data-editgi]').forEach(function(b){b.onclick=function(){
+    var idx=parseInt(b.dataset.editgi);var g=S.goodsIn[idx];if(!g)return;
+    var oldOv=document.querySelector('.overlay.gi-edit-ov');if(oldOv)oldOv.remove();
+    var isQty=g.entryType==='qty';
+    var ov=document.createElement('div');ov.className='overlay gi-edit-ov';
+    ov.innerHTML='<div class="modal" style="max-width:340px"><h3>\u270E Edit Goods Inward</h3>'
+      +'<div class="fg" style="margin-bottom:8px"><div class="fl">Vendor</div><input class="fi" id="giEditVendor" value="'+(g.vendor||'')+'"></div>'
+      +'<div class="fg" style="margin-bottom:8px"><div class="fl">Items / Description</div><input class="fi" id="giEditItems" value="'+(g.items||'')+'"></div>'
+      +(isQty?'<div class="fr c2" style="margin-bottom:8px"><div class="fg"><div class="fl">Quantity</div><input class="fi" type="number" inputmode="numeric" id="giEditQty" value="'+(g.qty||'')+'"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="giEditUnit"><option'+(g.qtyUnit==='kg'?' selected':'')+'>kg</option><option'+(g.qtyUnit==='g'?' selected':'')+'>g</option><option'+(g.qtyUnit==='litre'?' selected':'')+'>litre</option><option'+(g.qtyUnit==='ml'?' selected':'')+'>ml</option><option'+(g.qtyUnit==='nos'?' selected':'')+'>nos</option><option'+(g.qtyUnit==='packets'?' selected':'')+'>packets</option><option'+(g.qtyUnit==='bags'?' selected':'')+'>bags</option><option'+(g.qtyUnit==='box'?' selected':'')+'>box</option><option'+(g.qtyUnit==='dozen'?' selected':'')+'>dozen</option></select></div></div>'
+       +(g.rate?'<div class="fg" style="margin-bottom:8px"><div class="fl">Rate (\u20B9)</div><input class="fi" type="number" inputmode="numeric" id="giEditRate" value="'+(g.rate||'')+'"></div>':'')
+      :'<div class="fg" style="margin-bottom:8px"><div class="fl">Invoice No.</div><input class="fi" id="giEditBillNo" value="'+(g.billNo||'')+'"></div>')
+      +'<div class="fg" style="margin-bottom:8px"><div class="fl">Amount (\u20B9)</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="giEditAmt" value="'+(g.amount||0)+'"></div></div>'
+      +'<div class="modal-actions"><button class="btn-cancel" id="giEditCancel">Cancel</button><button class="btn-confirm" id="giEditSave">\u2705 Save</button></div></div>';
+    ov.addEventListener('click',function(e){if(e.target===ov)ov.remove()});
+    document.getElementById('app').appendChild(ov);
+    document.getElementById('giEditCancel').onclick=function(){ov.remove()};
+    document.getElementById('giEditSave').onclick=function(){
+      g.vendor=document.getElementById('giEditVendor').value;
+      g.items=document.getElementById('giEditItems').value;
+      g.amount=parseInt(document.getElementById('giEditAmt').value)||0;
+      if(isQty){g.qty=parseFloat(document.getElementById('giEditQty').value)||0;g.qtyUnit=document.getElementById('giEditUnit').value;var rEl=document.getElementById('giEditRate');if(rEl){g.rate=parseFloat(rEl.value)||0;g.amount=g.rate*g.qty}}
+      else{var bnEl=document.getElementById('giEditBillNo');if(bnEl)g.billNo=bnEl.value}
+      ov.remove();render();toast('\u2705 Updated')};
+  }});
+  // Edit expense item (owner)
+  document.querySelectorAll('[data-editexp]').forEach(function(b){b.onclick=function(){
+    var idx=parseInt(b.dataset.editexp);var x=S.exps[idx];if(!x)return;
+    var oldOv=document.querySelector('.overlay.exp-edit-ov');if(oldOv)oldOv.remove();
+    var ov=document.createElement('div');ov.className='overlay exp-edit-ov';
+    var catOpts='';for(var c=0;c<ECATS.length;c++){catOpts+='<option'+(ECATS[c]===x.category?' selected':'')+'>'+ECATS[c]+'</option>'}
+    ov.innerHTML='<div class="modal" style="max-width:340px"><h3>\u270E Edit Expense</h3>'
+      +'<div class="fg" style="margin-bottom:8px"><div class="fl">Description</div><input class="fi" id="expEditDesc" value="'+(x.description||'')+'"></div>'
+      +'<div class="fg" style="margin-bottom:8px"><div class="fl">Category</div><select class="fi" id="expEditCat">'+catOpts+'</select></div>'
+      +'<div class="fg" style="margin-bottom:8px"><div class="fl">Amount (\u20B9)</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="expEditAmt" value="'+(x.amount||0)+'"></div></div>'
+      +'<div class="modal-actions"><button class="btn-cancel" id="expEditCancel">Cancel</button><button class="btn-confirm" id="expEditSave">\u2705 Save</button></div></div>';
+    ov.addEventListener('click',function(e){if(e.target===ov)ov.remove()});
+    document.getElementById('app').appendChild(ov);
+    document.getElementById('expEditCancel').onclick=function(){ov.remove()};
+    document.getElementById('expEditSave').onclick=function(){
+      x.description=document.getElementById('expEditDesc').value;
+      x.category=document.getElementById('expEditCat').value;
+      x.amount=parseInt(document.getElementById('expEditAmt').value)||0;
+      ov.remove();render();toast('\u2705 Updated')};
+  }});
   document.querySelectorAll('[data-girate]').forEach(function(inp){inp.onchange=function(){var idx=parseInt(inp.dataset.girate);var rate=parseFloat(inp.value)||0;S.goodsIn[idx].rate=rate;S.goodsIn[idx].amount=rate*(S.goodsIn[idx].qty||0);render()}});
   var ni=document.getElementById('notesInp');if(ni)ni.oninput=function(e){S.notes=e.target.value};
   // SAVE
@@ -2652,6 +2899,22 @@ function bindEvents(){
   var csp=document.getElementById('changeStaffPin');if(csp)csp.onclick=function(){var role=document.getElementById('staffPinRole').value,ownerPin=document.getElementById('staffCurPin').value,newPin=document.getElementById('staffNewPin').value,m=document.getElementById('staffPinMsg');if(!newPin||newPin.length<8){m.textContent='\u274C Password must be at least 8 characters';m.style.color='var(--rose)';return}callApi('changePin',{},{currentPin:ownerPin,newPin:newPin,role:role}).then(function(){m.textContent='\u2705 '+role+' staff password updated!';m.style.color='var(--green)'}).catch(function(e){m.textContent='\u274C '+e.message;m.style.color='var(--rose)'})};
   // Ledger shop toggle
   document.querySelectorAll('[data-ledgershop]').forEach(function(b){b.onclick=function(){var v=b.dataset.ledgershop;S.ledgerShop=v==='all'?'all':parseInt(v);render()}});
+  // Ledger view toggle
+  document.querySelectorAll('[data-ldgview]').forEach(function(b){b.onclick=function(){S.ledgerView=b.dataset.ldgview;render()}});
+  // Ledger date nav
+  var ldgDi=document.getElementById('ldgDateInp');if(ldgDi)ldgDi.onchange=function(){S.ledgerDate=ldgDi.value;render()};
+  var ldgPrev=document.getElementById('ldgDatePrev');if(ldgPrev)ldgPrev.onclick=function(){var d=new Date(S.ledgerDate+'T00:00:00');d.setDate(d.getDate()-1);S.ledgerDate=toISO(d);render()};
+  var ldgNext=document.getElementById('ldgDateNext');if(ldgNext)ldgNext.onclick=function(){var d=new Date(S.ledgerDate+'T00:00:00');d.setDate(d.getDate()+1);S.ledgerDate=toISO(d);render()};
+  var ldgToday=document.getElementById('ldgDateToday');if(ldgToday)ldgToday.onclick=function(){S.ledgerDate=today();render()};
+  // Ledger period toggle
+  document.querySelectorAll('[data-ldgperiod]').forEach(function(b){b.onclick=function(){S.ledgerPeriod=b.dataset.ldgperiod;render()}});
+  var ldgFrom=document.getElementById('ldgFromInp');if(ldgFrom)ldgFrom.onchange=function(){S.ledgerFrom=ldgFrom.value;render()};
+  var ldgTo=document.getElementById('ldgToInp');if(ldgTo)ldgTo.onchange=function(){S.ledgerTo=ldgTo.value;render()};
+  // Ledger vendor selector
+  var ldgVSel=document.getElementById('ldgVendorSel');if(ldgVSel)ldgVSel.onchange=function(){S.ledgerVendor=ldgVSel.value;render()};
+  // Print buttons
+  var pls=document.getElementById('btnPrintLedgerSummary');if(pls)pls.onclick=generateLedgerSummaryReport;
+  var pvh=document.getElementById('btnPrintVendorHistory');if(pvh)pvh.onclick=generateVendorHistoryReport;
   // Vendor transaction toggle
   document.querySelectorAll('[data-venshow]').forEach(function(b){b.onclick=function(){var idx=b.dataset.venshow;var el=document.getElementById('venTxn'+idx);if(el){if(el.style.display==='none'){el.style.display='block';b.innerHTML='\u25B2 Hide transactions'}else{el.style.display='none';b.innerHTML='\u25BC View transactions'}}}});
   // Edit ledger transaction (owner only)
