@@ -518,7 +518,7 @@ function renderApp(){
   var tabs;
   if(isO)tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83C\uDFED Production','\uD83D\uDCD1 Report','\uD83D\uDCCA Dashboard','\uD83E\uDDE0 Analytics','\uD83D\uDCDA Ledger','\uD83D\uDCD6 Recipes','\u2699\uFE0F Settings'];
   else if(isP)tabs=['\uD83D\uDCE6 Orders','\uD83E\uDDF1 Raw Materials','\uD83D\uDCD6 Recipes'];
-  else if(isOrd)tabs=['\uD83D\uDCE6 Place Order','\uD83D\uDCE5 Goods Inward','\uD83D\uDCCB Advance Orders','\uD83D\uDCCB Order History'];
+  else if(isOrd)tabs=['\uD83D\uDCE6 Place Order','\uD83D\uDCE5 Goods Inward','\uD83D\uDCCB Customer Orders','\uD83D\uDCCB Order History'];
   else tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83D\uDCE6 Orders'];
   var tabH='';for(var i=0;i<tabs.length;i++)tabH+='<button class="tab-btn'+(S.tab===i?' on':'')+'" data-tab="'+i+'">'+tabs[i]+'</button>';
   var hdr='<div class="app-header"><div class="header-row"><div class="header-left"><div class="header-icon"><img src="data:image/png;base64,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" style="width:auto;height:28px" alt="AB"></div><div><div class="header-title">Akshay Bakery</div><div class="header-role"><span class="sync-dot '+(S.connected?'on':'off')+'"></span>'+roleLabel+' \u2022 Cloud</div></div></div><div style="display:flex;gap:6px"><button class="logout-btn" id="btnSync">\u21BB</button><button class="logout-btn" id="btnLogout">Logout</button></div></div><div class="tab-bar">'+tabH+'</div></div>';
@@ -1348,10 +1348,10 @@ function renderOrderingEntry(){
 
   var out='<div class="fr c2"><div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="ordDateInp2" value="'+S.date+'"></div><div class="fg"><div class="fl">Shop</div><select class="fi" id="ordShopInp"><option value="0"'+(S.ordShop===0?' selected':'')+'>Highway</option><option value="1"'+(S.ordShop===1?' selected':'')+'>Mainroad</option></select></div></div>';
 
-  // Advance orders for this date & shop
+  // Customer orders for this date & shop
   var advForDay=getAdvOrdersForDate(S.date,S.ordShop);
   if(advForDay.length){
-    out+='<div class="card" style="border-left:3px solid var(--amber);background:var(--al)"><div class="ch"><div class="ci a">\uD83D\uDCCB</div><div><div class="ct">Advance Customer Orders</div><div class="cs">'+advForDay.length+' pre-order'+(advForDay.length>1?'s':'')+' for today</div></div></div>';
+    out+='<div class="card" style="border-left:3px solid var(--amber);background:var(--al)"><div class="ch"><div class="ci a">\uD83D\uDCCB</div><div><div class="ct">Customer Orders</div><div class="cs">'+advForDay.length+' pre-order'+(advForDay.length>1?'s':'')+' for today</div></div></div>';
     for(var i=0;i<advForDay.length;i++){
       var a=advForDay[i];var alreadyAdded=false;
       for(var j=0;j<S.ordItems.length;j++){if(S.ordItems[j].advOrderId===a.id){alreadyAdded=true;break}}
@@ -1565,7 +1565,7 @@ function renderOrderingGRN(){
   return out;
 }
 
-/* ===== ADVANCE CUSTOMER ORDERS ===== */
+/* ===== CUSTOMER ORDERS ===== */
 function getAdvOrdersForDate(date,shop){
   var result=[];
   for(var i=0;i<S.advOrders.length;i++){
@@ -1578,20 +1578,20 @@ function renderAdvanceOrders(){
   var prods=loadSavedProducts();
   var prodDL='<datalist id="dlProducts">';for(var i=0;i<prods.length;i++)prodDL+='<option value="'+prods[i]+'">';prodDL+='</datalist>';
 
-  var out='<div class="card"><div class="ch"><div class="ci a">\uD83D\uDCCB</div><div><div class="ct">New Advance Order</div><div class="cs">Pre-orders for future dates</div></div></div>';
+  var out='<div class="card"><div class="ch"><div class="ci a">\uD83D\uDCCB</div><div><div class="ct">New Customer Order</div><div class="cs">Customer orders for upcoming dates</div></div></div>';
   out+='<div class="fr c2"><div class="fg"><div class="fl">Customer Name</div><input class="fi" type="text" id="advCustInp" value="'+(S.advCust||'')+'" placeholder="e.g. John"></div><div class="fg"><div class="fl">Delivery Date</div><input class="fi" type="date" id="advDateInp" value="'+S.advDate+'"></div></div>';
   out+='<div class="fr c2" style="margin-top:8px"><div class="fg"><div class="fl">Shop</div><select class="fi" id="advShopInp"><option value="0"'+(S.advShop===0?' selected':'')+'>Highway</option><option value="1"'+(S.advShop===1?' selected':'')+'>Mainroad</option></select></div><div class="fg"><div class="fl">Category</div><select class="fi" id="advCatInp">'+PCATS.map(function(c){return'<option'+(S.advCat===c?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div></div>';
   out+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Product</div><input class="fi" type="text" id="advProdInp" value="'+(S.advProd||'')+'" placeholder="e.g. Birthday Cake" list="dlProducts" autocomplete="off"></div><div class="fg"><div class="fl">Quantity</div><input class="fi" type="number" inputmode="numeric" id="advQtyInp" value="'+(S.advQty||'')+'" placeholder="0"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="advUnitInp">'+PUNITS.map(function(u){return'<option'+(S.advUnit===u?' selected':'')+'>'+u+'</option>'}).join('')+'</select></div></div>';
   out+='<div class="fg" style="margin-top:8px"><div class="fl">Notes</div><input class="fi" type="text" id="advNotesInp" value="'+(S.advNotes||'')+'" placeholder="e.g. Write Happy Birthday on top"></div>';
-  out+='<div style="margin-top:10px;text-align:right"><button class="ab g" id="saveAdvOrder">\uD83D\uDCCB Save Advance Order</button></div></div>';
+  out+='<div style="margin-top:10px;text-align:right"><button class="ab g" id="saveAdvOrder">\uD83D\uDCCB Save Customer Order</button></div></div>';
   out+=prodDL;
 
-  // List upcoming advance orders
+  // List upcoming customer orders
   var upcoming=[];for(var i=0;i<S.advOrders.length;i++){if(S.advOrders[i].deliveryDate>=today())upcoming.push(S.advOrders[i])}
   upcoming.sort(function(a,b){return a.deliveryDate<b.deliveryDate?-1:a.deliveryDate>b.deliveryDate?1:0});
 
   if(upcoming.length){
-    out+='<div class="card"><div class="ch"><div class="ci g">\uD83D\uDCC5</div><div><div class="ct">Upcoming Orders</div><div class="cs">'+upcoming.length+' pending advance order'+(upcoming.length>1?'s':'')+'</div></div></div>';
+    out+='<div class="card"><div class="ch"><div class="ci g">\uD83D\uDCC5</div><div><div class="ct">Upcoming Orders</div><div class="cs">'+upcoming.length+' pending customer order'+(upcoming.length>1?'s':'')+'</div></div></div>';
     var curDate='';
     for(var i=0;i<upcoming.length;i++){
       var a=upcoming[i];
@@ -1604,7 +1604,7 @@ function renderAdvanceOrders(){
   // Past orders
   var past=[];for(var i=0;i<S.advOrders.length;i++){if(S.advOrders[i].deliveryDate<today())past.push(S.advOrders[i])}
   if(past.length){
-    out+='<div style="font-size:11px;color:var(--text3);text-align:center;margin-top:12px">'+past.length+' past advance order'+(past.length>1?'s':'')+' (completed)</div>';
+    out+='<div style="font-size:11px;color:var(--text3);text-align:center;margin-top:12px">'+past.length+' past customer order'+(past.length>1?'s':'')+' (completed)</div>';
   }
 
   return out;
@@ -2538,7 +2538,7 @@ function generateExecutiveReport(){
   });
   // Get production records for same period
   var prodRecs=(S.records||[]).filter(function(r){return r.date>=range.from&&r.date<=range.to});
-  // Also check advance orders as production targets
+  // Also check customer orders as production targets
   var advOrdMap={};
   (S.advOrders||[]).forEach(function(r){
     if(r.deliveryDate>=range.from&&r.deliveryDate<=range.to){
@@ -2557,11 +2557,11 @@ function generateExecutiveReport(){
   });
 
   html+='<div class="section"><div class="section-title">Production to Sales Analysis</div>';
-  html+='<div style="font-size:12px;color:#555;margin-bottom:12px;line-height:1.6">This section compares production orders dispatched to each shop against advance orders placed. Discrepancies may indicate <b>overproduction (wastage)</b>, <b>underproduction (lost sales)</b>, or <b>profit leakage</b> in the supply chain.</div>';
+  html+='<div style="font-size:12px;color:#555;margin-bottom:12px;line-height:1.6">This section compares production orders dispatched to each shop against customer orders placed. Discrepancies may indicate <b>overproduction (wastage)</b>, <b>underproduction (lost sales)</b>, or <b>profit leakage</b> in the supply chain.</div>';
 
   // Production dispatch per shop
   if(Object.keys(s0ProdMap).length||Object.keys(s1ProdMap).length){
-    html+='<table><thead><tr><th>Product</th><th class="num">Highway Dispatched</th><th class="num">Mainroad Dispatched</th><th class="num">Total Production</th><th class="num">Advance Orders</th><th class="num">Variance</th><th>Status</th></tr></thead><tbody>';
+    html+='<table><thead><tr><th>Product</th><th class="num">Highway Dispatched</th><th class="num">Mainroad Dispatched</th><th class="num">Total Production</th><th class="num">Customer Orders</th><th class="num">Variance</th><th>Status</th></tr></thead><tbody>';
     var allProds={};
     for(var k in s0ProdMap)allProds[k]=true;
     for(var k in s1ProdMap)allProds[k]=true;
@@ -2577,7 +2577,7 @@ function generateExecutiveReport(){
       if(adv>0&&tot>adv*1.2){status='Overproduction';cls='color:#d97706'}
       else if(adv>0&&tot<adv*0.8){status='Underproduction';cls='color:#dc2626';leakItems.push(k)}
       else if(adv>0){status='On Target';cls='color:#16a34a'}
-      else{status='No Advance Order';cls='color:#777'}
+      else{status='No Customer Order';cls='color:#777'}
       html+='<tr><td><b>'+k+'</b></td><td class="num">'+hwy+'</td><td class="num">'+main+'</td><td class="num"><b>'+tot+'</b></td><td class="num">'+(adv||'-')+'</td><td class="num" style="'+(variance>0?'color:#d97706':variance<0?'color:#dc2626':'')+'">'+((variance>0?'+':'')+variance)+'</td><td style="'+cls+';font-weight:600;font-size:11px">'+status+'</td></tr>';
     });
     html+='</tbody></table>';
@@ -2588,7 +2588,7 @@ function generateExecutiveReport(){
 
     html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">';
     html+='<div style="padding:12px;border-radius:6px;background:#fffbeb;border:1px solid #fde68a"><div style="font-weight:700;font-size:12px;color:#92400e;margin-bottom:4px">Overproduction Risk</div><div style="font-size:12px;color:#78350f">'+(overProd.length?'<b>'+overProd.join(', ')+'</b> produced significantly more than ordered. This may lead to <b>wastage</b> and increased costs.':'No significant overproduction detected.')+'</div></div>';
-    html+='<div style="padding:12px;border-radius:6px;background:#fef2f2;border:1px solid #fecaca"><div style="font-weight:700;font-size:12px;color:#991b1b;margin-bottom:4px">Underproduction / Lost Sales</div><div style="font-size:12px;color:#7f1d1d">'+(underProd.length?'<b>'+underProd.join(', ')+'</b> fell short of advance orders. This indicates <b>potential lost revenue</b> and unmet customer demand.':'No significant underproduction detected.')+'</div></div>';
+    html+='<div style="padding:12px;border-radius:6px;background:#fef2f2;border:1px solid #fecaca"><div style="font-weight:700;font-size:12px;color:#991b1b;margin-bottom:4px">Underproduction / Lost Sales</div><div style="font-size:12px;color:#7f1d1d">'+(underProd.length?'<b>'+underProd.join(', ')+'</b> fell short of customer orders. This indicates <b>potential lost revenue</b> and unmet customer demand.':'No significant underproduction detected.')+'</div></div>';
     html+='</div>';
   }else{
     html+='<div style="padding:16px;text-align:center;color:#777;font-size:12px">No production order data available for this period. Ensure orders are being entered via the ordering staff login.</div>';
@@ -3061,7 +3061,7 @@ function bindEvents(){
     callApi('save',{},entry).then(function(){toast('\u2705 GRN saved!');S.grnItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveGrnBtn');if(b){b.textContent='\uD83D\uDCBE Save GRN to Cloud';b.className='save-btn'}})
   };
 
-  // Advance orders
+  // Customer orders
   var advDateInp=document.getElementById('advDateInp');if(advDateInp)advDateInp.onchange=function(e){S.advDate=e.target.value};
   var advShopInp=document.getElementById('advShopInp');if(advShopInp)advShopInp.onchange=function(e){S.advShop=parseInt(e.target.value)};
   var saveAdvOrder=document.getElementById('saveAdvOrder');if(saveAdvOrder)saveAdvOrder.onclick=function(){
@@ -3072,10 +3072,10 @@ function bindEvents(){
     if(S.saving)return;S.saving=true;saveAdvOrder.textContent='\u23F3 Saving...';
     var entry={type:'advanceOrder',id:gid(),customer:cust.value,deliveryDate:dt?dt.value:S.advDate,shop:shop?parseInt(shop.value):S.advShop,product:prod.value,qty:q,unit:unit?unit.value:'pcs',category:cat?cat.value:'Baking',notes:notes?notes.value:'',savedAt:new Date().toISOString(),savedBy:'ordering'};
     addProductName(prod.value);
-    callApi('save',{},entry).then(function(){toast('\u2705 Advance order saved!');S.advCust='';S.advProd='';S.advQty='';S.advNotes='';return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;render()})
+    callApi('save',{},entry).then(function(){toast('\u2705 Customer order saved!');S.advCust='';S.advProd='';S.advQty='';S.advNotes='';return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;render()})
   };
   document.querySelectorAll('[data-deladvorder]').forEach(function(b){b.onclick=function(){var id=b.dataset.deladvorder;callApi('delete',{id:id}).then(function(){toast('Deleted');doFetch()}).catch(function(e){toast('\u274C '+e.message)})}});
-  // Add advance order to production order
+  // Add customer order to production order
   document.querySelectorAll('[data-addadvtoorder]').forEach(function(b){b.onclick=function(){
     var advForDay=getAdvOrdersForDate(S.date,S.ordShop);var idx=parseInt(b.dataset.addadvtoorder);var a=advForDay[idx];if(!a)return;
     S.ordItems.push({id:gid(),advOrderId:a.id,product:a.product,category:a.category||'Baking',qty:a.qty,unit:a.unit,notes:'\uD83D\uDC64 '+a.customer+(a.notes?' \u2022 '+a.notes:'')});
