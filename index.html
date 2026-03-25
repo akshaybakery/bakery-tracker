@@ -975,15 +975,16 @@ function renderVendors(){
     out+='<div class="ven-card"><div class="ven-header" data-ventoggle="'+i+'"><div class="ven-name">\uD83C\uDFEA '+v.name+'</div><div class="ven-badge '+badgeCls+'">'+badgeText+'</div></div>';
     out+='<div class="ven-summary"><div class="ven-stat"><div class="ven-stat-lbl">Bills</div><div class="ven-stat-val" style="color:var(--amber)">'+fmt(v.billTotal)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Paid</div><div class="ven-stat-val" style="color:var(--green)">'+fmt(v.paidTotal)+'</div></div><div class="ven-stat"><div class="ven-stat-lbl">Balance</div><div class="ven-stat-val" style="color:'+(v.balance>0?'var(--rose)':'var(--green)')+'">'+fmt(v.balance)+'</div></div></div>';
     var allTxns=[];
-    for(var j=0;j<v.bills.length;j++){var bl=v.bills[j];var bDesc=bl.items||(bl.billNo?'Inv #'+bl.billNo:'Goods received');if(bl.entryType==='qty'&&bl.qty)bDesc=bl.qty+' '+bl.qtyUnit+(bl.items?' \u2022 '+bl.items:'');if(bl.billNo&&bl.entryType!=='qty')bDesc+=(bDesc?' \u2022 ':'')+'Inv #'+bl.billNo;if(bl.source==='grn')bDesc+=' (GRN)';allTxns.push({date:bl.date,type:'bill',desc:bDesc,amount:bl.amount,shop:bl.shop,recId:bl.recId,giIdx:bl.giIdx,source:bl.source})}
-    for(var j=0;j<v.payments.length;j++){var py=v.payments[j];allTxns.push({date:py.date,type:'pay',desc:'Payment',amount:py.amount,shop:py.shop,recId:py.recId,expIdx:py.expIdx})}
+    for(var j=0;j<v.bills.length;j++){var bl=v.bills[j];var bDesc=bl.items||(bl.billNo?'Inv #'+bl.billNo:'Goods received');if(bl.entryType==='qty'&&bl.qty)bDesc=bl.qty+' '+bl.qtyUnit+(bl.items?' \u2022 '+bl.items:'');if(bl.billNo&&bl.entryType!=='qty')bDesc+=(bDesc?' \u2022 ':'')+'Inv #'+bl.billNo;if(bl.source==='grn')bDesc+=' (GRN)';allTxns.push({date:bl.date,type:'bill',desc:bDesc,amount:bl.amount,shop:bl.shop,recId:bl.recId,giIdx:bl.giIdx,source:bl.source,vendor:v.name,items:bl.items||'',billNo:bl.billNo||''})}
+    for(var j=0;j<v.payments.length;j++){var py=v.payments[j];allTxns.push({date:py.date,type:'pay',desc:'Payment',amount:py.amount,shop:py.shop,recId:py.recId,expIdx:py.expIdx,vendor:v.name})}
     allTxns.sort(function(a,b){return b.date<a.date?-1:b.date>a.date?1:0});
     if(allTxns.length){
       out+='<div class="ven-txn-list" id="venTxn'+i+'" style="display:none">';
       for(var j=0;j<allTxns.length;j++){
         var tx=allTxns[j];
-        var delBtn=isO?'<button class="ix" style="margin-left:6px;font-size:10px" data-deltxn=\''+JSON.stringify({recId:tx.recId,type:tx.type,giIdx:tx.giIdx,expIdx:tx.expIdx,source:tx.source||''})+'\'>\u00D7</button>':'';
-        out+='<div class="ven-txn"><span class="ven-txn-date">'+fmtD(tx.date)+'</span><span class="ven-txn-desc">'+(tx.type==='bill'?'\uD83D\uDCE6 ':'\uD83D\uDCB0 ')+tx.desc+' \u2022 '+SHOPS[tx.shop]+'</span><span class="ven-txn-amt '+(tx.type==='bill'?'bill':'pay')+'">'+(tx.type==='bill'?'+':'-')+fmt(tx.amount)+delBtn+'</span></div>';
+        var editData=JSON.stringify({recId:tx.recId,type:tx.type,giIdx:tx.giIdx,expIdx:tx.expIdx,source:tx.source||'',amount:tx.amount,vendor:tx.vendor,items:tx.items||'',billNo:tx.billNo||''}).replace(/'/g,'&#39;');
+        var editBtn=isO?'<button style="margin-left:6px;background:none;border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:10px;cursor:pointer;color:var(--text2)" data-edittxn=\''+editData+'\'>\u270E</button>':'';
+        out+='<div class="ven-txn"><span class="ven-txn-date">'+fmtD(tx.date)+'</span><span class="ven-txn-desc">'+(tx.type==='bill'?'\uD83D\uDCE6 ':'\uD83D\uDCB0 ')+tx.desc+' \u2022 '+SHOPS[tx.shop]+'</span><span class="ven-txn-amt '+(tx.type==='bill'?'bill':'pay')+'">'+(tx.type==='bill'?'+':'-')+fmt(tx.amount)+editBtn+'</span></div>';
       }
       out+='</div>';
       out+='<button class="ven-expand" data-venshow="'+i+'">\u25BC View '+allTxns.length+' transactions</button>';
@@ -2652,19 +2653,44 @@ function bindEvents(){
   document.querySelectorAll('[data-ledgershop]').forEach(function(b){b.onclick=function(){var v=b.dataset.ledgershop;S.ledgerShop=v==='all'?'all':parseInt(v);render()}});
   // Vendor transaction toggle
   document.querySelectorAll('[data-venshow]').forEach(function(b){b.onclick=function(){var idx=b.dataset.venshow;var el=document.getElementById('venTxn'+idx);if(el){if(el.style.display==='none'){el.style.display='block';b.innerHTML='\u25B2 Hide transactions'}else{el.style.display='none';b.innerHTML='\u25BC View transactions'}}}});
-  // Delete ledger transaction (owner only)
-  document.querySelectorAll('[data-deltxn]').forEach(function(b){b.onclick=function(){
-    if(!confirm('Delete this transaction?'))return;
-    var info=JSON.parse(b.dataset.deltxn);
-    var src=info.source==='grn'?S.grnRecords:S.records;
-    var rec=null;for(var i=0;i<src.length;i++){if(src[i].id===info.recId){rec=src[i];break}}
-    if(!rec){toast('\u274C Record not found');return}
-    if(info.type==='bill'){
-      var gi=rec.goodsInward||[];if(info.giIdx>=0&&info.giIdx<gi.length){gi.splice(info.giIdx,1);rec.goodsInward=gi;var gt=0;for(var i=0;i<gi.length;i++)gt+=gi[i].amount;rec.totalGoodsInward=gt}
-    }else{
-      var exps=rec.expenses||[];if(info.expIdx>=0&&info.expIdx<exps.length){var removed=exps[info.expIdx];exps.splice(info.expIdx,1);rec.expenses=exps;rec.totalExpenses=(rec.totalExpenses||0)-removed.amount;if(removed.category==='Vendor Payment')rec.totalVendorPayments=(rec.totalVendorPayments||0)-removed.amount}
-    }
-    callApi('save',{},rec).then(function(){toast('\u2705 Transaction deleted');return doFetch()}).catch(function(e){toast('\u274C '+e.message)});
+  // Edit ledger transaction (owner only)
+  document.querySelectorAll('[data-edittxn]').forEach(function(b){b.onclick=function(){
+    var info=JSON.parse(b.dataset.edittxn);
+    var oldOv=document.querySelector('.overlay.txn-edit-ov');if(oldOv)oldOv.remove();
+    var isBill=info.type==='bill';
+    var ov=document.createElement('div');ov.className='overlay txn-edit-ov';
+    ov.innerHTML='<div class="modal" style="max-width:340px"><h3>\u270E Edit '+(isBill?'Goods Inward':'Payment')+'</h3>'
+      +'<div class="fg" style="margin-bottom:8px"><div class="fl">Vendor</div><input class="fi" id="txnEditVendor" value="'+info.vendor+'"></div>'
+      +(isBill?'<div class="fg" style="margin-bottom:8px"><div class="fl">Items / Description</div><input class="fi" id="txnEditItems" value="'+(info.items||'')+'"></div>':'')
+      +(isBill?'<div class="fg" style="margin-bottom:8px"><div class="fl">Invoice No.</div><input class="fi" id="txnEditBillNo" value="'+(info.billNo||'')+'"></div>':'')
+      +'<div class="fg" style="margin-bottom:8px"><div class="fl">Amount</div><div class="iw"><span class="ip">\u20B9</span><input class="fi wp" type="number" inputmode="numeric" id="txnEditAmt" value="'+info.amount+'"></div></div>'
+      +'<div class="modal-actions"><button class="btn-cancel" id="txnEditCancel">Cancel</button><button class="btn-confirm" id="txnEditDel" style="background:var(--rose);margin-right:auto">\uD83D\uDDD1 Delete</button><button class="btn-confirm" id="txnEditSave">\u2705 Save</button></div></div>';
+    ov.addEventListener('click',function(e){if(e.target===ov)ov.remove()});
+    document.getElementById('app').appendChild(ov);
+    document.getElementById('txnEditCancel').onclick=function(){ov.remove()};
+    document.getElementById('txnEditDel').onclick=function(){
+      if(!confirm('Delete this transaction permanently?'))return;
+      var src=info.source==='grn'?S.grnRecords:S.records;
+      var rec=null;for(var i=0;i<src.length;i++){if(src[i].id===info.recId){rec=src[i];break}}
+      if(!rec){toast('\u274C Record not found');ov.remove();return}
+      if(isBill){var gi=rec.goodsInward||[];if(info.giIdx>=0&&info.giIdx<gi.length){gi.splice(info.giIdx,1);rec.goodsInward=gi;var gt=0;for(var i=0;i<gi.length;i++)gt+=gi[i].amount;rec.totalGoodsInward=gt}}
+      else{var exps=rec.expenses||[];if(info.expIdx>=0&&info.expIdx<exps.length){var rm=exps[info.expIdx];exps.splice(info.expIdx,1);rec.expenses=exps;rec.totalExpenses=(rec.totalExpenses||0)-rm.amount;if(rm.category==='Vendor Payment')rec.totalVendorPayments=(rec.totalVendorPayments||0)-rm.amount}}
+      ov.remove();callApi('save',{},rec).then(function(){toast('\u2705 Deleted');return doFetch()}).catch(function(e){toast('\u274C '+e.message)});
+    };
+    document.getElementById('txnEditSave').onclick=function(){
+      var newAmt=parseInt(document.getElementById('txnEditAmt').value)||0;
+      var newVendor=document.getElementById('txnEditVendor').value.trim();
+      if(!newAmt||!newVendor){toast('\u274C Enter vendor and amount');return}
+      var src=info.source==='grn'?S.grnRecords:S.records;
+      var rec=null;for(var i=0;i<src.length;i++){if(src[i].id===info.recId){rec=src[i];break}}
+      if(!rec){toast('\u274C Record not found');ov.remove();return}
+      if(isBill){
+        var gi=rec.goodsInward||[];if(info.giIdx>=0&&info.giIdx<gi.length){var oldAmt=gi[info.giIdx].amount;gi[info.giIdx].vendor=newVendor;gi[info.giIdx].amount=newAmt;gi[info.giIdx].items=document.getElementById('txnEditItems').value.trim();gi[info.giIdx].billNo=document.getElementById('txnEditBillNo').value.trim();rec.goodsInward=gi;rec.totalGoodsInward=(rec.totalGoodsInward||0)-oldAmt+newAmt}
+      }else{
+        var exps=rec.expenses||[];if(info.expIdx>=0&&info.expIdx<exps.length){var oldAmt2=exps[info.expIdx].amount;exps[info.expIdx].description=newVendor;exps[info.expIdx].amount=newAmt;rec.expenses=exps;rec.totalExpenses=(rec.totalExpenses||0)-oldAmt2+newAmt;if(exps[info.expIdx].category==='Vendor Payment')rec.totalVendorPayments=(rec.totalVendorPayments||0)-oldAmt2+newAmt}
+      }
+      ov.remove();callApi('save',{},rec).then(function(){toast('\u2705 Updated');return doFetch()}).catch(function(e){toast('\u274C '+e.message)});
+    };
   }});
   // Orders tab
   var ordDateInp=document.getElementById('orderDateInp');if(ordDateInp)ordDateInp.onchange=function(e){S.date=e.target.value;loadForm();render()};
