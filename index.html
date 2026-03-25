@@ -405,7 +405,7 @@ else if(/Mac/.test(ua))msg='<b>Mac:</b><br>1. Open in <b>Chrome</b><br>2. Click 
 else msg='Open this page in <b>Chrome</b> or <b>Edge</b> and look for the <b>install icon</b> in the address bar.';
 S.installMsg=msg;render()
 }
-var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],grnRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:''};
+var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],grnRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:'',ledgerShop:'all'};
 
 function h(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
 
@@ -887,6 +887,23 @@ function barCard(icon,title,sub,dt,key,color){
 /* ===== VENDORS TAB ===== */
 function renderVendors(){
   var R=S.records;
+  var shopF=S.ledgerShop;// 'all', 0, 1
+  var shopMatch=function(sh){return shopF==='all'||sh==shopF};
+
+  // Shop toggle
+  var out='<div class="biz-shop-toggle" style="margin-bottom:12px"><button class="biz-shop-btn'+(shopF==='all'?' on':'')+'" data-ledgershop="all">\uD83C\uDFE2 All Shops</button><button class="biz-shop-btn'+(shopF===0?' on':'')+'" data-ledgershop="0">\uD83D\uDE80 Highway</button><button class="biz-shop-btn'+(shopF===1?' on':'')+'" data-ledgershop="1">\uD83D\uDEE3\uFE0F Mainroad</button></div>';
+
+  // Today's Goods Inward summary
+  var todayGI=[];var todayDate=today();
+  for(var i=0;i<R.length;i++){if(R[i].date===todayDate&&shopMatch(R[i].shop)){var gi0=R[i].goodsInward||[];for(var j=0;j<gi0.length;j++)todayGI.push({vendor:gi0[j].vendor||'Unknown',items:gi0[j].items||'',amount:gi0[j].amount||0,shop:R[i].shop})}}
+  for(var i=0;i<(S.grnRecords||[]).length;i++){var gr0=S.grnRecords[i];if(gr0.date===todayDate&&shopMatch(gr0.shop)){var gi0b=gr0.goodsInward||[];for(var j=0;j<gi0b.length;j++){var dup0=false;for(var m=0;m<todayGI.length;m++){if(todayGI[m].id===gi0b[j].id){dup0=true;break}}if(!dup0)todayGI.push({id:gi0b[j].id,vendor:gi0b[j].vendor||'Unknown',items:gi0b[j].items||'',amount:gi0b[j].amount||0,shop:gr0.shop})}}}
+  if(todayGI.length){
+    var giDayTot=0;for(var i=0;i<todayGI.length;i++)giDayTot+=todayGI[i].amount;
+    out+='<div class="card"><div class="ch"><div class="ci t">\uD83D\uDCE6</div><div><div class="ct">Today\'s Goods Inward</div><div class="cs">'+todayGI.length+' item'+(todayGI.length>1?'s':'')+' \u2022 '+fmt(giDayTot)+'</div></div></div><div class="il">';
+    for(var i=0;i<todayGI.length;i++){var tg=todayGI[i];out+='<div class="ir"><div><div class="in">'+tg.vendor+'</div><div class="ic">'+(tg.items||'\u2014')+' \u2022 '+SHOPS[tg.shop]+'</div></div><span class="ia v">'+fmt(tg.amount)+'</span></div>'}
+    out+='<div class="it"><span class="itl">Total</span><span class="ia v">'+fmt(giDayTot)+'</span></div></div></div>';
+  }
+
   var vMap={};
   for(var i=0;i<R.length;i++){
     var rec=R[i];
@@ -927,19 +944,25 @@ function renderVendors(){
       }
     }
   }
+
+  // Filter by shop and build vendor array
   var totalBills=0,totalPaid=0;
   var vArr=[];
   for(var k in vMap){
+    var fBills=vMap[k].bills.filter(function(b){return shopMatch(b.shop)});
+    var fPays=vMap[k].payments.filter(function(p){return shopMatch(p.shop)});
+    if(!fBills.length&&!fPays.length)continue;
     var bT=0,pT=0;
-    for(var i=0;i<vMap[k].bills.length;i++)bT+=vMap[k].bills[i].amount;
-    for(var i=0;i<vMap[k].payments.length;i++)pT+=vMap[k].payments[i].amount;
+    for(var i=0;i<fBills.length;i++)bT+=fBills[i].amount;
+    for(var i=0;i<fPays.length;i++)pT+=fPays[i].amount;
     totalBills+=bT;totalPaid+=pT;
-    vArr.push({name:k,billTotal:bT,paidTotal:pT,balance:bT-pT,bills:vMap[k].bills,payments:vMap[k].payments});
+    vArr.push({name:k,billTotal:bT,paidTotal:pT,balance:bT-pT,bills:fBills,payments:fPays});
   }
   vArr.sort(function(a,b){return b.balance-a.balance});
   var totalBalance=totalBills-totalPaid;
 
-  var out='<div class="ven-totals"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:8px">\uD83D\uDCCB Vendor Payables</div><div class="ven-totals-grid"><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalBills)+'</div><div class="ven-totals-lbl">Total Invoiced</div></div><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalPaid)+'</div><div class="ven-totals-lbl">Total Paid</div></div><div class="ven-totals-item"><div class="ven-totals-val" style="color:'+(totalBalance>0?'#fca5a5':'#86efac')+'">'+fmt(totalBalance)+'</div><div class="ven-totals-lbl">'+(totalBalance>0?'Outstanding':'Overpaid')+'</div></div></div></div>';
+  var shopLabel=shopF==='all'?'All Shops':SHOPS[shopF];
+  out+='<div class="ven-totals"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:8px">\uD83D\uDCCB Vendor Payables \u2022 '+shopLabel+'</div><div class="ven-totals-grid"><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalBills)+'</div><div class="ven-totals-lbl">Total Invoiced</div></div><div class="ven-totals-item"><div class="ven-totals-val">'+fmt(totalPaid)+'</div><div class="ven-totals-lbl">Total Paid</div></div><div class="ven-totals-item"><div class="ven-totals-val" style="color:'+(totalBalance>0?'#fca5a5':'#86efac')+'">'+fmt(totalBalance)+'</div><div class="ven-totals-lbl">'+(totalBalance>0?'Outstanding':'Overpaid')+'</div></div></div></div>';
 
   if(!vArr.length){
     out+='<div class="es"><div class="esi">\uD83C\uDFEA</div><div class="est">No vendor data yet.<br>Add goods inward entries and vendor payments in the Entry tab.</div></div>';
@@ -967,7 +990,21 @@ function renderVendors(){
     out+='</div>';
   }
 
-  var staffArr=[];for(var k in staffMap)staffArr.push({name:k,salary:staffMap[k].salary,advance:staffMap[k].advance,total:staffMap[k].salary+staffMap[k].advance,txns:staffMap[k].txns});
+  // Filter staff payroll by shop too
+  var fStaffMap={};
+  for(var i=0;i<R.length;i++){
+    if(!shopMatch(R[i].shop))continue;
+    var exps3=R[i].expenses||[];
+    for(var j=0;j<exps3.length;j++){
+      if((exps3[j].category==='Salary'||exps3[j].category==='Advance Salary')&&exps3[j].description){
+        var sn2=exps3[j].description;
+        if(!fStaffMap[sn2])fStaffMap[sn2]={salary:0,advance:0,txns:[]};
+        if(exps3[j].category==='Salary'){fStaffMap[sn2].salary+=exps3[j].amount}else{fStaffMap[sn2].advance+=exps3[j].amount}
+        fStaffMap[sn2].txns.push({date:R[i].date,shop:R[i].shop,amount:exps3[j].amount,type:exps3[j].category});
+      }
+    }
+  }
+  var staffArr=[];for(var k in fStaffMap)staffArr.push({name:k,salary:fStaffMap[k].salary,advance:fStaffMap[k].advance,total:fStaffMap[k].salary+fStaffMap[k].advance,txns:fStaffMap[k].txns});
   staffArr.sort(function(a,b){return b.total-a.total});
   if(staffArr.length){
     var salTotal=0,advTotal=0;
@@ -2610,6 +2647,8 @@ function bindEvents(){
   var ca=document.getElementById('clearAll');if(ca)ca.onclick=function(){if(!confirm('Delete ALL?'))return;var pin=prompt('Owner Password:');callApi('deleteAll',{pin:pin}).then(function(){toast('Deleted');doFetch()}).catch(function(e){toast('\u274C '+e.message)})};
   var cp=document.getElementById('changePin');if(cp)cp.onclick=function(){var c=document.getElementById('curPin').value,n=document.getElementById('newPin').value,cn=document.getElementById('confPin').value,m=document.getElementById('pinMsg');if(n!==cn){m.textContent='\u274C Passwords dont match';m.style.color='var(--rose)';return}if(n.length<8){m.textContent='\u274C Password must be at least 8 characters';m.style.color='var(--rose)';return}callApi('changePin',{},{currentPin:c,newPin:n,role:'owner'}).then(function(){m.textContent='\u2705 Owner password changed!';m.style.color='var(--green)'}).catch(function(e){m.textContent='\u274C '+e.message;m.style.color='var(--rose)'})};
   var csp=document.getElementById('changeStaffPin');if(csp)csp.onclick=function(){var role=document.getElementById('staffPinRole').value,ownerPin=document.getElementById('staffCurPin').value,newPin=document.getElementById('staffNewPin').value,m=document.getElementById('staffPinMsg');if(!newPin||newPin.length<8){m.textContent='\u274C Password must be at least 8 characters';m.style.color='var(--rose)';return}callApi('changePin',{},{currentPin:ownerPin,newPin:newPin,role:role}).then(function(){m.textContent='\u2705 '+role+' staff password updated!';m.style.color='var(--green)'}).catch(function(e){m.textContent='\u274C '+e.message;m.style.color='var(--rose)'})};
+  // Ledger shop toggle
+  document.querySelectorAll('[data-ledgershop]').forEach(function(b){b.onclick=function(){var v=b.dataset.ledgershop;S.ledgerShop=v==='all'?'all':parseInt(v);render()}});
   // Vendor transaction toggle
   document.querySelectorAll('[data-venshow]').forEach(function(b){b.onclick=function(){var idx=b.dataset.venshow;var el=document.getElementById('venTxn'+idx);if(el){if(el.style.display==='none'){el.style.display='block';b.innerHTML='\u25B2 Hide transactions'}else{el.style.display='none';b.innerHTML='\u25BC View transactions'}}}});
   // Orders tab
