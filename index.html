@@ -815,9 +815,37 @@ function compareRow(label,oldVal,newVal,inverse){
 
 function renderHistory(){
   var isO=S.role==='owner';var vis=S.records;
-  var out='<div class="hh"><h2>'+(isO?'All History ('+vis.length+')':'Recent ('+vis.length+')')+'</h2>'+(isO&&vis.length?'<button class="cb" id="clearAll">Clear All</button>':'')+'</div>';
+  var out='<div class="hh"><h2>'+(isO?'All History ('+vis.length+')':'Entry Log ('+vis.length+')')+'</h2>'+(isO&&vis.length?'<button class="cb" id="clearAll">Clear All</button>':'')+'</div>';
   if(!vis.length)return out+'<div class="es"><div class="esi">\uD83D\uDCCB</div><div class="est">No entries yet</div></div>';
-  for(var i=0;i<vis.length;i++){var r=vis[i];var rVen=r.totalVendorPayments||0;var rNonVen=r.totalExpenses-rVen;var rGI=r.totalGoodsInward||0;var giCount=(r.goodsInward||[]).length;var ts=r.savedAt?new Date(r.savedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:true}):'';out+='<div class="card hc"><div class="ht"><div><div class="hd">'+fmtD(r.date)+'</div><div class="hb s'+r.shop+'">'+SHOPS[r.shop]+(ts?' \u2022 Saved '+ts:'')+'</div></div>'+(isO?'<button class="hdel" data-delrec="'+r.id+'">Delete</button>':'')+'</div><div class="hm">'+mc('Billed',fmt(r.totalBilled))+mc('UPI',fmt(r.upiReceived),'blue')+mc('Walk-ins',r.walkIns,'green')+mc('Opening',fmt(r.openingTotal))+mc('Closing',fmt(r.closingTotal))+mc('Expenses',fmt(rNonVen),'rose')+(rGI?mc('Goods In',fmt(rGI),'teal'):'')+'</div>'+(rVen?'<div class="hv">Vendor Payments: '+fmt(rVen)+'</div>':'')+(giCount?'<div class="hv" style="color:var(--teal)">\uD83D\uDCE6 Goods Inward: '+giCount+' item'+(giCount>1?'s':'')+' \u2022 '+fmt(rGI)+'</div>':'')+(r.notes?'<div class="hn">"'+r.notes+'"</div>':'')+'</div>'}
+  for(var i=0;i<vis.length;i++){var r=vis[i];var rVen=r.totalVendorPayments||0;var rNonVen=r.totalExpenses-rVen;var rGI=r.totalGoodsInward||0;var giCount=(r.goodsInward||[]).length;var ts=r.savedAt?new Date(r.savedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:true}):'';
+  if(isO){
+    out+='<div class="card hc"><div class="ht"><div><div class="hd">'+fmtD(r.date)+'</div><div class="hb s'+r.shop+'">'+SHOPS[r.shop]+(ts?' \u2022 Saved '+ts:'')+'</div></div><button class="hdel" data-delrec="'+r.id+'">Delete</button></div><div class="hm">'+mc('Billed',fmt(r.totalBilled))+mc('UPI',fmt(r.upiReceived),'blue')+mc('Walk-ins',r.walkIns,'green')+mc('Opening',fmt(r.openingTotal))+mc('Closing',fmt(r.closingTotal))+mc('Expenses',fmt(rNonVen),'rose')+(rGI?mc('Goods In',fmt(rGI),'teal'):'')+'</div>'+(rVen?'<div class="hv">Vendor Payments: '+fmt(rVen)+'</div>':'')+(giCount?'<div class="hv" style="color:var(--teal)">\uD83D\uDCE6 Goods Inward: '+giCount+' item'+(giCount>1?'s':'')+' \u2022 '+fmt(rGI)+'</div>':'')+(r.notes?'<div class="hn">"'+r.notes+'"</div>':'')+'</div>';
+  }else{
+    // Staff: activity log — only show what they entered, no business metrics
+    var sl='';
+    sl+='<div class="card hc"><div class="ht"><div><div class="hd">'+fmtD(r.date)+'</div><div class="hb s'+r.shop+'">'+SHOPS[r.shop]+(ts?' \u2022 Saved '+ts:'')+'</div></div></div>';
+    var logRow=function(label,val){return '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">'+label+'</span><span style="font-weight:600">'+val+'</span></div>'};
+    // Cash Count
+    sl+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCB5 Cash Count</div>';
+    sl+=logRow('Opening Cash',fmt(r.openingTotal));
+    sl+=logRow('Closing Cash',fmt(r.closingTotal));
+    if(r.cashRetained)sl+=logRow('Cash Retained',fmt(r.cashRetained));
+    // Expenses entered
+    var exps=r.expenses||[];
+    if(exps.length){sl+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCE4 Expenses Entered</div>';
+    for(var ei=0;ei<exps.length;ei++){sl+=logRow(exps[ei].category+(exps[ei].description?' \u2022 '+exps[ei].description:''),'<span style="color:var(--dn)">'+fmt(exps[ei].amount)+'</span>')}}
+    // Goods Inward
+    var gi=r.goodsInward||[];
+    if(gi.length){sl+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCE6 Goods Inward</div>';
+    for(var gi3=0;gi3<gi.length;gi3++){var g3=gi[gi3];sl+=logRow(g3.vendor+(g3.items?' \u2022 '+g3.items:''),'<span style="color:var(--teal)">'+fmt(g3.amount||0)+'</span>')}}
+    // Other inputs
+    sl+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCDD Other Entries</div>';
+    sl+=logRow('UPI Received',fmt(r.upiReceived));
+    sl+=logRow('Walk-ins',''+r.walkIns);
+    if(r.notes){var cleanNotes=r.notes.replace(/\[\[CR:\d+\]\]/g,'').trim();if(cleanNotes)sl+=logRow('Notes',cleanNotes)}
+    sl+='</div>';
+    out+=sl;
+  }}
   return out;
 }
 function mc(l,v,c){return'<div class="hmc"><div class="hml">'+l+'</div><div class="hmv"'+(c?' style="color:var(--'+c+')"':'')+'>'+v+'</div></div>'}
