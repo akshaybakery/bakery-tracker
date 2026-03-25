@@ -598,45 +598,38 @@ function renderEntry(){
   out+='<div id="retainTip" style="font-size:10px;color:var(--text3);margin-top:6px;padding:6px 10px;background:var(--gl);border-radius:8px">\uD83D\uDCA1 Closing ('+fmt(ct)+') \u2212 Retained ('+fmt(cashRet)+') = Taken ('+fmt(cashTaken)+')</div></div>';
 
   // === DAILY PROFIT & LOSS (Standard Cash Reconciliation) ===
-  // Standard retail accounting: Cash Register Reconciliation
-  // Cash Sales = Closing Balance + Paid Out (Expenses) - Opening Balance
-  // Gross Revenue = Cash Sales + Non-Cash Sales (UPI)
-  // Net Profit = Gross Revenue - Total Expenses
   var venTot=0,nonVenTot=0;for(var i=0;i<S.exps.length;i++){if(S.exps[i].category==='Vendor Payment')venTot+=S.exps[i].amount;else nonVenTot+=S.exps[i].amount}
   var cashSales=ct-ot;
   var grossRevenue=expTot+S.upi+cashSales;
   var netProfit=S.upi+cashSales;
   var avgTicket=S.walk>0?Math.round(grossRevenue/S.walk):0;
   var grossMargin=grossRevenue>0?Math.round(netProfit/grossRevenue*100):0;
-  // Auto-sync to state for saving
   S.billed=grossRevenue;
 
+  if(!isStaff){
   out+='<div class="sc"><div class="st">\uD83D\uDCCA Daily P&L \u2022 '+SHOPS[S.shop]+'</div>';
   out+='<div style="font-size:10px;color:var(--text2);margin-bottom:8px;text-align:center">Standard Cash Register Reconciliation</div>';
-
-  // Gross Revenue hero
   out+='<div style="text-align:center;padding:12px 0"><div style="font-size:28px;font-weight:800;color:var(--gd)">'+fmt(grossRevenue)+'</div><div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">GROSS REVENUE (SALES)</div></div>';
   out+='<div class="sd"></div>';
-
-  // Sales breakdown
   out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCB0 Sales</div>';
   out+='<div class="sg">'+si('Cash Sales (Close \u2212 Open)',fmt(cashSales),cashSales>=0?'g':'r')+si('UPI Sales',fmt(S.upi),'b')+si('Total Expenses (Paid Out)',fmt(expTot),'r')+(S.walk>0?si('Customers',S.walk,'g'):'')+(S.walk>0?si('Avg Ticket',fmt(avgTicket)):'')+si('','')+'</div>';
-
-  // Expenses (Cost of Operations)
   out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCE4 Expenses (Paid Out)</div>';
   out+='<div class="sg">'+si('Operating Expenses',fmt(nonVenTot),'r')+si('Vendor Payments',fmt(venTot),'a')+si('Total Expenses',fmt(expTot),'r')+si('','')+'</div>';
-
-  // Cash Position
   out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">\uD83D\uDCB5 Cash Position</div>';
   out+='<div class="sg">'+si('Opening Balance',fmt(ot))+si('Closing Balance',fmt(ct))+si('Petty Cash (Retained)',fmt(cashRet),'b')+si('Cash to Bank/Owner',fmt(cashTaken),cashTaken>=0?'g':'r')+'</div>';
-
-  // Net Profit
   out+='<div class="sd"></div>';
   out+='<div class="sg">'+si('\u2B50 Net Profit',fmt(netProfit),netProfit>=0?'g':'r')+si('Gross Margin',grossMargin+'%',grossMargin>=0?'g':'r')+'</div>';
-
-  // Standard formula reference
   out+='<div style="font-size:9px;color:var(--text3);margin-top:8px;padding:8px;background:var(--bg);border-radius:8px;line-height:1.8;text-align:center"><strong>Daily Business Calculation</strong><br>Cash Sales = Closing \u2212 Opening<br>Gross Revenue = Total Expenses + UPI + Cash Sales<br>Net Profit = UPI + Cash Sales</div>';
   out+='</div>';
+  }else{
+  // Staff: show today's entry log (read-only summary)
+  out+='<div class="sc"><div class="st">\uD83D\uDCCB Today\'s Entry Log \u2022 '+SHOPS[S.shop]+'</div>';
+  out+='<div id="plSection">';
+  out+='<div class="sg">'+si('Opening Cash',fmt(ot))+si('Closing Cash',fmt(ct))+si('UPI Received',fmt(S.upi),'b')+si('Walk-ins',S.walk||0,'g')+si('Total Expenses',fmt(expTot),'r')+si('Goods Inward',fmt(giTot),'a')+si('Cash Retained',fmt(cashRet),'b')+si('Cash Taken',fmt(cashTaken),cashTaken>=0?'g':'r')+'</div>';
+  if(S.exps.length){out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px">Expenses Logged</div>';for(var ei=0;ei<S.exps.length;ei++){out+='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">'+S.exps[ei].category+(S.exps[ei].description?' \u2022 '+S.exps[ei].description:'')+'</span><span style="font-weight:600;color:var(--dn)">'+fmt(S.exps[ei].amount)+'</span></div>'}}
+  if(S.goodsIn.length){out+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin:10px 0 4px">Goods Inward Logged</div>';for(var gi2=0;gi2<S.goodsIn.length;gi2++){var g2=S.goodsIn[gi2];out+='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">'+g2.vendor+(g2.items?' \u2022 '+g2.items:'')+'</span><span style="font-weight:600;color:var(--teal)">'+fmt(g2.amount||0)+'</span></div>'}}
+  out+='</div></div>';
+  }
   out+=vendorDL+staffDL+'<datalist id="dlExpNames"></datalist>';
   out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save Entry')+'</button>';
   return out;
