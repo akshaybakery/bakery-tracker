@@ -447,7 +447,7 @@ function loadForm(){
 }
 function doFetch(){
   S.loading=true;render();
-  callApi('getAll').then(function(res){var d=res.data||[];S.records=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];S.advOrders=[];for(var i=0;i<d.length;i++){parseRecord(d[i]);if(d[i].type==='recipe')S.recipes.push(d[i]);else if(d[i].type==='rawMaterial')S.rawMatRecords.push(d[i]);else if(d[i].type==='goodsInward')S.grnRecords.push(d[i]);else if(d[i].type==='advanceOrder')S.advOrders.push(d[i]);else S.records.push(d[i])}S.connected=true;syncKnownNames();syncProductNames()}).catch(function(e){toast('\u274C '+e.message);S.connected=false}).then(function(){S.loading=false;loadForm();render()})
+  callApi('getAll').then(function(res){var d=res.data||[];S.records=[];S.staffLogs=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];S.advOrders=[];for(var i=0;i<d.length;i++){parseRecord(d[i]);if(d[i].type==='recipe')S.recipes.push(d[i]);else if(d[i].type==='rawMaterial')S.rawMatRecords.push(d[i]);else if(d[i].type==='goodsInward')S.grnRecords.push(d[i]);else if(d[i].type==='advanceOrder')S.advOrders.push(d[i]);else if(d[i].type==='staffLog')S.staffLogs.push(d[i]);else S.records.push(d[i])}S.connected=true;syncKnownNames();syncProductNames()}).catch(function(e){toast('\u274C '+e.message);S.connected=false}).then(function(){S.loading=false;loadForm();render()})
 }
 function toast(msg){var old=document.querySelector('.toast');if(old)old.remove();var t=h('div','toast',msg);document.body.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove()},2500)}
 
@@ -814,7 +814,7 @@ function compareRow(label,oldVal,newVal,inverse){
 }
 
 function renderHistory(){
-  var isO=S.role==='owner';var vis=S.records;
+  var isO=S.role==='owner';var vis=isO?S.records:(S.staffLogs||[]);
   var out='<div class="hh"><h2>'+(isO?'All History ('+vis.length+')':'Entry Log ('+vis.length+')')+'</h2>'+(isO&&vis.length?'<button class="cb" id="clearAll">Clear All</button>':'')+'</div>';
   if(!vis.length)return out+'<div class="es"><div class="esi">\uD83D\uDCCB</div><div class="est">No entries yet</div></div>';
   for(var i=0;i<vis.length;i++){var r=vis[i];var rVen=r.totalVendorPayments||0;var rNonVen=r.totalExpenses-rVen;var rGI=r.totalGoodsInward||0;var giCount=(r.goodsInward||[]).length;var ts=r.savedAt?new Date(r.savedAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:true}):'';

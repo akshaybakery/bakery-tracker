@@ -161,6 +161,21 @@ function saveEntry(entry) {
 
   sheet.appendRow(row);
 
+  // Save activity log for staff tracking (daily entries only)
+  if (!entry.type) {
+    var logEntry = {};
+    for (var k in entry) logEntry[k] = entry[k];
+    logEntry.type = 'staffLog';
+    logEntry.id = entry.id + '_log_' + new Date().getTime();
+    var logRow = headers.map(function(h) {
+      if (jsonFields.indexOf(h) >= 0) {
+        return JSON.stringify(logEntry[h] || []);
+      }
+      return logEntry[h] !== undefined ? logEntry[h] : '';
+    });
+    sheet.appendRow(logRow);
+  }
+
   if (sheet.getLastRow() > 2) {
     var dateIdx = headers.indexOf('date');
     if (dateIdx >= 0) {
