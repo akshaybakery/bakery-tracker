@@ -537,7 +537,7 @@ else if(/Mac/.test(ua))msg='<b>Mac:</b><br>1. Open in <b>Chrome</b><br>2. Click 
 else msg='Open this page in <b>Chrome</b> or <b>Edge</b> and look for the <b>install icon</b> in the address bar.';
 S.installMsg=msg;render()
 }
-var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],grnRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advItems:[],advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:'',ledgerShop:'all',ledgerDate:today(),ledgerView:'daily',ledgerPeriod:'thisMonth',ledgerFrom:'',ledgerTo:'',ledgerVendor:'',darkMode:localStorage.getItem('darkMode')==='1',histSearch:'',histFrom:'',histTo:'',histPage:0,ledgerSearch:''};
+var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],grnRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advItems:[],advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:'',ledgerShop:'all',ledgerDate:today(),ledgerView:'daily',ledgerPeriod:'thisMonth',ledgerFrom:'',ledgerTo:'',ledgerVendor:'',darkMode:localStorage.getItem('darkMode')==='1',histSearch:'',histFrom:'',histTo:'',histPage:0,ledgerSearch:'',wastItems:[],wastShop:0,wastRecords:[]};
 
 function h(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
 
@@ -545,8 +545,9 @@ function callApi(action,params,body){
   params=params||{};
   var url=new URL(API);url.searchParams.set('action',action);
   var pk=Object.keys(params);for(var i=0;i<pk.length;i++)url.searchParams.set(pk[i],params[pk[i]]);
-  if(body)url.searchParams.set('payload',JSON.stringify(body));
-  return fetch(url.toString()).then(function(r){return r.text()}).then(function(t){
+  var opts={redirect:'follow'};
+  if(body){opts.method='POST';opts.body=JSON.stringify(body)}
+  return fetch(url.toString(),opts).then(function(r){return r.text()}).then(function(t){
     try{var d=JSON.parse(t);if(!d.success&&d.error)throw new Error(d.error);return d}
     catch(e){var m=t.match(/href="([^"]+)"/);if(m)return fetch(m[1]).then(function(r){return r.json()});throw e}
   });
@@ -582,7 +583,7 @@ function loadForm(){
 function doFetch(){
   S.loading=true;render();
   var params={};if(S.role==='staff')params.role='staff';
-  callApi('getAll',params).then(function(res){var d=res.data||[];S.records=[];S.staffLogs=[];S.activityLogs=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];S.advOrders=[];S.prodOrderRecords=[];for(var i=0;i<d.length;i++){parseRecord(d[i]);if(d[i].type==='recipe')S.recipes.push(d[i]);else if(d[i].type==='rawMaterial')S.rawMatRecords.push(d[i]);else if(d[i].type==='goodsInward')S.grnRecords.push(d[i]);else if(d[i].type==='advanceOrder')S.advOrders.push(d[i]);else if(d[i].type==='staffLog')S.staffLogs.push(d[i]);else if(d[i].type==='activityLog')S.activityLogs.push(d[i]);else if(d[i].type==='productOrder')S.prodOrderRecords.push(d[i]);else S.records.push(d[i])}S.connected=true;syncKnownNames();syncProductNames();flushOfflineQueue()}).catch(function(e){toast('\u274C '+e.message);S.connected=false}).then(function(){S.loading=false;loadForm();render();resetSessionTimer()})
+  callApi('getAll',params).then(function(res){var d=res.data||[];S.records=[];S.staffLogs=[];S.activityLogs=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];S.advOrders=[];S.prodOrderRecords=[];S.wastRecords=[];for(var i=0;i<d.length;i++){parseRecord(d[i]);if(d[i].type==='recipe')S.recipes.push(d[i]);else if(d[i].type==='rawMaterial')S.rawMatRecords.push(d[i]);else if(d[i].type==='goodsInward')S.grnRecords.push(d[i]);else if(d[i].type==='advanceOrder')S.advOrders.push(d[i]);else if(d[i].type==='staffLog')S.staffLogs.push(d[i]);else if(d[i].type==='activityLog')S.activityLogs.push(d[i]);else if(d[i].type==='productOrder')S.prodOrderRecords.push(d[i]);else if(d[i].type==='wastage')S.wastRecords.push(d[i]);else S.records.push(d[i])}S.connected=true;syncKnownNames();syncProductNames();flushOfflineQueue()}).catch(function(e){toast('\u274C '+e.message);S.connected=false}).then(function(){S.loading=false;loadForm();render();resetSessionTimer()})
 }
 function toast(msg){var old=document.querySelector('.toast');if(old)old.remove();var t=h('div','toast',msg);document.body.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove()},2500)}
 
@@ -614,10 +615,10 @@ function renderApp(){
   var isO=S.role==='owner',isP=S.role==='production',isS=S.role==='staff',isOrd=S.role==='ordering';
   var roleLabel=isO?'Owner':isP?'Production':isOrd?'Ordering':(S.staffShop===0?'Highway Branch':'Mainroad Branch');
   var tabs;
-  if(isO)tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83C\uDFED Production','\uD83D\uDCD1 Report','\uD83D\uDCCA Dashboard','\uD83E\uDDE0 Analytics','\uD83D\uDCDA Ledger','\uD83D\uDCD6 Recipes','\u2699\uFE0F Settings'];
-  else if(isP)tabs=['\uD83D\uDCE6 Orders','\uD83E\uDDF1 Raw Materials','\uD83D\uDCD6 Recipes'];
-  else if(isOrd)tabs=['\uD83D\uDCE6 Place Order','\uD83D\uDCE5 Goods Inward','\uD83D\uDCCB Customer Orders','\uD83D\uDCCB Order History'];
-  else tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83D\uDCE6 Orders'];
+  if(isO)tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83C\uDFED Production','\uD83D\uDCD1 Report','\uD83D\uDCCA Dashboard','\uD83E\uDDE0 Analytics','\uD83D\uDCDA Ledger','\uD83D\uDCD6 Recipes','\uD83D\uDCE6 Orders','\uD83D\uDDD1 Wastage','\u2699\uFE0F Settings'];
+  else if(isP)tabs=['\uD83D\uDCE6 Orders','\uD83E\uDDF1 Raw Materials','\uD83D\uDCD6 Recipes','\uD83D\uDDD1 Wastage'];
+  else if(isOrd)tabs=['\uD83D\uDCE6 Place Order','\uD83D\uDCE5 Goods Inward','\uD83D\uDCCB Customer Orders','\uD83D\uDCCB Order History','\uD83D\uDDD1 Wastage'];
+  else tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83D\uDCE6 Orders','\uD83D\uDDD1 Wastage'];
   var tabH='';for(var i=0;i<tabs.length;i++)tabH+='<button class="tab-btn'+(S.tab===i?' on':'')+'" data-tab="'+i+'">'+tabs[i]+'</button>';
   var hdr='<div class="app-header"><div class="header-row"><div class="header-left"><div class="header-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAArCAYAAAAkL+tRAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAGeUlEQVR4nN2aC5CWUxjHv61FuqpELiMRkWJQI0xjGrS1SjV0kUJbitpKCW2JthoyJbfIdCVKMzET0tV9XGJXcolxvw65zZhG5Pb8zLP9T3t6fV+Zacv37Zk5c853znnPe/7nuT/vl0rtwwLUUHsS8G6qOhegJtBc/VbAJvUbAU1S1aUAeWqbAB8AtYDjI8CTgDvVz09VU8Atva/xUuAu9Wumcr0A9QS2sVPVzOoDdYALIgrPUP/wVK4WYD+1FwOPAXWBD9UeBdyh+SkCfTmwMH42pwpiT6CXma1U/2y1C9leJjpVgUOBkcCD8bO5RtmrgP7A+cCaaP40YJujNbOfXIFpfGxE4flAs5wATyVlbwVuBjomAJeIuhWggWKNXx8BfsPMToxtd1YWIB/oK5tbamY3CfC6aM3dCcAzNX5dDFhy7va6IOuAU2l6DgTKdNgbgcnAmcCyaO1UAf1N7RSNj/DL8L6ZvQU0NLNrgMVZp8jYGfB6AR4f2dd60ZrzBPRPtV0i7giu5wYH7IrMzB7KdsBlAuyyeo/GuwTW1O/lArs2eraTs7/6G3OJwmURhWdpfJkAzjGzA4CjgVeAU4D93Rxp/oFcZOmyCHCg8PNUlnVAbX8GaJCYW1VdAK9NKKpJGr9N9vhXjT+ey4BLgHs1PkOAflf7HnAw8JF+/6G2NNcBz/JxM2svu/u3gH0PdBZlbTuRK/qtc1lplQS76sXMRgdBNbPvpJW3RvI7XHvUCGZprwBmu1e0p7UicFckVJ7GLJ0OHCbz5NT9BDgE+Ar4BjhX8210OW/KDo8CHtEetarirKl9ZJaWiJ0vUzx8llPMoyd3SszsSlF57l6XYaDA5QkoVC1Q2yU4DIk2zMXPFCoquhB438yO3IVZuk9jwauaF7H6ygiw57qGAS8BbfWOztFZCjP04zUFyeqb3yDHfQgwWGFasdipWKxZrHUesw6U3zs2emaYop2JZvaZx7hmNiEANrPnMkRIY2NzlQDcWPt7Wmio++bSA36GcZobofMN1RlKtOdwP6+lqYHKNXUz3eUJeRq1WaQ1W0uZHAMUqa0jxePPtN+VlgbuT5ilcjkfbyfGb8/E0trH5byF+v7uVup7RHZqpEfa7I6tS4CnnCJAVz8ocDWwBThZv51NVivp5gF6bwUKTtl+UZBQnsYOFyYChs1mdg7wiyj7l8Y7xIDFZUu1h+/5jrjR371UmZNxck2XSzkuiDIs+WmVlt+OmT3sFWinmLVIFFgsx8HzTtOjS3IQrykn1VVjtTOZJV1mKJv1/FbZ4R3UdU4KWloUXqLxxkoqOEv3VOjpPvpsiduTfvGeHHTQsTL9VwEGuQYVsNmeYNMmvulM4GPgEnf95PBP0/oVYqe2uzFLLUQx5wYvX0hkNguwU/KgkNZJZ5a0z2BxWFO/IOAFgR+vpMEZ2jdo9pqZKNxSGzi1mmuTjqJCAx10f2UzFgA9tG6aKF+UhsKxWVqk/JXL3QnAFTJLRUrKuxj9HDR4JhmWx9ZJZ7pFCcL6OsMgvatpELG0RenRi1R7K63aJ6r9dAH9BdTXdBfF/Zlevs7MLhUF3D8+IjZLkZZ2eZ2g9wZnpTRpliRKjZQI3CA2HagLD7WXau9wbj+DzuHjA5LV53zzUX6TqqNVw+8d41pXMQeMSa6RiXCF8mkScGSHgzYeoPEhCXO1KgHYzc0mJ0qmcyXPGPCEPjvXkamqKEE5uEkzs9dltsYEz0lisAOYmb0smSpPXERICYUvFH6B86va08qvohry0esla92AZzXWMwFss9zKLQlz1cF1gyutSLNPjnzpPT5nai/ko+fJy6ondgyfSJcmoqWuMksVIaObRK1zBfmo+q9mZZo2Abibs7X67qDMUb9B+MRiZl8Cxyly8jJXVqChXMl28u5cluvu0qb+X4XoQKJMX8n05x4NhTXuscnG15Kt7qQ5d12fiS7IP8BNzerPLVRGQJ0VRDTW14Nv5cDsRK2obSPz80RkKjdlLXUzsPYUHbqBvg+v0CUskH3tIdO1xhMBIZKRbP8QBSTZJbu7ofR04OsQFLjcSqE9rcBhkRya2pr3C/gxaxXVf6R0H1F2tRIEef5l0N3HKOQbpUym+8Yt4+dzqlAJ2tn6WuBF/7uSgodtckM3KrTrJqWWl5NgQ5FHlRdp4rqSU4/Ajg3sHM3nDhtnKqJaRTCe7o9pVZpRzFJl1lqsvc/NzT94mnQ/2ViQ0QAAAABJRU5ErkJggg==" style="width:auto;height:28px" alt="AB"></div><div><div class="header-title">Akshay Bakery</div><div class="header-role"><span class="sync-dot '+(S.connected?'on':'off')+'"></span>'+roleLabel+' \u2022 Cloud</div></div></div><div style="display:flex;gap:6px"><button class="logout-btn" id="btnSync">\u21BB</button><button class="logout-btn" id="btnLogout">Logout</button></div></div><div class="tab-bar">'+tabH+'</div></div>';
   var body='<div class="app-body"><div class="ptr-indicator">\u21BB Pull to refresh</div>';
@@ -630,20 +631,25 @@ function renderApp(){
     else if(S.tab===5)body+=renderAnalytics();
     else if(S.tab===6)body+=renderVendors();
     else if(S.tab===7)body+=renderRecipeBook();
-    else if(S.tab===8)body+=renderSettings();
+    else if(S.tab===8)body+=renderUnifiedOrders();
+    else if(S.tab===9)body+=renderWastage();
+    else if(S.tab===10)body+=renderSettings();
   }else if(isOrd){
     if(S.tab===0)body+=renderOrderingEntry();
     else if(S.tab===1)body+=renderOrderingGRN();
     else if(S.tab===2)body+=renderAdvanceOrders();
     else if(S.tab===3)body+=renderOrderingHistory();
+    else if(S.tab===4)body+=renderWastage();
   }else if(isP){
     if(S.tab===0)body+=renderProductionOrders();
     else if(S.tab===1)body+=renderRawMaterials();
     else if(S.tab===2)body+=renderRecipeBook();
+    else if(S.tab===3)body+=renderWastage();
   }else{
     if(S.tab===0)body+=renderEntry();
     else if(S.tab===1)body+=renderHistory();
-    else if(S.tab===2)body+=renderOrders();
+    else if(S.tab===2)body+=renderUnifiedOrders();
+    else if(S.tab===3)body+=renderWastage();
   }
   body+='</div>';
   return hdr+body;
@@ -1504,17 +1510,17 @@ function renderOrderingEntry(){
 
   // Saved orders for selected shop+date (from prodOrderRecords and daily records)
   var savedOrds=[],savedOrdRecId=null;
-  for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.shop==S.ordShop&&por.date===S.date){savedOrdRecId=por.id;var po=por.productOrders||[];for(var j=0;j<po.length;j++)savedOrds.push(po[j])}}
-  for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.shop==S.ordShop&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup=false;for(var k=0;k<savedOrds.length;k++){if(savedOrds[k].id===po[j].id){dup=true;break}}if(!dup)savedOrds.push(po[j])}}}
+  for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.shop==S.ordShop&&por.date===S.date){savedOrdRecId=por.id;var po=por.productOrders||[];for(var j=0;j<po.length;j++)savedOrds.push({order:po[j],recId:por.id,idx:j,source:'prodOrder'})}}
+  for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.shop==S.ordShop&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup=false;for(var k=0;k<savedOrds.length;k++){if(savedOrds[k].order.id===po[j].id){dup=true;break}}if(!dup)savedOrds.push({order:po[j],recId:r.id,idx:j,source:'daily'})}}}
   if(savedOrds.length){
     var sByCat={};for(var i=0;i<PCATS.length;i++)sByCat[PCATS[i]]=[];
-    for(var i=0;i<savedOrds.length;i++){var o=savedOrds[i];var cat=o.category||'Baking';if(!sByCat[cat])sByCat[cat]=[];sByCat[cat].push(o)}
-    var sTotalQty=0;for(var i=0;i<savedOrds.length;i++)sTotalQty+=savedOrds[i].qty||0;
+    for(var i=0;i<savedOrds.length;i++){var cat=savedOrds[i].order.category||'Baking';if(!sByCat[cat])sByCat[cat]=[];sByCat[cat].push(savedOrds[i])}
+    var sTotalQty=0;for(var i=0;i<savedOrds.length;i++)sTotalQty+=savedOrds[i].order.qty||0;
     var sIcons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
-    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--green)"><div class="ch"><div class="ci g">\u2705</div><div><div class="ct">Saved Orders \u2022 '+SHOPS[S.ordShop]+'</div><div class="cs">'+savedOrds.length+' items \u2022 '+sTotalQty+' total qty \u2022 '+fmtD(S.date)+'</div></div><div style="margin-left:auto;display:flex;gap:6px"><button class="ab" id="editSavedOrds" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text2);cursor:pointer">\u270E Edit</button>'+(savedOrdRecId?'<button class="ab" id="delSavedOrds" data-delordid="'+savedOrdRecId+'" style="font-size:11px;padding:5px 12px;border:1px solid var(--rose);border-radius:var(--rs);background:var(--card);color:var(--rose);cursor:pointer">\u00D7</button>':'')+'</div></div>';
+    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--green)"><div class="ch"><div class="ci g">\u2705</div><div><div class="ct">Saved Orders \u2022 '+SHOPS[S.ordShop]+'</div><div class="cs">'+savedOrds.length+' items \u2022 '+sTotalQty+' total qty \u2022 '+fmtD(S.date)+'</div></div><div style="margin-left:auto;display:flex;gap:6px"><button class="ab" id="editSavedOrds" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text2);cursor:pointer">\u270E Edit All</button>'+(savedOrdRecId?'<button class="ab" id="delSavedOrds" data-delordid="'+savedOrdRecId+'" style="font-size:11px;padding:5px 12px;border:1px solid var(--rose);border-radius:var(--rs);background:var(--card);color:var(--rose);cursor:pointer">\u00D7 All</button>':'')+'</div></div>';
     for(var c=0;c<PCATS.length;c++){var cat=PCATS[c];var items=sByCat[cat]||[];if(!items.length)continue;
       out+='<div style="font-size:11px;font-weight:700;color:var(--text2);margin:8px 0 4px;text-transform:uppercase">'+(sIcons[cat]||'')+' '+cat+' ('+items.length+')</div>';
-      for(var i=0;i<items.length;i++){var o=items[i];out+='<div class="ir"><div><div class="in">'+o.product+'</div>'+(o.notes?'<div class="ic">'+o.notes+'</div>':'')+'</div><div class="order-qty">'+o.qty+' '+o.unit+'</div></div>'}}
+      for(var i=0;i<items.length;i++){var o=items[i].order;var editData=JSON.stringify({recId:items[i].recId,idx:items[i].idx,source:items[i].source,product:o.product,qty:o.qty,unit:o.unit,category:o.category,notes:o.notes||''}).replace(/'/g,'&#39;');out+='<div class="ir"><div><div class="in">'+esc(o.product)+'</div>'+(o.notes?'<div class="ic">'+esc(o.notes)+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+o.qty+' '+o.unit+'</div><button style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;cursor:pointer;color:var(--text2)" data-editsavedord=\''+editData+'\'>\u270E</button><button class="ix" data-delsavedord=\''+editData+'\'>\u00D7</button></div></div>'}}
     out+='</div>';
   }
 
@@ -1610,6 +1616,118 @@ function collectProductOrders(dt){
   for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.date===dt){var pOrds=por.productOrders||[];for(var j=0;j<pOrds.length;j++){var dup=false;var tgt=parseInt(por.shop)===0?orders0:orders1;for(var m=0;m<tgt.length;m++){if(tgt[m].id===pOrds[j].id){dup=true;break}}if(!dup)tgt.push(pOrds[j])}}}
   return{orders0:orders0,orders1:orders1,all:orders0.concat(orders1)}
 }
+/* ===== UNIFIED ORDERS (All Logins) ===== */
+function renderUnifiedOrders(){
+  var prods=loadSavedProducts();
+  var prodDL='<datalist id="dlProducts">';for(var i=0;i<prods.length;i++)prodDL+='<option value="'+prods[i]+'">';prodDL+='</datalist>';
+  var isStaff=S.role==='staff';
+  var curShop=isStaff?S.shop:S.ordShop;
+
+  var out='<div class="fr c2"><div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="uoDateInp" value="'+S.date+'"></div><div class="fg"><div class="fl">Shop</div>'+(isStaff?'<input class="fi" type="text" value="'+SHOPS[curShop]+'" disabled style="background:#f0f0f0;color:var(--text2)">':'<select class="fi" id="uoShopInp"><option value="0"'+(curShop===0?' selected':'')+'>Highway</option><option value="1"'+(curShop===1?' selected':'')+'>Mainroad</option></select>')+'</div></div>';
+
+  // Current unsaved items
+  var byCat={};for(var i=0;i<PCATS.length;i++)byCat[PCATS[i]]=[];
+  for(var i=0;i<S.ordItems.length;i++){var o=S.ordItems[i];var cat=o.category||'Baking';if(!byCat[cat])byCat[cat]=[];byCat[cat].push({idx:i,order:o})}
+  var totalItems=S.ordItems.length,totalQty=0;for(var i=0;i<S.ordItems.length;i++)totalQty+=S.ordItems[i].qty||0;
+
+  if(totalItems)out+='<div class="order-summary"><div class="order-summary-grid"><div class="order-summary-item"><div class="order-summary-val">'+totalItems+'</div><div class="order-summary-lbl">Items</div></div><div class="order-summary-item"><div class="order-summary-val">'+totalQty+'</div><div class="order-summary-lbl">Total Qty</div></div><div class="order-summary-item"><div class="order-summary-val">'+SHOPS[curShop]+'</div><div class="order-summary-lbl">Shop</div></div></div></div>';
+
+  out+='<div class="card"><div class="ch"><div class="ci g">\uD83D\uDCE6</div><div><div class="ct">Product Orders</div><div class="cs">Add items for production</div></div></div>';
+  var icons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C'};
+  for(var c=0;c<PCATS.length;c++){var cat=PCATS[c];var items=byCat[cat]||[];
+    out+='<div class="order-cat-hdr">'+(icons[cat]||'')+' '+cat+' ('+items.length+')</div>';
+    if(items.length){for(var i=0;i<items.length;i++){var o=items[i].order;out+='<div class="order-item"><div><div style="font-weight:600">'+esc(o.product)+'</div>'+(o.notes?'<div style="font-size:10px;color:var(--text3)">'+esc(o.notes)+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+o.qty+' '+o.unit+'</div><button style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;cursor:pointer;color:var(--text2)" data-editorditem="'+items[i].idx+'">\u270E</button><button class="ix" data-delorditem="'+items[i].idx+'">\u00D7</button></div></div>'}}}
+
+  // Add form
+  out+='<div style="margin-top:12px;padding-top:12px;border-top:1.5px solid var(--border)"><div class="fr c2"><div class="fg"><div class="fl">Product Name</div><input class="fi" type="text" id="uoProduct" placeholder="e.g. White Bread" list="dlProducts" autocomplete="off"></div><div class="fg"><div class="fl">Category</div><select class="fi" id="uoCat">'+PCATS.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select></div></div>';
+  out+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Quantity</div><input class="fi" type="number" inputmode="numeric" id="uoQty" placeholder="0"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="uoUnit">'+PUNITS.map(function(u){return'<option>'+u+'</option>'}).join('')+'</select></div><div class="fg"><div class="fl">Notes</div><input class="fi" type="text" id="uoNotes" placeholder="Optional"></div></div>';
+  out+='<div style="margin-top:8px;text-align:right"><button class="ab g" id="addUOItem">\uD83D\uDCE6 Add Order</button></div></div></div>';
+  out+=prodDL;
+  if(totalItems)out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveUOBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save '+SHOPS[curShop]+' Order')+'</button>';
+
+  // Saved orders
+  var savedOrds=[];
+  for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.shop==curShop&&por.date===S.date){var po=por.productOrders||[];for(var j=0;j<po.length;j++)savedOrds.push({order:po[j],recId:por.id,idx:j,source:'prodOrder'})}}
+  for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.shop==curShop&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup=false;for(var k=0;k<savedOrds.length;k++){if(savedOrds[k].order.id===po[j].id){dup=true;break}}if(!dup)savedOrds.push({order:po[j],recId:r.id,idx:j,source:'daily'})}}}
+  if(savedOrds.length){
+    var sByCat={};for(var i=0;i<PCATS.length;i++)sByCat[PCATS[i]]=[];
+    for(var i=0;i<savedOrds.length;i++){var scat=savedOrds[i].order.category||'Baking';if(!sByCat[scat])sByCat[scat]=[];sByCat[scat].push(savedOrds[i])}
+    var sTotalQty=0;for(var i=0;i<savedOrds.length;i++)sTotalQty+=savedOrds[i].order.qty||0;
+    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--green)"><div class="ch"><div class="ci g">\u2705</div><div><div class="ct">Saved Orders \u2022 '+SHOPS[curShop]+'</div><div class="cs">'+savedOrds.length+' items \u2022 '+sTotalQty+' total qty \u2022 '+fmtD(S.date)+'</div></div><div style="margin-left:auto"><button class="ab" id="editUOSaved" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text2);cursor:pointer">\u270E Edit All</button></div></div>';
+    for(var c=0;c<PCATS.length;c++){var cat=PCATS[c];var sitems=sByCat[cat]||[];if(!sitems.length)continue;
+      out+='<div style="font-size:11px;font-weight:700;color:var(--text2);margin:8px 0 4px;text-transform:uppercase">'+(icons[cat]||'')+' '+cat+' ('+sitems.length+')</div>';
+      for(var i=0;i<sitems.length;i++){var o=sitems[i].order;var editData=JSON.stringify({recId:sitems[i].recId,idx:sitems[i].idx,source:sitems[i].source,product:o.product,qty:o.qty,unit:o.unit,category:o.category,notes:o.notes||''}).replace(/'/g,'&#39;');out+='<div class="ir"><div><div class="in">'+esc(o.product)+'</div>'+(o.notes?'<div class="ic">'+esc(o.notes)+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+o.qty+' '+o.unit+'</div><button style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;cursor:pointer;color:var(--text2)" data-editsavedord=\''+editData+'\'>\u270E</button><button class="ix" data-delsavedord=\''+editData+'\'>\u00D7</button></div></div>'}}
+    out+='</div>';
+  }
+
+  // Also show other shop's orders (read-only)
+  var otherShop=curShop===0?1:0;
+  var otherOrds=[];
+  for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.shop==otherShop&&por.date===S.date){var po=por.productOrders||[];for(var j=0;j<po.length;j++)otherOrds.push(po[j])}}
+  for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.shop==otherShop&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup2=false;for(var k=0;k<otherOrds.length;k++){if(otherOrds[k].id===po[j].id){dup2=true;break}}if(!dup2)otherOrds.push(po[j])}}}
+  if(otherOrds.length){
+    var oTotalQty=0;for(var i=0;i<otherOrds.length;i++)oTotalQty+=otherOrds[i].qty||0;
+    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--blue);opacity:.85"><div class="ch"><div class="ci b">\uD83D\uDC41</div><div><div class="ct">'+SHOPS[otherShop]+' Orders</div><div class="cs">'+otherOrds.length+' items \u2022 '+oTotalQty+' qty \u2022 Read-only</div></div></div>';
+    for(var i=0;i<otherOrds.length;i++){var o=otherOrds[i];out+='<div class="ir"><div><div class="in">'+esc(o.product)+'</div>'+(o.notes?'<div class="ic">'+esc(o.notes)+'</div>':'')+'</div><div class="order-qty">'+o.qty+' '+o.unit+'</div></div>'}
+    out+='</div>';
+  }
+  return out;
+}
+
+/* ===== WASTAGE / LEFTOVERS / SPOILED ===== */
+var WAST_REASONS=['Leftover','Spoiled','Expired','Damaged','Returned','Other'];
+function renderWastage(){
+  var prods=loadSavedProducts();
+  var prodDL='<datalist id="dlProducts">';for(var i=0;i<prods.length;i++)prodDL+='<option value="'+prods[i]+'">';prodDL+='</datalist>';
+  var isStaff=S.role==='staff';
+  var curShop=isStaff?S.shop:S.wastShop;
+
+  var out='<div class="fr c2"><div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="wastDateInp" value="'+S.date+'"></div><div class="fg"><div class="fl">Shop</div>'+(isStaff?'<input class="fi" type="text" value="'+SHOPS[curShop]+'" disabled style="background:#f0f0f0;color:var(--text2)">':'<select class="fi" id="wastShopInp"><option value="0"'+(curShop===0?' selected':'')+'>Highway</option><option value="1"'+(curShop===1?' selected':'')+'>Mainroad</option></select>')+'</div></div>';
+
+  // Current unsaved items
+  var wastTotalQty=0;
+  for(var i=0;i<S.wastItems.length;i++)wastTotalQty+=S.wastItems[i].qty||0;
+
+  if(S.wastItems.length)out+='<div class="order-summary"><div class="order-summary-grid"><div class="order-summary-item"><div class="order-summary-val">'+S.wastItems.length+'</div><div class="order-summary-lbl">Items</div></div><div class="order-summary-item"><div class="order-summary-val">'+wastTotalQty+'</div><div class="order-summary-lbl">Total Qty</div></div><div class="order-summary-item"><div class="order-summary-val">'+SHOPS[curShop]+'</div><div class="order-summary-lbl">Shop</div></div></div></div>';
+
+  out+='<div class="card"><div class="ch"><div class="ci r">\uD83D\uDDD1</div><div><div class="ct">Wastage / Leftovers</div><div class="cs">Record unsold, spoiled or leftover goods</div></div></div>';
+
+  if(S.wastItems.length){
+    out+='<div class="il">';
+    for(var i=0;i<S.wastItems.length;i++){var w=S.wastItems[i];out+='<div class="ir"><div><div class="in">'+esc(w.product)+'</div><div class="ic">'+esc(w.reason||'Leftover')+(w.notes?' \u2022 '+esc(w.notes):'')+'</div></div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+w.qty+' '+w.unit+'</div><button style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;cursor:pointer;color:var(--text2)" data-editwast="'+i+'">\u270E</button><button class="ix" data-delwast="'+i+'">\u00D7</button></div></div>'}
+    out+='</div>';
+  }
+
+  // Add form
+  out+='<div style="margin-top:12px;padding-top:12px;border-top:1.5px solid var(--border)"><div class="fr c2"><div class="fg"><div class="fl">Product Name</div><input class="fi" type="text" id="wastProduct" placeholder="e.g. White Bread" list="dlProducts" autocomplete="off"></div><div class="fg"><div class="fl">Reason</div><select class="fi" id="wastReason">'+WAST_REASONS.map(function(r){return'<option>'+r+'</option>'}).join('')+'</select></div></div>';
+  out+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Quantity</div><input class="fi" type="number" inputmode="numeric" id="wastQty" placeholder="0"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="wastUnit">'+PUNITS.map(function(u){return'<option>'+u+'</option>'}).join('')+'</select></div><div class="fg"><div class="fl">Notes</div><input class="fi" type="text" id="wastNotes" placeholder="Optional"></div></div>';
+  out+='<div style="margin-top:8px;text-align:right"><button class="ab g" id="addWastItem">\uD83D\uDDD1 Add Wastage</button></div></div></div>';
+  out+=prodDL;
+  if(S.wastItems.length)out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveWastBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save Wastage Record')+'</button>';
+
+  // Saved wastage records for this date
+  var savedWast=[];
+  for(var i=0;i<(S.wastRecords||[]).length;i++){var wr=S.wastRecords[i];if(wr.date===S.date&&wr.shop==curShop){var items=wr.productOrders||[];for(var j=0;j<items.length;j++)savedWast.push({item:items[j],recId:wr.id,idx:j})}}
+  if(savedWast.length){
+    var swTotalQty=0;for(var i=0;i<savedWast.length;i++)swTotalQty+=savedWast[i].item.qty||0;
+    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--rose)"><div class="ch"><div class="ci r">\uD83D\uDCCB</div><div><div class="ct">Saved Wastage \u2022 '+SHOPS[curShop]+'</div><div class="cs">'+savedWast.length+' items \u2022 '+swTotalQty+' total qty \u2022 '+fmtD(S.date)+'</div></div></div><div class="il">';
+    for(var i=0;i<savedWast.length;i++){var sw=savedWast[i].item;var wEditData=JSON.stringify({recId:savedWast[i].recId,idx:savedWast[i].idx,product:sw.product,qty:sw.qty,unit:sw.unit,reason:sw.reason||'Leftover',notes:sw.notes||''}).replace(/'/g,'&#39;');out+='<div class="ir"><div><div class="in">'+esc(sw.product)+'</div><div class="ic">'+esc(sw.reason||'Leftover')+(sw.notes?' \u2022 '+esc(sw.notes):'')+'</div></div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+sw.qty+' '+sw.unit+'</div><button style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;cursor:pointer;color:var(--text2)" data-editsavedwast=\''+wEditData+'\'>\u270E</button><button class="ix" data-delsavedwast=\''+wEditData+'\'>\u00D7</button></div></div>'}
+    out+='</div></div>';
+  }
+
+  // Show other shop's wastage (read-only)
+  var otherShop=curShop===0?1:0;
+  var otherWast=[];
+  for(var i=0;i<(S.wastRecords||[]).length;i++){var wr2=S.wastRecords[i];if(wr2.date===S.date&&wr2.shop==otherShop){var items2=wr2.productOrders||[];for(var j=0;j<items2.length;j++)otherWast.push(items2[j])}}
+  if(otherWast.length){
+    var owTotalQty=0;for(var i=0;i<otherWast.length;i++)owTotalQty+=otherWast[i].qty||0;
+    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--blue);opacity:.85"><div class="ch"><div class="ci b">\uD83D\uDC41</div><div><div class="ct">'+SHOPS[otherShop]+' Wastage</div><div class="cs">'+otherWast.length+' items \u2022 '+owTotalQty+' qty \u2022 Read-only</div></div></div>';
+    for(var i=0;i<otherWast.length;i++){var ow=otherWast[i];out+='<div class="ir"><div><div class="in">'+esc(ow.product)+'</div><div class="ic">'+esc(ow.reason||'Leftover')+(ow.notes?' \u2022 '+esc(ow.notes):'')+'</div></div><div class="order-qty">'+ow.qty+' '+ow.unit+'</div></div>'}
+    out+='</div>';
+  }
+  return out;
+}
+
 function renderOrderingHistory(){
   var out='<div class="fg" style="margin-bottom:12px"><div class="fl">View Date</div><input class="fi" type="date" id="ordHistDate" value="'+S.orderDate+'"></div>';
   var cp=collectProductOrders(S.orderDate);var orders0=cp.orders0,orders1=cp.orders1,allOrders=cp.all;
@@ -3013,7 +3131,7 @@ function bindEvents(){
   var pk=document.getElementById('pinOk');if(pk)pk.onclick=function(){callApi('verifyPin',{pin:S.pinVal,role:S.pinRole}).then(function(r){if(r.valid){S.pinShow=false;if(S.pinRole==='owner'){S.role='owner';S.staffShop=-1;S.shop=0}else if(S.pinRole==='highway'){S.role='staff';S.staffShop=0;S.shop=0}else if(S.pinRole==='mainroad'){S.role='staff';S.staffShop=1;S.shop=1}else if(S.pinRole==='production'){S.role='production';S.staffShop=-1;S.shop=0}else if(S.pinRole==='ordering'){S.role='ordering';S.staffShop=-1;S.shop=0}S.screen='app';S.tab=0;startAutoSync();doFetch()}else{S.pinErr='Wrong password';render()}}).catch(function(e){S.pinErr=e.message;render()})};
   document.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){S.tab=parseInt(b.dataset.tab);if(S.tab===0)loadForm();render()}});
   var sy=document.getElementById('btnSync');if(sy)sy.onclick=function(){doFetch()};
-  var lo=document.getElementById('btnLogout');if(lo)lo.onclick=function(){stopAutoSync();S.screen='login';S.role=null;S.staffShop=-1;S.tab=0;S.shop=0;S.date=today();S.records=[];S.staffLogs=[];S.activityLogs=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];S.advOrders=[];S.prodOrderRecords=[];S.oc=[0,0,0,0,0,0,0];S.cc=[0,0,0,0,0,0,0];S.upi=0;S.billed=0;S.walk=0;S.exps=[];S.goodsIn=[];S.prodOrders=[];S.rawMats=[];S.notes='';S.cashRetained=0;S.ordItems=[];S.grnItems=[];S.advItems=[];render()};
+  var lo=document.getElementById('btnLogout');if(lo)lo.onclick=function(){stopAutoSync();S.screen='login';S.role=null;S.staffShop=-1;S.tab=0;S.shop=0;S.date=today();S.records=[];S.staffLogs=[];S.activityLogs=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];S.advOrders=[];S.prodOrderRecords=[];S.wastRecords=[];S.oc=[0,0,0,0,0,0,0];S.cc=[0,0,0,0,0,0,0];S.upi=0;S.billed=0;S.walk=0;S.exps=[];S.goodsIn=[];S.prodOrders=[];S.rawMats=[];S.notes='';S.cashRetained=0;S.ordItems=[];S.grnItems=[];S.advItems=[];S.wastItems=[];render()};
   var di=document.getElementById('dateInp');if(di)di.onchange=function(e){S.date=e.target.value;loadForm();render()};
   var si2=document.getElementById('shopInp');if(si2)si2.onchange=function(e){S.shop=parseInt(e.target.value);loadForm();render()};
   var ui=document.getElementById('upiInp');if(ui)ui.oninput=function(e){S.upi=parseInt(e.target.value)||0};
@@ -3033,6 +3151,8 @@ function bindEvents(){
   acInput('ordProduct',prods);
   acInput('ordProduct2',prods);
   acInput('advProdInp',prods);
+  acInput('uoProduct',prods);
+  acInput('wastProduct',prods);
   // Customer name autocomplete from existing orders
   var custNames=[];for(var i=0;i<S.advOrders.length;i++){var cn=S.advOrders[i].customer;if(cn&&custNames.indexOf(cn)===-1)custNames.push(cn)}custNames.sort();
   acInput('advCustInp',custNames);
@@ -3233,6 +3353,129 @@ function bindEvents(){
     callApi('save',{},entry).then(function(){toast('\u2705 Order saved!');S.ordItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveOrdBtn');if(b){b.textContent='\uD83D\uDCBE Save Order to Cloud';b.className='save-btn'}})
   };
   var ordHistDate=document.getElementById('ordHistDate');if(ordHistDate)ordHistDate.onchange=function(e){S.orderDate=e.target.value;render()};
+
+  // Unified Orders tab (all logins)
+  var uoDateInp=document.getElementById('uoDateInp');if(uoDateInp)uoDateInp.onchange=function(e){S.date=e.target.value;render()};
+  var uoShopInp=document.getElementById('uoShopInp');if(uoShopInp)uoShopInp.onchange=function(e){S.ordShop=parseInt(e.target.value);render()};
+  var addUOItem=document.getElementById('addUOItem');if(addUOItem)addUOItem.onclick=function(){var p=document.getElementById('uoProduct'),q=document.getElementById('uoQty'),u=document.getElementById('uoUnit'),c=document.getElementById('uoCat'),n=document.getElementById('uoNotes');var qty=parseInt(q.value)||0;if(!qty||!p.value){toast('\u274C Product and quantity required');return}S.ordItems.push({id:gid(),product:p.value,category:c.value,qty:qty,unit:u.value,notes:n.value||''});addProductName(p.value);render()};
+  var saveUOBtn=document.getElementById('saveUOBtn');if(saveUOBtn)saveUOBtn.onclick=function(){
+    if(S.saving||!S.ordItems.length)return;S.saving=true;saveUOBtn.textContent='\u23F3 Saving...';saveUOBtn.className='save-btn off';
+    var curShop=S.role==='staff'?S.shop:S.ordShop;
+    var entry={id:gid(),type:'productOrder',shop:curShop,date:S.date,productOrders:JSON.parse(JSON.stringify(S.ordItems)),savedAt:new Date().toISOString(),savedBy:S.role||(S.staffShop>=0?'staff':'unknown')};
+    logActivity('save_product_order','Saved '+S.ordItems.length+' items for '+SHOPS[curShop]);
+    callApi('save',{},entry).then(function(){toast('\u2705 Order saved!');S.ordItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveUOBtn');if(b){b.textContent='\uD83D\uDCBE Save Order';b.className='save-btn'}})
+  };
+  var editUOSaved=document.getElementById('editUOSaved');if(editUOSaved)editUOSaved.onclick=function(){
+    var curShop=S.role==='staff'?S.shop:S.ordShop;var loaded=[];
+    for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.shop==curShop&&por.date===S.date){var po=por.productOrders||[];for(var j=0;j<po.length;j++)loaded.push(JSON.parse(JSON.stringify(po[j])))}}
+    for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.shop==curShop&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup=false;for(var k=0;k<loaded.length;k++){if(loaded[k].id===po[j].id){dup=true;break}}if(!dup)loaded.push(JSON.parse(JSON.stringify(po[j])))}}}
+    if(loaded.length){S.ordItems=loaded;render();toast('\u270E Loaded '+loaded.length+' items for editing')}
+  };
+  // Edit/delete saved product orders (all logins)
+  document.querySelectorAll('[data-delsavedord]').forEach(function(b){b.onclick=function(){
+    if(!confirm('Delete this order item?'))return;
+    var info=JSON.parse(b.dataset.delsavedord);
+    var src=info.source==='prodOrder'?S.prodOrderRecords:S.records;
+    var rec=null;for(var i=0;i<src.length;i++){if(src[i].id===info.recId){rec=src[i];break}}
+    if(!rec){toast('\u274C Record not found');return}
+    var orders=rec.productOrders||[];if(info.idx>=0&&info.idx<orders.length){
+      var deleted=orders[info.idx];orders.splice(info.idx,1);rec.productOrders=orders;
+      logActivity('delete_product_order','Deleted: '+deleted.product+' '+deleted.qty+' '+deleted.unit);
+      callApi('save',{},rec).then(function(){toast('\u2705 Deleted');return doFetch()}).catch(function(e){toast('\u274C '+e.message)})
+    }
+  }});
+  document.querySelectorAll('[data-editsavedord]').forEach(function(b){b.onclick=function(){
+    var info=JSON.parse(b.dataset.editsavedord);
+    var ov=document.createElement('div');ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    var md='<div style="background:var(--card);border-radius:16px;padding:20px;width:100%;max-width:360px"><div style="font-weight:700;font-size:16px;margin-bottom:12px">\u270E Edit Order Item</div>';
+    md+='<div class="fg"><div class="fl">Product</div><input class="fi" type="text" id="soProduct" value="'+esc(info.product)+'"></div>';
+    md+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Qty</div><input class="fi" type="number" inputmode="numeric" id="soQty" value="'+info.qty+'"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="soUnit">'+PUNITS.map(function(u){return'<option'+(u===info.unit?' selected':'')+'>'+u+'</option>'}).join('')+'</select></div><div class="fg"><div class="fl">Category</div><select class="fi" id="soCat">'+PCATS.map(function(c){return'<option'+(c===info.category?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div></div>';
+    md+='<div class="fg" style="margin-top:8px"><div class="fl">Notes</div><input class="fi" type="text" id="soNotes" value="'+esc(info.notes||'')+'"></div>';
+    md+='<div style="display:flex;gap:8px;margin-top:14px"><button class="save-btn" id="soSave" style="flex:1">Save</button><button class="save-btn" id="soCancel" style="flex:1;background:var(--bg);color:var(--text2)">Cancel</button></div></div>';
+    ov.innerHTML=md;document.body.appendChild(ov);
+    document.getElementById('soCancel').onclick=function(){ov.remove()};
+    document.getElementById('soSave').onclick=function(){
+      var p=document.getElementById('soProduct').value,q=parseInt(document.getElementById('soQty').value)||0,u=document.getElementById('soUnit').value,c=document.getElementById('soCat').value,n=document.getElementById('soNotes').value;
+      if(!p||!q){toast('\u274C Product and quantity required');return}
+      var src=info.source==='prodOrder'?S.prodOrderRecords:S.records;
+      var rec=null;for(var i=0;i<src.length;i++){if(src[i].id===info.recId){rec=src[i];break}}
+      if(!rec){toast('\u274C Record not found');ov.remove();return}
+      var orders=rec.productOrders||[];if(info.idx>=0&&info.idx<orders.length){
+        logActivity('edit_product_order','Edited: '+info.product+' '+info.qty+info.unit+' \u2192 '+p+' '+q+u);
+        orders[info.idx].product=p;orders[info.idx].qty=q;orders[info.idx].unit=u;orders[info.idx].category=c;orders[info.idx].notes=n;
+        rec.productOrders=orders;
+        ov.remove();callApi('save',{},rec).then(function(){toast('\u2705 Updated');return doFetch()}).catch(function(e){toast('\u274C '+e.message)})
+      }
+    };
+  }});
+
+  // Wastage tab (all logins)
+  var wastDateInp=document.getElementById('wastDateInp');if(wastDateInp)wastDateInp.onchange=function(e){S.date=e.target.value;render()};
+  var wastShopInp=document.getElementById('wastShopInp');if(wastShopInp)wastShopInp.onchange=function(e){S.wastShop=parseInt(e.target.value);render()};
+  var addWastItem=document.getElementById('addWastItem');if(addWastItem)addWastItem.onclick=function(){
+    var p=document.getElementById('wastProduct'),q=document.getElementById('wastQty'),u=document.getElementById('wastUnit'),r=document.getElementById('wastReason'),n=document.getElementById('wastNotes');
+    var qty=parseInt(q.value)||0;if(!qty||!p.value){toast('\u274C Product and quantity required');return}
+    S.wastItems.push({id:gid(),product:p.value,reason:r.value,qty:qty,unit:u.value,notes:n.value||''});addProductName(p.value);render()
+  };
+  document.querySelectorAll('[data-delwast]').forEach(function(b){b.onclick=function(){S.wastItems.splice(parseInt(b.dataset.delwast),1);render()}});
+  document.querySelectorAll('[data-editwast]').forEach(function(b){b.onclick=function(){
+    var idx=parseInt(b.dataset.editwast);var w=S.wastItems[idx];if(!w)return;
+    var ov=document.createElement('div');ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    var md='<div style="background:var(--card);border-radius:16px;padding:20px;width:100%;max-width:360px"><div style="font-weight:700;font-size:16px;margin-bottom:12px">\u270E Edit Wastage Item</div>';
+    md+='<div class="fg"><div class="fl">Product</div><input class="fi" type="text" id="weProduct" value="'+esc(w.product)+'"></div>';
+    md+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Qty</div><input class="fi" type="number" inputmode="numeric" id="weQty" value="'+w.qty+'"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="weUnit">'+PUNITS.map(function(u){return'<option'+(u===w.unit?' selected':'')+'>'+u+'</option>'}).join('')+'</select></div><div class="fg"><div class="fl">Reason</div><select class="fi" id="weReason">'+WAST_REASONS.map(function(r){return'<option'+(r===w.reason?' selected':'')+'>'+r+'</option>'}).join('')+'</select></div></div>';
+    md+='<div class="fg" style="margin-top:8px"><div class="fl">Notes</div><input class="fi" type="text" id="weNotes" value="'+esc(w.notes||'')+'"></div>';
+    md+='<div style="display:flex;gap:8px;margin-top:14px"><button class="save-btn" id="weSave" style="flex:1">Save</button><button class="save-btn" id="weCancel" style="flex:1;background:var(--bg);color:var(--text2)">Cancel</button></div></div>';
+    ov.innerHTML=md;document.body.appendChild(ov);
+    document.getElementById('weCancel').onclick=function(){ov.remove()};
+    document.getElementById('weSave').onclick=function(){
+      var p=document.getElementById('weProduct').value,q=parseInt(document.getElementById('weQty').value)||0,u=document.getElementById('weUnit').value,r2=document.getElementById('weReason').value,n=document.getElementById('weNotes').value;
+      if(!p||!q){toast('\u274C Product and quantity required');return}
+      S.wastItems[idx]={id:w.id,product:p,reason:r2,qty:q,unit:u,notes:n};ov.remove();render();toast('\u2705 Updated')
+    };
+  }});
+  var saveWastBtn=document.getElementById('saveWastBtn');if(saveWastBtn)saveWastBtn.onclick=function(){
+    if(S.saving||!S.wastItems.length)return;S.saving=true;saveWastBtn.textContent='\u23F3 Saving...';saveWastBtn.className='save-btn off';
+    var curShop=S.role==='staff'?S.shop:S.wastShop;
+    var entry={id:gid(),type:'wastage',shop:curShop,date:S.date,productOrders:JSON.parse(JSON.stringify(S.wastItems)),savedAt:new Date().toISOString(),savedBy:S.role||(S.staffShop>=0?'staff':'unknown')};
+    logActivity('save_wastage','Saved '+S.wastItems.length+' wastage items for '+SHOPS[curShop]);
+    callApi('save',{},entry).then(function(){toast('\u2705 Wastage saved!');S.wastItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveWastBtn');if(b){b.textContent='\uD83D\uDCBE Save Wastage Record';b.className='save-btn'}})
+  };
+  // Edit/delete saved wastage
+  document.querySelectorAll('[data-delsavedwast]').forEach(function(b){b.onclick=function(){
+    if(!confirm('Delete this wastage item?'))return;
+    var info=JSON.parse(b.dataset.delsavedwast);
+    var rec=null;for(var i=0;i<S.wastRecords.length;i++){if(S.wastRecords[i].id===info.recId){rec=S.wastRecords[i];break}}
+    if(!rec){toast('\u274C Record not found');return}
+    var items=rec.productOrders||[];if(info.idx>=0&&info.idx<items.length){
+      var deleted=items[info.idx];items.splice(info.idx,1);rec.productOrders=items;
+      logActivity('delete_wastage','Deleted wastage: '+deleted.product+' '+deleted.qty+' '+deleted.unit);
+      callApi('save',{},rec).then(function(){toast('\u2705 Deleted');return doFetch()}).catch(function(e){toast('\u274C '+e.message)})
+    }
+  }});
+  document.querySelectorAll('[data-editsavedwast]').forEach(function(b){b.onclick=function(){
+    var info=JSON.parse(b.dataset.editsavedwast);
+    var ov=document.createElement('div');ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    var md='<div style="background:var(--card);border-radius:16px;padding:20px;width:100%;max-width:360px"><div style="font-weight:700;font-size:16px;margin-bottom:12px">\u270E Edit Wastage Item</div>';
+    md+='<div class="fg"><div class="fl">Product</div><input class="fi" type="text" id="sweProduct" value="'+esc(info.product)+'"></div>';
+    md+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Qty</div><input class="fi" type="number" inputmode="numeric" id="sweQty" value="'+info.qty+'"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="sweUnit">'+PUNITS.map(function(u){return'<option'+(u===info.unit?' selected':'')+'>'+u+'</option>'}).join('')+'</select></div><div class="fg"><div class="fl">Reason</div><select class="fi" id="sweReason">'+WAST_REASONS.map(function(r){return'<option'+(r===info.reason?' selected':'')+'>'+r+'</option>'}).join('')+'</select></div></div>';
+    md+='<div class="fg" style="margin-top:8px"><div class="fl">Notes</div><input class="fi" type="text" id="sweNotes" value="'+esc(info.notes||'')+'"></div>';
+    md+='<div style="display:flex;gap:8px;margin-top:14px"><button class="save-btn" id="sweSave" style="flex:1">Save</button><button class="save-btn" id="sweCancel" style="flex:1;background:var(--bg);color:var(--text2)">Cancel</button></div></div>';
+    ov.innerHTML=md;document.body.appendChild(ov);
+    document.getElementById('sweCancel').onclick=function(){ov.remove()};
+    document.getElementById('sweSave').onclick=function(){
+      var p=document.getElementById('sweProduct').value,q=parseInt(document.getElementById('sweQty').value)||0,u=document.getElementById('sweUnit').value,r2=document.getElementById('sweReason').value,n=document.getElementById('sweNotes').value;
+      if(!p||!q){toast('\u274C Product and quantity required');return}
+      var rec=null;for(var i=0;i<S.wastRecords.length;i++){if(S.wastRecords[i].id===info.recId){rec=S.wastRecords[i];break}}
+      if(!rec){toast('\u274C Record not found');ov.remove();return}
+      var items=rec.productOrders||[];if(info.idx>=0&&info.idx<items.length){
+        logActivity('edit_wastage','Edited wastage: '+info.product+' '+info.qty+info.unit+' \u2192 '+p+' '+q+u);
+        items[info.idx].product=p;items[info.idx].qty=q;items[info.idx].unit=u;items[info.idx].reason=r2;items[info.idx].notes=n;
+        rec.productOrders=items;
+        ov.remove();callApi('save',{},rec).then(function(){toast('\u2705 Updated');return doFetch()}).catch(function(e){toast('\u274C '+e.message)})
+      }
+    };
+  }});
 
   // GRN (Goods Inward) - Ordering staff
   var grnDateInp=document.getElementById('grnDateInp');if(grnDateInp)grnDateInp.onchange=function(e){S.date=e.target.value;render()};
