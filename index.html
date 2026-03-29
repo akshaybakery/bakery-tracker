@@ -545,11 +545,25 @@ function callApi(action,params,body){
   params=params||{};
   var url=new URL(API);url.searchParams.set('action',action);
   var pk=Object.keys(params);for(var i=0;i<pk.length;i++)url.searchParams.set(pk[i],params[pk[i]]);
-  var opts={redirect:'follow'};
-  if(body){opts.method='POST';opts.body=JSON.stringify(body)}
-  return fetch(url.toString(),opts).then(function(r){return r.text()}).then(function(t){
-    try{var d=JSON.parse(t);if(!d.success&&d.error)throw new Error(d.error);return d}
-    catch(e){var m=t.match(/href="([^"]+)"/);if(m)return fetch(m[1]).then(function(r){return r.json()});throw e}
+  if(body)url.searchParams.set('payload',JSON.stringify(body));
+  var finalUrl=url.toString();
+  function doFetchCall(u){
+    return fetch(u,{redirect:'follow'}).then(function(r){return r.text()}).then(function(t){
+      try{var d=JSON.parse(t);if(!d.success&&d.error)throw new Error(d.error);return d}
+      catch(e){
+        // GAS sometimes returns HTML redirect page — decode &amp; to &
+        var m=t.match(/href="([^"]+)"/);
+        if(m){var rurl=m[1].replace(/&amp;/g,'&');return fetch(rurl).then(function(r2){return r2.json()})}
+        throw new Error('Save failed. Check internet and try again.')
+      }
+    })
+  }
+  // Retry once on network failure
+  return doFetchCall(finalUrl).catch(function(err){
+    if(err.message==='Failed to fetch'||err.message==='Load failed'||err.message.indexOf('NetworkError')>=0){
+      return new Promise(function(res){setTimeout(res,2000)}).then(function(){return doFetchCall(finalUrl)})
+    }
+    throw err;
   });
 }
 
