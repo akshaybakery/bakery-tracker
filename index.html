@@ -494,9 +494,23 @@ function resetSessionTimer(){
 ['click','touchstart','keydown'].forEach(function(ev){document.addEventListener(ev,resetSessionTimer,{passive:true})});
 // Auto-sync: refresh data every 2 minutes so changes from other logins are visible
 var _syncInterval=null;
+function hasUnsavedFormData(){
+  // Check if user has typed into any form input (don't wipe their work)
+  var focused=document.activeElement;
+  if(focused&&(focused.tagName==='INPUT'||focused.tagName==='TEXTAREA'||focused.tagName==='SELECT'))return true;
+  // Check unsaved items in ordering, wastage, etc.
+  if(S.ordItems&&S.ordItems.length)return true;
+  if(S.wastItems&&S.wastItems.length)return true;
+  if(S.grnItems&&S.grnItems.length)return true;
+  if(S.advItems&&S.advItems.length)return true;
+  // Check if any text input on the page has a value (user mid-entry)
+  var inputs=document.querySelectorAll('.app-body input[type=text],.app-body input[type=number],.app-body textarea');
+  for(var i=0;i<inputs.length;i++){if(inputs[i].value&&inputs[i].value.trim())return true}
+  return false;
+}
 function startAutoSync(){
   if(_syncInterval)clearInterval(_syncInterval);
-  _syncInterval=setInterval(function(){if(S.screen==='app'&&!S.saving&&navigator.onLine)doFetch()},2*60*1000)
+  _syncInterval=setInterval(function(){if(S.screen==='app'&&!S.saving&&navigator.onLine&&!hasUnsavedFormData())doFetch()},2*60*1000)
 }
 function stopAutoSync(){if(_syncInterval){clearInterval(_syncInterval);_syncInterval=null}}
 // CSV export
