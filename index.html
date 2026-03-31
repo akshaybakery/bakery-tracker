@@ -3449,32 +3449,22 @@ function bindEvents(){
     if(loaded.length){S.ordItems=loaded;render();toast('\u270E Loaded '+loaded.length+' items for editing. Modify and save again.')}
   };
   var saveOrdBtn=document.getElementById('saveOrdBtn');if(saveOrdBtn)saveOrdBtn.onclick=function(){
-    if(S.saving||!S.ordItems.length)return;S.saving=true;saveOrdBtn.textContent='\u23F3 Syncing...';saveOrdBtn.className='save-btn off';
-    // First fetch latest data to merge with any orders saved from other phones
-    callApi('getAll',{}).then(function(res){
-      var d=res.data||[];var existing=[];var existingId=null;
-      for(var i=0;i<d.length;i++){
-        if(d[i].type==='productOrder'&&String(d[i].shop)===String(S.ordShop)&&d[i].date===S.date){
-          existingId=d[i].id;
-          var po=d[i].productOrders||[];
-          if(typeof po==='string')try{po=JSON.parse(po)}catch(e){po=[]}
-          for(var j=0;j<po.length;j++)existing.push(po[j]);
-        }
+    if(S.saving||!S.ordItems.length)return;S.saving=true;saveOrdBtn.textContent='\u23F3 Saving...';saveOrdBtn.className='save-btn off';
+    // Merge new items with existing saved orders from local data (no extra API call)
+    var existing=[],existingId=null;
+    for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(String(por.shop)===String(S.ordShop)&&por.date===S.date){existingId=por.id;var po=por.productOrders||[];for(var j=0;j<po.length;j++)existing.push(po[j])}}
+    for(var i=0;i<S.records.length;i++){var r=S.records[i];if(String(r.shop)===String(S.ordShop)&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup2=false;for(var k=0;k<existing.length;k++){if(existing[k].id&&po[j].id&&existing[k].id===po[j].id){dup2=true;break}}if(!dup2)existing.push(po[j])}}}
+    var merged=JSON.parse(JSON.stringify(existing));
+    for(var n=0;n<S.ordItems.length;n++){
+      var item=S.ordItems[n];var dup=false;
+      for(var e=0;e<merged.length;e++){
+        if(item.id&&merged[e].id&&item.id===merged[e].id){dup=true;merged[e]=JSON.parse(JSON.stringify(item));break}
+        if(item.product===merged[e].product&&item.category===merged[e].category){dup=true;merged[e]=JSON.parse(JSON.stringify(item));break}
       }
-      // Merge: add new items that don't already exist (by id or by product+category match)
-      var merged=JSON.parse(JSON.stringify(existing));
-      for(var n=0;n<S.ordItems.length;n++){
-        var item=S.ordItems[n];var dup=false;
-        for(var e=0;e<merged.length;e++){
-          if(item.id&&merged[e].id&&item.id===merged[e].id){dup=true;merged[e]=JSON.parse(JSON.stringify(item));break}
-          if(item.product===merged[e].product&&item.category===merged[e].category){dup=true;merged[e]=JSON.parse(JSON.stringify(item));break}
-        }
-        if(!dup)merged.push(JSON.parse(JSON.stringify(item)));
-      }
-      saveOrdBtn.textContent='\u23F3 Saving...';
-      var entry={id:existingId||gid(),type:'productOrder',shop:S.ordShop,date:S.date,productOrders:merged,savedAt:new Date().toISOString(),savedBy:'ordering'};
-      return callApi('save',{},entry);
-    }).then(function(){toast('\u2705 Order saved!');S.ordItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveOrdBtn');if(b){b.textContent='\uD83D\uDCBE Save Order to Cloud';b.className='save-btn'}})
+      if(!dup)merged.push(JSON.parse(JSON.stringify(item)));
+    }
+    var entry={id:existingId||gid(),type:'productOrder',shop:S.ordShop,date:S.date,productOrders:merged,savedAt:new Date().toISOString(),savedBy:'ordering'};
+    callApi('save',{},entry).then(function(){toast('\u2705 Order saved!');S.ordItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveOrdBtn');if(b){b.textContent='\uD83D\uDCBE Save Order to Cloud';b.className='save-btn'}})
   };
   var ordHistDate=document.getElementById('ordHistDate');if(ordHistDate)ordHistDate.onchange=function(e){S.orderDate=e.target.value;render()};
 
@@ -3483,33 +3473,24 @@ function bindEvents(){
   var uoShopInp=document.getElementById('uoShopInp');if(uoShopInp)uoShopInp.onchange=function(e){S.ordShop=parseInt(e.target.value);render()};
   var addUOItem=document.getElementById('addUOItem');if(addUOItem)addUOItem.onclick=function(){var p=document.getElementById('uoProduct'),q=document.getElementById('uoQty'),u=document.getElementById('uoUnit'),c=document.getElementById('uoCat'),n=document.getElementById('uoNotes');var qty=parseInt(q.value)||0;if(!qty||!p.value){toast('\u274C Product and quantity required');return}S.ordItems.push({id:gid(),product:p.value,category:c.value,qty:qty,unit:u.value,notes:n.value||''});addProductName(p.value);render()};
   var saveUOBtn=document.getElementById('saveUOBtn');if(saveUOBtn)saveUOBtn.onclick=function(){
-    if(S.saving||!S.ordItems.length)return;S.saving=true;saveUOBtn.textContent='\u23F3 Syncing...';saveUOBtn.className='save-btn off';
+    if(S.saving||!S.ordItems.length)return;S.saving=true;saveUOBtn.textContent='\u23F3 Saving...';saveUOBtn.className='save-btn off';
     var curShop=S.role==='staff'?S.shop:S.ordShop;
-    // Fetch latest to merge with orders from other phones
-    callApi('getAll',{}).then(function(res){
-      var d=res.data||[];var existing=[];var existingId=null;
-      for(var i=0;i<d.length;i++){
-        if(d[i].type==='productOrder'&&String(d[i].shop)===String(curShop)&&d[i].date===S.date){
-          existingId=d[i].id;
-          var po=d[i].productOrders||[];
-          if(typeof po==='string')try{po=JSON.parse(po)}catch(e){po=[]}
-          for(var j=0;j<po.length;j++)existing.push(po[j]);
-        }
+    // Merge new items with existing saved orders from local data
+    var existing=[],existingId=null;
+    for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(String(por.shop)===String(curShop)&&por.date===S.date){existingId=por.id;var po=por.productOrders||[];for(var j=0;j<po.length;j++)existing.push(po[j])}}
+    for(var i=0;i<S.records.length;i++){var r=S.records[i];if(String(r.shop)===String(curShop)&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup2=false;for(var k=0;k<existing.length;k++){if(existing[k].id&&po[j].id&&existing[k].id===po[j].id){dup2=true;break}}if(!dup2)existing.push(po[j])}}}
+    var merged=JSON.parse(JSON.stringify(existing));
+    for(var n=0;n<S.ordItems.length;n++){
+      var item=S.ordItems[n];var dup=false;
+      for(var e=0;e<merged.length;e++){
+        if(item.id&&merged[e].id&&item.id===merged[e].id){dup=true;merged[e]=JSON.parse(JSON.stringify(item));break}
+        if(item.product===merged[e].product&&item.category===merged[e].category){dup=true;merged[e]=JSON.parse(JSON.stringify(item));break}
       }
-      var merged=JSON.parse(JSON.stringify(existing));
-      for(var n=0;n<S.ordItems.length;n++){
-        var item=S.ordItems[n];var dup=false;
-        for(var e=0;e<merged.length;e++){
-          if(item.id&&merged[e].id&&item.id===merged[e].id){dup=true;merged[e]=JSON.parse(JSON.stringify(item));break}
-          if(item.product===merged[e].product&&item.category===merged[e].category){dup=true;merged[e]=JSON.parse(JSON.stringify(item));break}
-        }
-        if(!dup)merged.push(JSON.parse(JSON.stringify(item)));
-      }
-      saveUOBtn.textContent='\u23F3 Saving...';
-      var entry={id:existingId||gid(),type:'productOrder',shop:curShop,date:S.date,productOrders:merged,savedAt:new Date().toISOString(),savedBy:S.role||(S.staffShop>=0?'staff':'unknown')};
-      logActivity('save_product_order','Saved '+merged.length+' items for '+SHOPS[curShop]);
-      return callApi('save',{},entry);
-    }).then(function(){toast('\u2705 Order saved!');S.ordItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveUOBtn');if(b){b.textContent='\uD83D\uDCBE Save Order';b.className='save-btn'}})
+      if(!dup)merged.push(JSON.parse(JSON.stringify(item)));
+    }
+    var entry={id:existingId||gid(),type:'productOrder',shop:curShop,date:S.date,productOrders:merged,savedAt:new Date().toISOString(),savedBy:S.role||(S.staffShop>=0?'staff':'unknown')};
+    logActivity('save_product_order','Saved '+merged.length+' items for '+SHOPS[curShop]);
+    callApi('save',{},entry).then(function(){toast('\u2705 Order saved!');S.ordItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveUOBtn');if(b){b.textContent='\uD83D\uDCBE Save Order';b.className='save-btn'}})
   };
   var editUOSaved=document.getElementById('editUOSaved');if(editUOSaved)editUOSaved.onclick=function(){
     var curShop=S.role==='staff'?S.shop:S.ordShop;var loaded=[];
