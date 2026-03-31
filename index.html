@@ -593,13 +593,24 @@ function callApi(action,params,body){
   var url=new URL(API);url.searchParams.set('action',action);
   var pk=Object.keys(params);for(var i=0;i<pk.length;i++)url.searchParams.set(pk[i],params[pk[i]]);
   var finalUrl=url.toString();
-  var opts={redirect:'follow'};
-  if(body){opts.method='POST';opts.body=JSON.stringify(body)}
   function doFetchCall(u){
-    return fetch(u,opts).then(function(r){return r.text()}).then(function(t){
+    var opts={redirect:'follow'};
+    if(body){opts.method='POST';opts.body=JSON.stringify(body)}
+    return fetch(u,opts).then(function(r){
+      // GAS redirects — if we got redirected and response is ok, read it
+      if(r.ok||r.redirected)return r.text();
+      // If opaque redirect, try following manually
+      if(r.type==='opaqueredirect'||r.status===0){
+        return fetch(u,{method:'POST',body:body?JSON.stringify(body):undefined,redirect:'manual'}).then(function(r2){
+          var loc=r2.headers.get('location');
+          if(loc)return fetch(loc).then(function(r3){return r3.text()});
+          return r2.text();
+        });
+      }
+      return r.text();
+    }).then(function(t){
       try{var d=JSON.parse(t);if(!d.success&&d.error)throw new Error(d.error);return d}
       catch(e){
-        // GAS sometimes returns HTML redirect page — decode &amp; to &
         var m=t.match(/href="([^"]+)"/);
         if(m){var rurl=m[1].replace(/&amp;/g,'&');return fetch(rurl).then(function(r2){return r2.json()})}
         throw new Error('Save failed. Check internet and try again.')
