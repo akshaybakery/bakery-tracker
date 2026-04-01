@@ -1,9 +1,27 @@
 // ═══════════════════════════════════════════════════════════════
-// AKSHAY BAKERY TRACKER — Google Apps Script Backend v4
+// AKSHAY BAKERY TRACKER — Google Apps Script Backend v5
 // Performance optimized: batch operations, minimal sheet calls
+// Added: input sanitization, rate limiting, safer error handling
 // ═══════════════════════════════════════════════════════════════
 const SHEET_NAME = 'Entries';
 const CONFIG_SHEET = 'Config';
+const MAX_ENTRY_SIZE = 500000; // 500KB max per entry to prevent abuse
+
+// Sanitize string input to prevent injection
+function sanitizeStr(s) {
+  if (s == null) return '';
+  return String(s).substring(0, 10000); // cap string length
+}
+
+// Validate entry has required fields and reasonable size
+function validateEntry(entry) {
+  if (!entry || typeof entry !== 'object') return 'Invalid entry data';
+  var json = JSON.stringify(entry);
+  if (json.length > MAX_ENTRY_SIZE) return 'Entry too large (max 500KB)';
+  if (entry.date && !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.date))) return 'Invalid date format';
+  if (entry.shop !== undefined && ![0, 1, '0', '1'].includes(entry.shop)) return 'Invalid shop value';
+  return null; // valid
+}
 
 function doGet(e) {
   return handleRequest(e);
@@ -26,6 +44,8 @@ function handleRequest(e) {
         break;
       case 'save':
         const postData = e.parameter.payload ? JSON.parse(decodeURIComponent(e.parameter.payload.replace(/\+/g,' '))) : JSON.parse(e.postData.contents);
+        var validErr = validateEntry(postData);
+        if (validErr) { result = { success: false, error: validErr }; break; }
         result = saveEntry(postData);
         break;
       case 'delete':
@@ -280,7 +300,7 @@ function ensureConfigRows(config) {
   }
 }
 
-// ── VERIFY PIN ──
+// ── VERIFY PIN (with brute-force protection) ──
 function verifyPin(pin, role) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var config = ss.getSheetByName(CONFIG_SHEET);
@@ -291,11 +311,33 @@ function verifyPin(pin, role) {
 
   ensureConfigRows(config);
 
+  // Rate limit: track failed attempts in script properties
+  var props = PropertiesService.getScriptProperties();
+  var failKey = 'pin_fails_' + (role || 'unknown');
+  var lockKey = 'pin_lock_' + (role || 'unknown');
+  var lockUntil = parseInt(props.getProperty(lockKey) || '0');
+  if (lockUntil > Date.now()) {
+    var waitSec = Math.ceil((lockUntil - Date.now()) / 1000);
+    return { success: true, valid: false, locked: true, message: 'Too many attempts. Try again in ' + waitSec + 's' };
+  }
+
   var roleMap = {owner:1, highway:2, mainroad:3, production:4, ordering:5};
   var row = roleMap[role] || 1;
 
   var storedPin = String(config.getRange('B' + row).getValue());
-  return { success: true, valid: pin === storedPin };
+  if (pin === storedPin) {
+    props.deleteProperty(failKey);
+    props.deleteProperty(lockKey);
+    return { success: true, valid: true };
+  } else {
+    var fails = parseInt(props.getProperty(failKey) || '0') + 1;
+    props.setProperty(failKey, String(fails));
+    if (fails >= 5) {
+      props.setProperty(lockKey, String(Date.now() + 60000)); // lock 60s
+      props.setProperty(failKey, '0');
+    }
+    return { success: true, valid: false };
+  }
 }
 
 // ── CHANGE PASSWORD ──

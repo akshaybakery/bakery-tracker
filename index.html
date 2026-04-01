@@ -515,7 +515,7 @@ window.addEventListener('offline',function(){toast('\u26A0\uFE0F Offline \u2014 
 var _sessionTimer=null;
 function resetSessionTimer(){
   if(_sessionTimer)clearTimeout(_sessionTimer);
-  if(S.screen==='app')_sessionTimer=setTimeout(function(){S.screen='login';S.role=null;S.staffShop=-1;S.tab=0;S.shop=0;S.records=[];toast('\u23F0 Session expired \u2014 please login again');render()},30*60*1000)
+  if(S.screen==='app')_sessionTimer=setTimeout(function(){if(hasUnsavedFormData()){toast('\u26A0\uFE0F Session expiring soon \u2014 save your work!');_sessionTimer=setTimeout(function(){S.screen='login';S.role=null;S.staffShop=-1;S.tab=0;S.shop=0;S.records=[];toast('\u23F0 Session expired \u2014 please login again');render()},2*60*1000);return}S.screen='login';S.role=null;S.staffShop=-1;S.tab=0;S.shop=0;S.records=[];toast('\u23F0 Session expired \u2014 please login again');render()},30*60*1000)
 }
 ['click','touchstart','keydown'].forEach(function(ev){document.addEventListener(ev,resetSessionTimer,{passive:true})});
 // Auto-sync: refresh data every 2 minutes so changes from other logins are visible
@@ -654,10 +654,12 @@ function loadForm(){
   }
   if(r){S.oc=r.openingCash?r.openingCash.slice():[0,0,0,0,0,0,0];S.cc=r.closingCash?r.closingCash.slice():[0,0,0,0,0,0,0];S.upi=r.upiReceived||0;S.billed=r.totalBilled||0;S.walk=r.walkIns||0;S.exps=(r.expenses||[]).map(function(e){return JSON.parse(JSON.stringify(e))});var oldVends=r.vendorPayments||[];for(var j=0;j<oldVends.length;j++){var alreadyMigrated=false;for(var k=0;k<S.exps.length;k++){if(S.exps[k].category==='Vendor Payment'&&S.exps[k].description===oldVends[j].name&&S.exps[k].amount===oldVends[j].amount){alreadyMigrated=true;break}}if(!alreadyMigrated)S.exps.push({id:gid(),description:oldVends[j].name,amount:oldVends[j].amount,category:'Vendor Payment'})}S.goodsIn=(r.goodsInward||[]).map(function(g){return JSON.parse(JSON.stringify(g))});S.prodOrders=(r.productOrders||[]).map(function(p){return JSON.parse(JSON.stringify(p))});var rawNotes=r.notes||'';var crMatch=rawNotes.match(/\[\[CR:(\d+)\]\]/);S.cashRetained=r.cashRetained||0;if(!S.cashRetained&&crMatch)S.cashRetained=parseInt(crMatch[1])||0;S.notes=rawNotes.replace(/\s*\[\[CR:\d+\]\]/g,'').trim()}
   else{S.oc=[0,0,0,0,0,0,0];S.cc=[0,0,0,0,0,0,0];S.upi=0;S.billed=0;S.walk=0;S.exps=[];S.goodsIn=[];S.prodOrders=[];S.notes='';S.cashRetained=0}
-  // Merge product orders from ordering staff (productOrder typed entries)
-  for(var po=0;po<(S.prodOrderRecords||[]).length;po++){var por=S.prodOrderRecords[po];if(por.shop==S.shop&&por.date===S.date){var pOrds=por.productOrders||[];for(var pk=0;pk<pOrds.length;pk++){var pdup=false;for(var pm=0;pm<S.prodOrders.length;pm++){if(S.prodOrders[pm].id===pOrds[pk].id){pdup=true;break}}if(!pdup)S.prodOrders.push(JSON.parse(JSON.stringify(pOrds[pk])))}}}
-  // Merge GRN records from ordering staff
-  for(var g=0;g<S.grnRecords.length;g++){var gr=S.grnRecords[g];if(gr.shop==S.shop&&gr.date===S.date){var gi=gr.goodsInward||[];for(var k=0;k<gi.length;k++){var dup=false;for(var m=0;m<S.goodsIn.length;m++){if(S.goodsIn[m].id===gi[k].id){dup=true;break}}if(!dup)S.goodsIn.push(JSON.parse(JSON.stringify(gi[k])))}}}
+  // Merge product orders from ordering staff (productOrder typed entries) — O(n) with Set
+  var poIdSet={};for(var pm=0;pm<S.prodOrders.length;pm++){if(S.prodOrders[pm].id)poIdSet[S.prodOrders[pm].id]=1}
+  for(var po=0;po<(S.prodOrderRecords||[]).length;po++){var por=S.prodOrderRecords[po];if(por.shop==S.shop&&por.date===S.date){var pOrds=por.productOrders||[];for(var pk=0;pk<pOrds.length;pk++){if(!pOrds[pk].id||!poIdSet[pOrds[pk].id]){S.prodOrders.push(JSON.parse(JSON.stringify(pOrds[pk])));if(pOrds[pk].id)poIdSet[pOrds[pk].id]=1}}}}
+  // Merge GRN records from ordering staff — O(n) with Set
+  var giIdSet={};for(var gm=0;gm<S.goodsIn.length;gm++){if(S.goodsIn[gm].id)giIdSet[S.goodsIn[gm].id]=1}
+  for(var g=0;g<S.grnRecords.length;g++){var gr=S.grnRecords[g];if(gr.shop==S.shop&&gr.date===S.date){var gi=gr.goodsInward||[];for(var k=0;k<gi.length;k++){if(!gi[k].id||!giIdSet[gi[k].id]){S.goodsIn.push(JSON.parse(JSON.stringify(gi[k])));if(gi[k].id)giIdSet[gi[k].id]=1}}}}
 }
 function doFetch(){
   S.loading=true;render();
@@ -3235,10 +3237,10 @@ function bindEvents(){
   var cih=document.getElementById('closeInstallHelp');if(cih)cih.onclick=function(){S.installMsg=null;render()};
   var pi=document.getElementById('pinInp');if(pi)pi.oninput=function(e){S.pinVal=e.target.value};
   var pc=document.getElementById('pinCancel');if(pc)pc.onclick=function(){S.pinShow=false;render()};
-  var pk=document.getElementById('pinOk');if(pk)pk.onclick=function(){callApi('verifyPin',{pin:S.pinVal,role:S.pinRole}).then(function(r){if(r.valid){S.pinShow=false;if(S.pinRole==='owner'){S.role='owner';S.staffShop=-1;S.shop=0}else if(S.pinRole==='highway'){S.role='staff';S.staffShop=0;S.shop=0}else if(S.pinRole==='mainroad'){S.role='staff';S.staffShop=1;S.shop=1}else if(S.pinRole==='production'){S.role='production';S.staffShop=-1;S.shop=0}else if(S.pinRole==='ordering'){S.role='ordering';S.staffShop=-1;S.shop=0}S.screen='app';S.tab=0;startAutoSync();doFetch()}else{S.pinErr='Wrong password';render()}}).catch(function(e){S.pinErr=e.message;render()})};
+  var pk=document.getElementById('pinOk');if(pk)pk.onclick=function(){callApi('verifyPin',{pin:S.pinVal,role:S.pinRole}).then(function(r){if(r.valid){S.pinShow=false;if(S.pinRole==='owner'){S.role='owner';S.staffShop=-1;S.shop=0}else if(S.pinRole==='highway'){S.role='staff';S.staffShop=0;S.shop=0}else if(S.pinRole==='mainroad'){S.role='staff';S.staffShop=1;S.shop=1}else if(S.pinRole==='production'){S.role='production';S.staffShop=-1;S.shop=0}else if(S.pinRole==='ordering'){S.role='ordering';S.staffShop=-1;S.shop=0}S.screen='app';S.tab=0;startAutoSync();doFetch()}else{S.pinErr=r.locked?r.message:'Wrong password';S.pinVal='';render()}}).catch(function(e){S.pinErr=e.message;render()})};
   document.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){S.tab=parseInt(b.dataset.tab);if(S.tab===0)loadForm();render()}});
   var sy=document.getElementById('btnSync');if(sy)sy.onclick=function(){doFetch()};
-  var lo=document.getElementById('btnLogout');if(lo)lo.onclick=function(){stopAutoSync();S.screen='login';S.role=null;S.staffShop=-1;S.tab=0;S.shop=0;S.date=today();S.records=[];S.staffLogs=[];S.activityLogs=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];S.advOrders=[];S.prodOrderRecords=[];S.wastRecords=[];S.oc=[0,0,0,0,0,0,0];S.cc=[0,0,0,0,0,0,0];S.upi=0;S.billed=0;S.walk=0;S.exps=[];S.goodsIn=[];S.prodOrders=[];S.rawMats=[];S.notes='';S.cashRetained=0;S.ordItems=[];S.grnItems=[];S.advItems=[];S.wastItems=[];render()};
+  var lo=document.getElementById('btnLogout');if(lo)lo.onclick=function(){if(hasUnsavedFormData()&&!confirm('You have unsaved data. Discard and logout?'))return;stopAutoSync();S.screen='login';S.role=null;S.staffShop=-1;S.tab=0;S.shop=0;S.date=today();S.records=[];S.staffLogs=[];S.activityLogs=[];S.recipes=[];S.rawMatRecords=[];S.grnRecords=[];S.advOrders=[];S.prodOrderRecords=[];S.wastRecords=[];S.oc=[0,0,0,0,0,0,0];S.cc=[0,0,0,0,0,0,0];S.upi=0;S.billed=0;S.walk=0;S.exps=[];S.goodsIn=[];S.prodOrders=[];S.rawMats=[];S.notes='';S.cashRetained=0;S.ordItems=[];S.grnItems=[];S.advItems=[];S.wastItems=[];render()};
   var di=document.getElementById('dateInp');if(di)di.onchange=function(e){S.date=e.target.value;loadForm();render()};
   var si2=document.getElementById('shopInp');if(si2)si2.onchange=function(e){S.shop=parseInt(e.target.value);loadForm();render()};
   var ui=document.getElementById('upiInp');if(ui)ui.oninput=function(e){S.upi=parseInt(e.target.value)||0};
@@ -3264,11 +3266,11 @@ function bindEvents(){
   var custNames=[];for(var i=0;i<S.advOrders.length;i++){var cn=S.advOrders[i].customer;if(cn&&custNames.indexOf(cn)===-1)custNames.push(cn)}custNames.sort();
   acInput('advCustInp',custNames);
   var ae=document.getElementById('addExp');if(ae)ae.onclick=function(){var d=document.getElementById('expDesc'),a=document.getElementById('expAmt'),c=document.getElementById('expCat');var amt=parseInt(a.value)||0;if(!amt){toast('\u274C Enter amount');return}if(amt<0){toast('\u274C Amount cannot be negative');return}var expDesc=d.value;if(c.value==='Vendor Payment'&&expDesc)expDesc=normalizeVendorName(expDesc);S.exps.push({id:gid(),description:expDesc,amount:amt,category:c.value});if(d)d.value=expDesc;if(d.value){var saved=loadSavedNames();if(c.value==='Vendor Payment'&&saved.vendors.indexOf(d.value)===-1){saved.vendors.push(d.value);saved.vendors.sort();saveNames(saved.vendors,saved.staff)}if(c.value==='Advance Salary'&&saved.staff.indexOf(d.value)===-1){saved.staff.push(d.value);saved.staff.sort();saveNames(saved.vendors,saved.staff)}}render()};
-  document.querySelectorAll('[data-delex]').forEach(function(b){b.onclick=function(){S.exps.splice(parseInt(b.dataset.delex),1);render()}});
+  document.querySelectorAll('[data-delex]').forEach(function(b){b.onclick=function(){var idx=parseInt(b.dataset.delex);var ex=S.exps[idx];if(ex&&ex.amount>500&&!confirm('Delete expense "'+esc(ex.description||'')+ '" ('+fmt(ex.amount)+')?'))return;S.exps.splice(idx,1);render();toast('\u2705 Expense removed')}});
   // Goods Inward
   document.querySelectorAll('[data-gitype]').forEach(function(b){b.onclick=function(){S.giType=b.dataset.gitype;render()}});
   var agi=document.getElementById('addGI');if(agi)agi.onclick=function(){var v=document.getElementById('giVendor'),it=document.getElementById('giItems');if(!v||!v.value){toast('\u274C Enter vendor name');return}var entry={id:gid(),vendor:normalizeVendorName(v.value),items:it?it.value:'',entryType:S.giType};v.value=entry.vendor;if(S.giType==='bill'){var a=document.getElementById('giAmount'),bn=document.getElementById('giBillNo');var amt=parseInt(a?a.value:0)||0;if(!amt){toast('\u274C Enter bill amount');return}if(amt<0){toast('\u274C Amount cannot be negative');return}entry.amount=amt;entry.billNo=bn?bn.value:''}else{var q=document.getElementById('giQtyVal'),u=document.getElementById('giQtyUnit');var qty=parseFloat(q?q.value:0)||0;if(!qty){toast('\u274C Enter quantity');return}if(qty<0){toast('\u274C Quantity cannot be negative');return}entry.qty=qty;entry.qtyUnit=u?u.value:'kg';entry.amount=0}S.goodsIn.push(entry);var saved=loadSavedNames();if(saved.vendors.indexOf(v.value)===-1){saved.vendors.push(v.value);saved.vendors.sort();saveNames(saved.vendors,saved.staff)}render()};
-  document.querySelectorAll('[data-delgi]').forEach(function(b){b.onclick=function(){S.goodsIn.splice(parseInt(b.dataset.delgi),1);render()}});
+  document.querySelectorAll('[data-delgi]').forEach(function(b){b.onclick=function(){var idx=parseInt(b.dataset.delgi);var gi=S.goodsIn[idx];if(gi&&gi.amount>500&&!confirm('Delete goods inward from "'+esc(gi.vendor||'')+ '" ('+fmt(gi.amount)+')?'))return;S.goodsIn.splice(idx,1);render();toast('\u2705 Goods inward removed')}});
   // Edit goods inward item (owner)
   document.querySelectorAll('[data-editgi]').forEach(function(b){b.onclick=function(){
     var idx=parseInt(b.dataset.editgi);var g=S.goodsIn[idx];if(!g)return;
@@ -3290,7 +3292,7 @@ function bindEvents(){
       g.vendor=document.getElementById('giEditVendor').value;
       g.items=document.getElementById('giEditItems').value;
       g.amount=parseInt(document.getElementById('giEditAmt').value)||0;
-      if(isQty){g.qty=parseFloat(document.getElementById('giEditQty').value)||0;g.qtyUnit=document.getElementById('giEditUnit').value;var rEl=document.getElementById('giEditRate');if(rEl){g.rate=parseFloat(rEl.value)||0;g.amount=g.rate*g.qty}}
+      if(isQty){g.qty=Math.max(0,parseFloat(document.getElementById('giEditQty').value)||0);g.qtyUnit=document.getElementById('giEditUnit').value;var rEl=document.getElementById('giEditRate');if(rEl){g.rate=Math.max(0,parseFloat(rEl.value)||0);g.amount=Math.round((g.rate||0)*(g.qty||0))}}
       else{var bnEl=document.getElementById('giEditBillNo');if(bnEl)g.billNo=bnEl.value}
       ov.remove();render();toast('\u2705 Updated')};
   }});
@@ -3320,6 +3322,9 @@ function bindEvents(){
   var sb=document.getElementById('saveBtn');
   if(sb)sb.onclick=function(){
     if(S.saving)return;
+    // Validate entry has meaningful data before saving
+    var hasData=dTotal(S.oc)>0||dTotal(S.cc)>0||S.upi>0||S.billed>0||S.walk>0||S.exps.length>0||S.goodsIn.length>0||S.prodOrders.length>0||S.cashRetained>0||(S.notes&&S.notes.trim());
+    if(!hasData){toast('\u274C Nothing to save \u2014 enter some data first');return}
     S.saving=true;sb.textContent='\u23F3 Saving...';sb.className='save-btn off';
     var allExps=JSON.parse(JSON.stringify(S.exps));var venTotal=0,expTotal=0;for(var ei=0;ei<allExps.length;ei++){expTotal+=allExps[ei].amount;if(allExps[ei].category==='Vendor Payment')venTotal+=allExps[ei].amount}
     var giData=JSON.parse(JSON.stringify(S.goodsIn));var giTotal=0;for(var gi=0;gi<giData.length;gi++)giTotal+=giData[gi].amount;
@@ -3330,8 +3335,8 @@ function bindEvents(){
   document.querySelectorAll('[data-delrec]').forEach(function(b){b.onclick=function(){if(!confirm('Delete this entry?'))return;var id=b.dataset.delrec;var entry=null;for(var i=0;i<S.records.length;i++){if(S.records[i].id===id){entry=JSON.parse(JSON.stringify(S.records[i]));break}}callApi('delete',{id:id}).then(function(){if(entry)showUndoToast(entry);else toast('Deleted');doFetch()}).catch(function(e){toast('\u274C '+e.message)})}});
   // History search, date filter, pagination
   var hsi=document.getElementById('histSearchInp');if(hsi){hsi.oninput=function(){S.histSearch=hsi.value;S.histPage=0;render()}}
-  var hfi=document.getElementById('histFromInp');if(hfi)hfi.onchange=function(){S.histFrom=hfi.value;S.histPage=0;render()};
-  var hti=document.getElementById('histToInp');if(hti)hti.onchange=function(){S.histTo=hti.value;S.histPage=0;render()};
+  var hfi=document.getElementById('histFromInp');if(hfi)hfi.onchange=function(){S.histFrom=hfi.value;if(S.histTo&&S.histFrom>S.histTo){toast('\u274C From date cannot be after To date');S.histFrom='';hfi.value='';return}S.histPage=0;render()};
+  var hti=document.getElementById('histToInp');if(hti)hti.onchange=function(){S.histTo=hti.value;if(S.histFrom&&S.histTo<S.histFrom){toast('\u274C To date cannot be before From date');S.histTo='';hti.value='';return}S.histPage=0;render()};
   var hcd=document.getElementById('histClearDates');if(hcd)hcd.onclick=function(){S.histFrom='';S.histTo='';S.histPage=0;render()};
   document.querySelectorAll('[data-histpage]').forEach(function(b){b.onclick=function(){var p=parseInt(b.dataset.histpage);if(p>=0)S.histPage=p;render()}});
   document.querySelectorAll('[data-editrec]').forEach(function(b){b.onclick=function(){S.date=b.dataset.editrec;S.shop=parseInt(b.dataset.editshop);S.tab=0;loadForm();render();toast('\u270E Editing '+fmtD(S.date)+' \u2022 '+SHOPS[S.shop])}});
