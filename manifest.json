@@ -1,7 +1,7 @@
 {
-  "name": "Akshay Bakery Tracker",
-  "short_name": "Akshay Bakery",
-  "description": "Daily business tracker for Akshay Bakery",
+  "name": "Akshay Bakery Ops",
+  "short_name": "Bakery Ops",
+  "description": "Professional operations dashboard for Akshay Bakery",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

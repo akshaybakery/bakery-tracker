@@ -1,39 +1,70 @@
-const CACHE_NAME = 'akshay-bakery-v40';
-const ASSETS = [
+const CACHE_NAME = 'akshay-bakery-v41';
+const APP_SHELL = [
   './',
   './index.html',
+  './manifest.json',
   './icon-192.png',
-  './icon-512.png',
-  'https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:wght@700&display=swap'
+  './icon-512.png'
 ];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL))
+  );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(
+self.addEventListener('activate', event => {
+  event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
     )
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', e => {
-  // Network-first for API calls, cache-first for assets
-  if (e.request.url.includes('script.google.com') || e.request.url.includes('macros')) {
-    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-  } else {
-    e.respondWith(
-      caches.match(e.request).then(cached => {
-        const fetched = fetch(e.request).then(response => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+function isAppShellRequest(request) {
+  return request.mode === 'navigate' || (request.method === 'GET' && new URL(request.url).origin === self.location.origin);
+}
+
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  const url = new URL(request.url);
+
+  if (request.method !== 'GET') return;
+
+  if (url.origin !== self.location.origin) {
+    if (url.hostname.indexOf('script.google.com') >= 0 || url.pathname.indexOf('/macros/') >= 0) {
+      event.respondWith(fetch(request));
+    }
+    return;
+  }
+
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
           return response;
-        }).catch(() => cached);
-        return cached || fetched;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
+  if (isAppShellRequest(request)) {
+    event.respondWith(
+      caches.match(request).then(cached => {
+        const networkFetch = fetch(request)
+          .then(response => {
+            if (response && response.ok) {
+              caches.open(CACHE_NAME).then(cache => cache.put(request, response.clone()));
+            }
+            return response;
+          })
+          .catch(() => cached);
+        return cached || networkFetch;
       })
     );
   }

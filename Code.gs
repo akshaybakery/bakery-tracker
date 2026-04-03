@@ -1,27 +1,10 @@
-// ═══════════════════════════════════════════════════════════════
-// AKSHAY BAKERY TRACKER — Google Apps Script Backend v5
-// Performance optimized: batch operations, minimal sheet calls
-// Added: input sanitization, rate limiting, safer error handling
-// ═══════════════════════════════════════════════════════════════
 const SHEET_NAME = 'Entries';
 const CONFIG_SHEET = 'Config';
-const MAX_ENTRY_SIZE = 500000; // 500KB max per entry to prevent abuse
-
-// Sanitize string input to prevent injection
-function sanitizeStr(s) {
-  if (s == null) return '';
-  return String(s).substring(0, 10000); // cap string length
-}
-
-// Validate entry has required fields and reasonable size
-function validateEntry(entry) {
-  if (!entry || typeof entry !== 'object') return 'Invalid entry data';
-  var json = JSON.stringify(entry);
-  if (json.length > MAX_ENTRY_SIZE) return 'Entry too large (max 500KB)';
-  if (entry.date && !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.date))) return 'Invalid date format';
-  if (entry.shop !== undefined && ![0, 1, '0', '1'].includes(entry.shop)) return 'Invalid shop value';
-  return null; // valid
-}
+const MAX_ENTRY_SIZE = 500000;
+const AUTH_TOKEN_TTL_SEC = 12 * 60 * 60;
+const MAX_PIN_LENGTH = 128;
+const JSON_FIELDS = ['openingCash', 'closingCash', 'expenses', 'vendorPayments', 'goodsInward', 'productOrders', 'ingredients', 'method', 'materials'];
+const NUMBER_FIELDS = ['shop', 'openingTotal', 'closingTotal', 'upiReceived', 'totalBilled', 'walkIns', 'totalExpenses', 'totalVendorPayments', 'totalGoodsInward', 'cashRetained', 'qty'];
 
 function doGet(e) {
   return handleRequest(e);
@@ -32,24 +15,27 @@ function doPost(e) {
 }
 
 function handleRequest(e) {
-  const params = e.parameter || {};
-  const action = params.action || '';
-
-  let result;
+  var params = (e && e.parameter) || {};
+  var action = String(params.action || '');
+  var body = null;
+  var result;
 
   try {
-    switch(action) {
+    if (action === 'save' || action === 'changePin') {
+      body = getPayloadObject(e);
+    }
+
+    switch (action) {
       case 'getAll':
         result = getAllEntries(params);
         break;
       case 'save':
-        const postData = e.parameter.payload ? JSON.parse(decodeURIComponent(e.parameter.payload.replace(/\+/g,' '))) : JSON.parse(e.postData.contents);
-        var validErr = validateEntry(postData);
-        if (validErr) { result = { success: false, error: validErr }; break; }
-        result = saveEntry(postData);
+        body = sanitizePayload(body);
+        var validationError = validateEntry(body);
+        result = validationError ? { success: false, error: validationError } : saveEntry(body, params);
         break;
       case 'delete':
-        result = deleteEntry(params.id);
+        result = deleteEntry(params.id, params);
         break;
       case 'deleteAll':
         result = deleteAllEntries(params);
@@ -58,209 +44,329 @@ function handleRequest(e) {
         result = verifyPin(params.pin, params.role);
         break;
       case 'changePin':
-        const pinData = e.parameter.payload ? JSON.parse(e.parameter.payload) : (e.postData ? JSON.parse(e.postData.contents) : {});
-        result = changePin(pinData);
+        result = changePin(sanitizePayload(body), params);
         break;
       default:
         result = { success: false, error: 'Unknown action: ' + action };
     }
-  } catch(err) {
-    result = { success: false, error: err.toString() };
+  } catch (err) {
+    result = { success: false, error: err && err.message ? err.message : String(err) };
   }
 
-  const output = ContentService.createTextOutput(JSON.stringify(result));
-  output.setMimeType(ContentService.MimeType.JSON);
-  return output;
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
-// ── GET ALL ENTRIES ──
+function getPayloadObject(e) {
+  if (e && e.parameter && e.parameter.payload) {
+    try {
+      return JSON.parse(decodeURIComponent(String(e.parameter.payload).replace(/\+/g, ' ')));
+    } catch (err) {
+      return JSON.parse(e.parameter.payload);
+    }
+  }
+  if (e && e.postData && e.postData.contents) {
+    return JSON.parse(e.postData.contents);
+  }
+  return {};
+}
+
+function validateEntry(entry) {
+  if (!entry || typeof entry !== 'object') return 'Invalid entry data';
+  var json = JSON.stringify(entry);
+  if (!json || json.length > MAX_ENTRY_SIZE) return 'Entry too large (max 500KB)';
+  if (entry.date && !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.date))) return 'Invalid date format';
+  if (entry.deliveryDate && !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.deliveryDate))) return 'Invalid delivery date format';
+  if (entry.shop !== undefined && [0, 1, '0', '1'].indexOf(entry.shop) === -1) return 'Invalid shop value';
+  return null;
+}
+
+function sanitizePayload(payload) {
+  if (!payload || typeof payload !== 'object') return {};
+  var clean = JSON.parse(JSON.stringify(payload));
+  delete clean.token;
+  return clean;
+}
+
+function normalizeRole(role) {
+  return String(role || '').toLowerCase().trim();
+}
+
+function hashSecret(value) {
+  var digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(value));
+  return 'sha256:' + Utilities.base64EncodeWebSafe(digest);
+}
+
+function isStoredSecretMatch(input, storedValue) {
+  var inputStr = String(input || '');
+  var stored = String(storedValue || '');
+  if (!stored) return { matched: false, needsUpgrade: false };
+  if (stored.indexOf('sha256:') === 0) {
+    return { matched: hashSecret(inputStr) === stored, needsUpgrade: false };
+  }
+  return { matched: inputStr === stored, needsUpgrade: inputStr === stored };
+}
+
+function createAuthToken(role) {
+  var token = Utilities.getUuid() + '.' + Date.now();
+  CacheService.getScriptCache().put('auth:' + token, JSON.stringify({ role: role, issuedAt: Date.now() }), AUTH_TOKEN_TTL_SEC);
+  return token;
+}
+
+function getAuthContext(params, body) {
+  var token = '';
+  if (params && params.token) token = String(params.token);
+  if (!token && body && body.token) token = String(body.token);
+  if (!token) return null;
+  var cached = CacheService.getScriptCache().get('auth:' + token);
+  if (!cached) return null;
+  try {
+    var auth = JSON.parse(cached);
+    auth.token = token;
+    return auth;
+  } catch (err) {
+    return null;
+  }
+}
+
+function requireAuth(params, body, allowedRoles) {
+  var auth = getAuthContext(params, body);
+  if (!auth || !auth.role) throw new Error('Authentication required. Please log in again.');
+  if (allowedRoles && allowedRoles.length && allowedRoles.indexOf(auth.role) === -1) {
+    throw new Error('You do not have permission for this action.');
+  }
+  return auth;
+}
+
+function canAccessShop(auth, shop) {
+  if (!auth) return false;
+  if (auth.role === 'owner' || auth.role === 'production' || auth.role === 'ordering') return true;
+  if (auth.role === 'highway') return String(shop) === '0';
+  if (auth.role === 'mainroad') return String(shop) === '1';
+  return false;
+}
+
+function canSaveEntryForRole(auth, entry) {
+  var type = String((entry && entry.type) || '');
+  if (type === 'activityLog') return true;
+  if (auth.role === 'owner') return true;
+  if (auth.role === 'highway' || auth.role === 'mainroad') {
+    return canAccessShop(auth, entry.shop) && (type === '' || type === 'productOrder' || type === 'wastage' || type === 'staffLog');
+  }
+  if (auth.role === 'production') {
+    return type === 'rawMaterial' || type === 'recipe' || type === 'wastage';
+  }
+  if (auth.role === 'ordering') {
+    return type === 'productOrder' || type === 'goodsInward' || type === 'advanceOrder' || type === 'wastage';
+  }
+  return false;
+}
+
+function canDeleteEntryForRole(auth, record) {
+  var type = String((record && record.type) || '');
+  if (auth.role === 'owner') return true;
+  if (auth.role === 'highway' || auth.role === 'mainroad') {
+    return canAccessShop(auth, record.shop) && (type === '' || type === 'productOrder' || type === 'wastage' || type === 'staffLog');
+  }
+  if (auth.role === 'production') {
+    return type === 'rawMaterial' || type === 'recipe' || type === 'wastage';
+  }
+  if (auth.role === 'ordering') {
+    return type === 'productOrder' || type === 'goodsInward' || type === 'advanceOrder' || type === 'wastage';
+  }
+  return false;
+}
+
+function getSheetHeaders(sheet, entry) {
+  var baseHeaders = ['id', 'type', 'shop', 'date', 'deliveryDate', 'customer', 'product', 'qty', 'unit', 'category',
+    'openingCash', 'closingCash', 'openingTotal', 'closingTotal', 'upiReceived', 'totalBilled', 'walkIns',
+    'expenses', 'vendorPayments', 'totalExpenses', 'totalVendorPayments', 'goodsInward', 'totalGoodsInward',
+    'productOrders', 'cashRetained', 'notes', 'savedAt', 'savedBy'];
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(baseHeaders);
+    sheet.getRange(1, 1, 1, baseHeaders.length).setFontWeight('bold');
+    return baseHeaders;
+  }
+
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(function (h) { return String(h); });
+  var entryKeys = Object.keys(entry || {});
+  var added = false;
+
+  for (var i = 0; i < entryKeys.length; i++) {
+    if (headers.indexOf(entryKeys[i]) === -1) {
+      headers.push(entryKeys[i]);
+      added = true;
+    }
+  }
+
+  if (added) {
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+  }
+
+  return headers;
+}
+
 function getAllEntries(params) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  var auth = requireAuth(params, null, ['owner', 'highway', 'mainroad', 'production', 'ordering']);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
 
   if (!sheet || sheet.getLastRow() < 2) {
     return { success: true, data: [] };
   }
 
-  // Single read — get all data in one call
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0].map(function(h){return String(h)});
-  const entries = [];
-  const jsonFields = ['openingCash','closingCash','expenses','vendorPayments','goodsInward','productOrders','ingredients','method','materials'];
-  const numFields = ['shop','openingTotal','closingTotal','upiReceived','totalBilled','walkIns','totalExpenses','totalVendorPayments','totalGoodsInward','cashRetained','qty'];
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function (h) { return String(h); });
+  var entries = [];
+  var jsonIdx = {};
+  var numIdx = {};
+  var dateIdx = headers.indexOf('date');
+  var cutoffStr = '';
+  var applyRecentStaffFilter = auth.role === 'highway' || auth.role === 'mainroad';
 
-  // Pre-compute field indices for faster lookup
-  const jsonIdx = new Set();
-  const numIdx = new Set();
-  headers.forEach((h, j) => {
-    if (jsonFields.indexOf(h) >= 0) jsonIdx.add(j);
-    if (numFields.indexOf(h) >= 0) numIdx.add(j);
-  });
+  for (var h = 0; h < headers.length; h++) {
+    if (JSON_FIELDS.indexOf(headers[h]) >= 0) jsonIdx[h] = true;
+    if (NUMBER_FIELDS.indexOf(headers[h]) >= 0) numIdx[h] = true;
+  }
 
-  // Staff filter: compute cutoff once
-  var staffFilter = false, cutoffStr = '';
-  if (params.role === 'staff') {
-    staffFilter = true;
-    const now = new Date();
-    const cutoff = new Date(now);
+  if (applyRecentStaffFilter) {
+    var cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 2);
     cutoffStr = Utilities.formatDate(cutoff, Session.getScriptTimeZone(), 'yyyy-MM-dd');
   }
 
-  const dateIdx = headers.indexOf('date');
-
-  for (let i = 1; i < data.length; i++) {
-    // Early filter for staff — skip old rows before parsing JSON
-    if (staffFilter && dateIdx >= 0) {
+  for (var i = 1; i < data.length; i++) {
+    if (applyRecentStaffFilter && dateIdx >= 0) {
       var rowDate = data[i][dateIdx];
-      if (rowDate instanceof Date) {
-        rowDate = Utilities.formatDate(rowDate, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-      } else {
-        rowDate = String(rowDate).substring(0, 10);
-      }
+      rowDate = rowDate instanceof Date
+        ? Utilities.formatDate(rowDate, Session.getScriptTimeZone(), 'yyyy-MM-dd')
+        : String(rowDate).substring(0, 10);
       if (rowDate < cutoffStr) continue;
     }
 
-    const row = {};
-    for (let j = 0; j < headers.length; j++) {
-      let val = data[i][j];
-      if (jsonIdx.has(j)) {
-        try { val = JSON.parse(val); } catch(e) { val = headers[j].includes('Cash') ? [0,0,0,0,0,0,0] : []; }
-      } else if (numIdx.has(j)) {
+    var row = {};
+    for (var j = 0; j < headers.length; j++) {
+      var val = data[i][j];
+      if (jsonIdx[j]) {
+        try {
+          val = JSON.parse(val);
+        } catch (err) {
+          val = headers[j].indexOf('Cash') >= 0 ? [0, 0, 0, 0, 0, 0, 0] : [];
+        }
+      } else if (numIdx[j]) {
         val = Number(val) || 0;
       }
       row[headers[j]] = val;
     }
+
+    if ((auth.role === 'highway' || auth.role === 'mainroad') && !canAccessShop(auth, row.shop)) {
+      continue;
+    }
+
     entries.push(row);
   }
 
   return { success: true, data: entries };
 }
 
-// ── SAVE ENTRY ──
-function saveEntry(entry) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(SHEET_NAME);
-
-  if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
+function saveEntry(entry, params) {
+  var auth = requireAuth(params, entry, ['owner', 'highway', 'mainroad', 'production', 'ordering']);
+  if (!canSaveEntryForRole(auth, entry)) {
+    return { success: false, error: 'You do not have permission to save this record type' };
   }
 
-  var baseHeaders = ['id','type','shop','date','deliveryDate','customer','product','qty','unit','category',
-    'openingCash','closingCash','openingTotal','closingTotal',
-    'upiReceived','totalBilled','walkIns','expenses','vendorPayments',
-    'totalExpenses','totalVendorPayments','goodsInward','totalGoodsInward',
-    'productOrders','cashRetained','notes','savedAt','savedBy'];
+  entry.savedBy = auth.role;
 
-  var headers;
-  if (sheet.getLastRow() === 0) {
-    headers = baseHeaders;
-    sheet.appendRow(headers);
-    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
-  } else {
-    var headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    headers = headerRow.map(function(h){return String(h)});
-    var entryKeys = Object.keys(entry);
-    var added = false;
-    for (var i = 0; i < entryKeys.length; i++) {
-      if (headers.indexOf(entryKeys[i]) === -1) {
-        headers.push(entryKeys[i]);
-        added = true;
-      }
-    }
-    if (added) {
-      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-      sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
-    }
-  }
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
 
-  // ── Find rows to delete (batch collect, then delete in reverse) ──
+  var headers = getSheetHeaders(sheet, entry);
+
   if (sheet.getLastRow() > 1) {
-    const data = sheet.getDataRange().getValues();
+    var data = sheet.getDataRange().getValues();
     var idCol = headers.indexOf('id');
     var typeCol = headers.indexOf('type');
     var shopCol = headers.indexOf('shop');
     var dateCol = headers.indexOf('date');
     var rowsToDelete = [];
 
-    for (let i = 1; i < data.length; i++) {
-      var sheetDate = data[i][dateCol] instanceof Date ? Utilities.formatDate(data[i][dateCol], Session.getScriptTimeZone(), 'yyyy-MM-dd') : String(data[i][dateCol]).substring(0,10);
+    for (var i = 1; i < data.length; i++) {
+      var sheetDate = data[i][dateCol] instanceof Date
+        ? Utilities.formatDate(data[i][dateCol], Session.getScriptTimeZone(), 'yyyy-MM-dd')
+        : String(data[i][dateCol]).substring(0, 10);
       var rowType = typeCol >= 0 ? String(data[i][typeCol] || '') : '';
 
       if (entry.type === 'activityLog' || entry.type === 'staffLog') {
-        // Never overwrite — always append
+        continue;
       } else if (entry.type === 'advanceOrder' || entry.type === 'recipe' || entry.type === 'rawMaterial' || entry.type === 'goodsInward') {
-        if (idCol >= 0 && data[i][idCol] === entry.id) {
-          rowsToDelete.push(i + 1);
-        }
+        if (idCol >= 0 && data[i][idCol] === entry.id) rowsToDelete.push(i + 1);
       } else if (entry.type === 'productOrder' || entry.type === 'wastage') {
-        if (rowType === entry.type && String(data[i][shopCol]) === String(entry.shop) && sheetDate === entry.date) {
-          rowsToDelete.push(i + 1);
-        }
+        if (rowType === entry.type && String(data[i][shopCol]) === String(entry.shop) && sheetDate === entry.date) rowsToDelete.push(i + 1);
       } else if (!entry.type) {
-        if (!rowType && String(data[i][shopCol]) === String(entry.shop) && sheetDate === entry.date) {
-          rowsToDelete.push(i + 1);
-        }
+        if (!rowType && String(data[i][shopCol]) === String(entry.shop) && sheetDate === entry.date) rowsToDelete.push(i + 1);
       }
     }
 
-    // Delete in reverse order to preserve row indices
     for (var d = rowsToDelete.length - 1; d >= 0; d--) {
       sheet.deleteRow(rowsToDelete[d]);
     }
   }
 
-  // ── Build row data ──
-  const jsonFields = ['openingCash','closingCash','expenses','vendorPayments','goodsInward','productOrders','ingredients','method','materials'];
-  const row = headers.map(function(h) {
-    if (jsonFields.indexOf(h) >= 0) {
-      return JSON.stringify(entry[h] || []);
-    }
-    return entry[h] !== undefined ? entry[h] : '';
+  var row = headers.map(function (header) {
+    if (JSON_FIELDS.indexOf(header) >= 0) return JSON.stringify(entry[header] || []);
+    return entry[header] !== undefined ? entry[header] : '';
   });
-
   sheet.appendRow(row);
 
-  // Save compact staff log for daily entries (only key fields, not full copy)
   if (!entry.type) {
-    var logRow = headers.map(function(h) {
-      if (h === 'type') return 'staffLog';
-      if (h === 'id') return entry.id + '_log_' + new Date().getTime();
-      // Only keep essential tracking fields in log, skip bulky JSON
-      if (h === 'openingCash' || h === 'closingCash' || h === 'expenses' || h === 'vendorPayments' || h === 'goodsInward' || h === 'productOrders' || h === 'ingredients' || h === 'method' || h === 'materials') {
-        return '[]';
-      }
-      return entry[h] !== undefined ? entry[h] : '';
+    var logRow = headers.map(function (header) {
+      if (header === 'type') return 'staffLog';
+      if (header === 'id') return entry.id + '_log_' + Date.now();
+      if (JSON_FIELDS.indexOf(header) >= 0) return '[]';
+      return entry[header] !== undefined ? entry[header] : '';
     });
     sheet.appendRow(logRow);
   }
 
-  // Sort by date (descending) — only if more than a few rows
   if (sheet.getLastRow() > 2) {
-    var dateIdx = headers.indexOf('date');
-    if (dateIdx >= 0) {
+    var sortDateIdx = headers.indexOf('date');
+    if (sortDateIdx >= 0) {
       sheet.getRange(2, 1, sheet.getLastRow() - 1, headers.length)
-        .sort({ column: dateIdx + 1, ascending: false });
+        .sort({ column: sortDateIdx + 1, ascending: false });
     }
   }
 
   return { success: true, message: 'Entry saved' };
 }
 
-// ── DELETE ENTRY ──
-function deleteEntry(id) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(SHEET_NAME);
+function deleteEntry(id, params) {
+  var auth = requireAuth(params, null, ['owner', 'highway', 'mainroad', 'production', 'ordering']);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
 
   if (!sheet || sheet.getLastRow() < 2) {
     return { success: false, error: 'No entries found' };
   }
 
-  const data = sheet.getDataRange().getValues();
-  var headers = data[0].map(function(h){return String(h)});
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function (h) { return String(h); });
   var idCol = headers.indexOf('id');
-  for (let i = data.length - 1; i >= 1; i--) {
+  var typeCol = headers.indexOf('type');
+  var shopCol = headers.indexOf('shop');
+
+  for (var i = data.length - 1; i >= 1; i--) {
     if (idCol >= 0 && data[i][idCol] === id) {
+      var record = {
+        type: typeCol >= 0 ? String(data[i][typeCol] || '') : '',
+        shop: shopCol >= 0 ? data[i][shopCol] : ''
+      };
+      if (!canDeleteEntryForRole(auth, record)) {
+        return { success: false, error: 'You do not have permission to delete this record' };
+      }
       sheet.deleteRow(i + 1);
       return { success: true, message: 'Deleted' };
     }
@@ -269,30 +375,23 @@ function deleteEntry(id) {
   return { success: false, error: 'Entry not found' };
 }
 
-// ── DELETE ALL ──
 function deleteAllEntries(params) {
-  const pin = params.pin || '';
-  const pinResult = verifyPin(pin, 'owner');
-  if (!pinResult.valid) {
-    return { success: false, error: 'Invalid PIN' };
-  }
-
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  requireAuth(params, null, ['owner']);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
   if (sheet && sheet.getLastRow() > 1) {
     sheet.deleteRows(2, sheet.getLastRow() - 1);
   }
   return { success: true, message: 'All entries deleted' };
 }
 
-// ── HELPER: Ensure Config has all PIN rows ──
 function ensureConfigRows(config) {
   var defaults = [
-    ['owner_pin', '7736'],
-    ['highway_pin', '1234'],
-    ['mainroad_pin', '1234'],
-    ['production_pin', '1234'],
-    ['ordering_pin', '1234']
+    ['owner_pin', hashSecret('7736')],
+    ['highway_pin', hashSecret('1234')],
+    ['mainroad_pin', hashSecret('1234')],
+    ['production_pin', hashSecret('1234')],
+    ['ordering_pin', hashSecret('1234')]
   ];
   var lastRow = config.getLastRow();
   for (var i = lastRow; i < defaults.length; i++) {
@@ -300,8 +399,12 @@ function ensureConfigRows(config) {
   }
 }
 
-// ── VERIFY PIN (with brute-force protection) ──
 function verifyPin(pin, role) {
+  if (!pin || String(pin).length > MAX_PIN_LENGTH) {
+    return { success: true, valid: false };
+  }
+
+  var normalizedRole = normalizeRole(role);
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var config = ss.getSheetByName(CONFIG_SHEET);
 
@@ -311,37 +414,40 @@ function verifyPin(pin, role) {
 
   ensureConfigRows(config);
 
-  // Rate limit: track failed attempts in script properties
   var props = PropertiesService.getScriptProperties();
-  var failKey = 'pin_fails_' + (role || 'unknown');
-  var lockKey = 'pin_lock_' + (role || 'unknown');
-  var lockUntil = parseInt(props.getProperty(lockKey) || '0');
+  var failKey = 'pin_fails_' + (normalizedRole || 'unknown');
+  var lockKey = 'pin_lock_' + (normalizedRole || 'unknown');
+  var lockUntil = parseInt(props.getProperty(lockKey) || '0', 10);
   if (lockUntil > Date.now()) {
     var waitSec = Math.ceil((lockUntil - Date.now()) / 1000);
     return { success: true, valid: false, locked: true, message: 'Too many attempts. Try again in ' + waitSec + 's' };
   }
 
-  var roleMap = {owner:1, highway:2, mainroad:3, production:4, ordering:5};
-  var row = roleMap[role] || 1;
-
+  var roleMap = { owner: 1, highway: 2, mainroad: 3, production: 4, ordering: 5 };
+  var row = roleMap[normalizedRole] || 1;
   var storedPin = String(config.getRange('B' + row).getValue());
-  if (pin === storedPin) {
+  var match = isStoredSecretMatch(pin, storedPin);
+
+  if (match.matched) {
+    if (match.needsUpgrade) {
+      config.getRange('B' + row).setValue(hashSecret(pin));
+    }
     props.deleteProperty(failKey);
     props.deleteProperty(lockKey);
-    return { success: true, valid: true };
-  } else {
-    var fails = parseInt(props.getProperty(failKey) || '0') + 1;
-    props.setProperty(failKey, String(fails));
-    if (fails >= 5) {
-      props.setProperty(lockKey, String(Date.now() + 60000)); // lock 60s
-      props.setProperty(failKey, '0');
-    }
-    return { success: true, valid: false };
+    return { success: true, valid: true, token: createAuthToken(normalizedRole), role: normalizedRole };
   }
+
+  var fails = parseInt(props.getProperty(failKey) || '0', 10) + 1;
+  props.setProperty(failKey, String(fails));
+  if (fails >= 5) {
+    props.setProperty(lockKey, String(Date.now() + 60000));
+    props.setProperty(failKey, '0');
+  }
+  return { success: true, valid: false };
 }
 
-// ── CHANGE PASSWORD ──
-function changePin(data) {
+function changePin(data, params) {
+  requireAuth(params, data, ['owner']);
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var config = ss.getSheetByName(CONFIG_SHEET);
 
@@ -352,17 +458,17 @@ function changePin(data) {
   ensureConfigRows(config);
 
   var ownerPin = String(config.getRange('B1').getValue());
-  if (data.currentPin !== ownerPin) {
+  if (!isStoredSecretMatch(data.currentPin, ownerPin).matched) {
     return { success: false, error: 'Owner password is wrong' };
   }
-  if (!data.newPin || data.newPin.length < 8) {
+  if (!data.newPin || data.newPin.length < 8 || data.newPin.length > MAX_PIN_LENGTH) {
     return { success: false, error: 'Password must be at least 8 characters' };
   }
 
-  var roleMap = {owner:1, highway:2, mainroad:3, production:4, ordering:5};
-  var role = data.role || 'owner';
+  var roleMap = { owner: 1, highway: 2, mainroad: 3, production: 4, ordering: 5 };
+  var role = normalizeRole(data.role || 'owner');
   var row = roleMap[role] || 1;
 
-  config.getRange('B' + row).setValue(data.newPin);
+  config.getRange('B' + row).setValue(hashSecret(data.newPin));
   return { success: true, message: role + ' password updated' };
 }
