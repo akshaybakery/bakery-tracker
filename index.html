@@ -607,7 +607,7 @@ else if(/Mac/.test(ua))msg='<b>Mac:</b><br>1. Open in <b>Chrome</b><br>2. Click 
 else msg='Open this page in <b>Chrome</b> or <b>Edge</b> and look for the <b>install icon</b> in the address bar.';
 S.installMsg=msg;render()
 }
-var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],recipes:[],rawMatRecords:[],grnRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advItems:[],advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:'',ledgerShop:'all',ledgerDate:today(),ledgerView:'daily',ledgerPeriod:'thisMonth',ledgerFrom:'',ledgerTo:'',ledgerVendor:'',darkMode:localStorage.getItem('darkMode')==='1',histSearch:'',histFrom:'',histTo:'',histPage:0,ledgerSearch:'',wastItems:[],wastShop:0,wastRecords:[]};
+var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],staffLogs:[],activityLogs:[],recipes:[],rawMatRecords:[],grnRecords:[],advOrders:[],prodOrderRecords:[],wastRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advItems:[],advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:'',ledgerShop:'all',ledgerDate:today(),ledgerView:'daily',ledgerPeriod:'thisMonth',ledgerFrom:'',ledgerTo:'',ledgerVendor:'',darkMode:localStorage.getItem('darkMode')==='1',histSearch:'',histFrom:'',histTo:'',histPage:0,ledgerSearch:'',wastItems:[],wastShop:0,wastRecords:[]};
 
 function h(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
 
@@ -643,7 +643,7 @@ function callApi(action,params,body){
       catch(e){
         var m=t.match(/href="([^"]+)"/);
         if(m){var rurl=m[1].replace(/&amp;/g,'&');return fetch(rurl).then(function(r2){return r2.json()})}
-        throw new Error('Save failed. Check internet and try again.')
+        throw new Error('Request failed. Check internet and try again.')
       }
     })
   }
@@ -3702,7 +3702,7 @@ function bindEvents(){
   document.querySelectorAll('[data-delsavedord]').forEach(function(b){b.onclick=function(){
     if(!confirm('Delete this order item?'))return;
     var info=JSON.parse(b.dataset.delsavedord);
-    var src=info.source==='prodOrder'?S.prodOrderRecords:S.records;
+    var src=info.source==='prodOrder'?(S.prodOrderRecords||[]):S.records;
     var rec=null;for(var i=0;i<src.length;i++){if(src[i].id===info.recId){rec=src[i];break}}
     if(!rec){toast('\u274C Record not found');return}
     var orders=rec.productOrders||[];if(info.idx>=0&&info.idx<orders.length){
@@ -3724,7 +3724,7 @@ function bindEvents(){
     document.getElementById('soSave').onclick=function(){
       var p=document.getElementById('soProduct').value,q=parseInt(document.getElementById('soQty').value)||0,u=document.getElementById('soUnit').value,c=document.getElementById('soCat').value,n=document.getElementById('soNotes').value;
       if(!p||!q){toast('\u274C Product and quantity required');return}
-      var src=info.source==='prodOrder'?S.prodOrderRecords:S.records;
+      var src=info.source==='prodOrder'?(S.prodOrderRecords||[]):S.records;
       var rec=null;for(var i=0;i<src.length;i++){if(src[i].id===info.recId){rec=src[i];break}}
       if(!rec){toast('\u274C Record not found');ov.remove();return}
       var orders=rec.productOrders||[];if(info.idx>=0&&info.idx<orders.length){

@@ -394,8 +394,17 @@ function ensureConfigRows(config) {
     ['ordering_pin', hashSecret('1234')]
   ];
   var lastRow = config.getLastRow();
+  // Fill in any missing rows up to 5
   for (var i = lastRow; i < defaults.length; i++) {
     config.appendRow(defaults[i]);
+  }
+  // Ensure each existing row has a valid PIN in column B
+  for (var i = 0; i < Math.min(lastRow, defaults.length); i++) {
+    var val = String(config.getRange('B' + (i + 1)).getValue());
+    if (!val || val === 'undefined' || val === 'null') {
+      config.getRange('A' + (i + 1)).setValue(defaults[i][0]);
+      config.getRange('B' + (i + 1)).setValue(defaults[i][1]);
+    }
   }
 }
 
