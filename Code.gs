@@ -4,7 +4,7 @@ const MAX_ENTRY_SIZE = 500000;
 const AUTH_TOKEN_TTL_SEC = 12 * 60 * 60;
 const MAX_PIN_LENGTH = 128;
 const JSON_FIELDS = ['openingCash', 'closingCash', 'expenses', 'vendorPayments', 'goodsInward', 'productOrders', 'ingredients', 'method', 'materials'];
-const NUMBER_FIELDS = ['shop', 'openingTotal', 'closingTotal', 'upiReceived', 'totalBilled', 'walkIns', 'totalExpenses', 'totalVendorPayments', 'totalGoodsInward', 'cashRetained', 'qty'];
+const NUMBER_FIELDS = ['shop', 'openingTotal', 'closingTotal', 'upiReceived', 'totalBilled', 'walkIns', 'totalExpenses', 'totalVendorPayments', 'totalGoodsInward', 'cashRetained', 'qty', 'lat', 'lng', 'gpsAccuracy', 'distanceFromShop', 'monthlySalary', 'totalAdvances', 'pendingPay', 'paidAmount', 'days', 'radiusMeters', 'leaveBalance', 'annualLeave'];
 
 function doGet(e) {
   return handleRequest(e);
@@ -78,7 +78,7 @@ function validateEntry(entry) {
   if (!json || json.length > MAX_ENTRY_SIZE) return 'Entry too large (max 500KB)';
   if (entry.date && !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.date))) return 'Invalid date format';
   if (entry.deliveryDate && !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.deliveryDate))) return 'Invalid delivery date format';
-  if (entry.shop !== undefined && [0, 1, '0', '1'].indexOf(entry.shop) === -1) return 'Invalid shop value';
+  if (entry.shop !== undefined && [0, 1, '0', '1', -1, '-1', 2, '2'].indexOf(entry.shop) === -1) return 'Invalid shop value';
   return null;
 }
 
@@ -141,7 +141,7 @@ function requireAuth(params, body, allowedRoles) {
 
 function canAccessShop(auth, shop) {
   if (!auth) return false;
-  if (auth.role === 'owner' || auth.role === 'production' || auth.role === 'ordering') return true;
+  if (auth.role === 'owner' || auth.role === 'production' || auth.role === 'ordering' || auth.role === 'hr') return true;
   if (auth.role === 'highway') return String(shop) === '0';
   if (auth.role === 'mainroad') return String(shop) === '1';
   return false;
@@ -152,13 +152,16 @@ function canSaveEntryForRole(auth, entry) {
   if (type === 'activityLog') return true;
   if (auth.role === 'owner') return true;
   if (auth.role === 'highway' || auth.role === 'mainroad') {
-    return canAccessShop(auth, entry.shop) && (type === '' || type === 'productOrder' || type === 'wastage' || type === 'staffLog');
+    return canAccessShop(auth, entry.shop) && (type === '' || type === 'productOrder' || type === 'wastage' || type === 'staffLog' || type === 'attendance' || type === 'leaveRequest');
   }
   if (auth.role === 'production') {
     return type === 'rawMaterial' || type === 'recipe' || type === 'wastage';
   }
   if (auth.role === 'ordering') {
     return type === 'productOrder' || type === 'goodsInward' || type === 'advanceOrder' || type === 'wastage';
+  }
+  if (auth.role === 'hr') {
+    return type === 'employee' || type === 'attendance' || type === 'leaveRequest' || type === 'salaryRecord' || type === 'shopLocation';
   }
   return false;
 }
@@ -174,6 +177,9 @@ function canDeleteEntryForRole(auth, record) {
   }
   if (auth.role === 'ordering') {
     return type === 'productOrder' || type === 'goodsInward' || type === 'advanceOrder' || type === 'wastage';
+  }
+  if (auth.role === 'hr') {
+    return type === 'employee' || type === 'attendance' || type === 'leaveRequest' || type === 'salaryRecord' || type === 'shopLocation';
   }
   return false;
 }
@@ -210,7 +216,7 @@ function getSheetHeaders(sheet, entry) {
 }
 
 function getAllEntries(params) {
-  var auth = requireAuth(params, null, ['owner', 'highway', 'mainroad', 'production', 'ordering']);
+  var auth = requireAuth(params, null, ['owner', 'highway', 'mainroad', 'production', 'ordering', 'hr']);
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(SHEET_NAME);
 
@@ -273,7 +279,7 @@ function getAllEntries(params) {
 }
 
 function saveEntry(entry, params) {
-  var auth = requireAuth(params, entry, ['owner', 'highway', 'mainroad', 'production', 'ordering']);
+  var auth = requireAuth(params, entry, ['owner', 'highway', 'mainroad', 'production', 'ordering', 'hr']);
   if (!canSaveEntryForRole(auth, entry)) {
     return { success: false, error: 'You do not have permission to save this record type' };
   }
@@ -300,8 +306,12 @@ function saveEntry(entry, params) {
         : String(data[i][dateCol]).substring(0, 10);
       var rowType = typeCol >= 0 ? String(data[i][typeCol] || '') : '';
 
-      if (entry.type === 'activityLog' || entry.type === 'staffLog') {
+      if (entry.type === 'activityLog' || entry.type === 'staffLog' || entry.type === 'attendance') {
         continue;
+      } else if (entry.type === 'shopLocation') {
+        if (rowType === 'shopLocation' && String(data[i][shopCol]) === String(entry.shop)) rowsToDelete.push(i + 1);
+      } else if (entry.type === 'employee' || entry.type === 'leaveRequest' || entry.type === 'salaryRecord') {
+        if (idCol >= 0 && data[i][idCol] === entry.id) rowsToDelete.push(i + 1);
       } else if (entry.type === 'advanceOrder' || entry.type === 'recipe' || entry.type === 'rawMaterial' || entry.type === 'goodsInward') {
         if (idCol >= 0 && data[i][idCol] === entry.id) rowsToDelete.push(i + 1);
       } else if (entry.type === 'productOrder' || entry.type === 'wastage') {
@@ -344,7 +354,7 @@ function saveEntry(entry, params) {
 }
 
 function deleteEntry(id, params) {
-  var auth = requireAuth(params, null, ['owner', 'highway', 'mainroad', 'production', 'ordering']);
+  var auth = requireAuth(params, null, ['owner', 'highway', 'mainroad', 'production', 'ordering', 'hr']);
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(SHEET_NAME);
 
@@ -391,7 +401,8 @@ function ensureConfigRows(config) {
     ['highway_pin', hashSecret('1234')],
     ['mainroad_pin', hashSecret('1234')],
     ['production_pin', hashSecret('1234')],
-    ['ordering_pin', hashSecret('1234')]
+    ['ordering_pin', hashSecret('1234')],
+    ['hr_pin', hashSecret('1234')]
   ];
   var lastRow = config.getLastRow();
   // Fill in any missing rows up to 5
@@ -432,7 +443,7 @@ function verifyPin(pin, role) {
     return { success: true, valid: false, locked: true, message: 'Too many attempts. Try again in ' + waitSec + 's' };
   }
 
-  var roleMap = { owner: 1, highway: 2, mainroad: 3, production: 4, ordering: 5 };
+  var roleMap = { owner: 1, highway: 2, mainroad: 3, production: 4, ordering: 5, hr: 6 };
   var row = roleMap[normalizedRole] || 1;
   var storedPin = String(config.getRange('B' + row).getValue());
   var match = isStoredSecretMatch(pin, storedPin);
@@ -474,7 +485,7 @@ function changePin(data, params) {
     return { success: false, error: 'Password must be at least 8 characters' };
   }
 
-  var roleMap = { owner: 1, highway: 2, mainroad: 3, production: 4, ordering: 5 };
+  var roleMap = { owner: 1, highway: 2, mainroad: 3, production: 4, ordering: 5, hr: 6 };
   var role = normalizeRole(data.role || 'owner');
   var row = roleMap[role] || 1;
 
