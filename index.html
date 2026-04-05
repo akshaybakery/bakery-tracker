@@ -736,7 +736,7 @@ function renderApp(){
   else if(isHR)tabs=['\uD83D\uDC65 Staff','\u23F0 Attendance','\uD83D\uDCB0 Salary','\uD83C\uDFD6 Leave'];
   else if(isP)tabs=['\uD83D\uDCE6 Orders','\uD83E\uDDF1 Raw Materials','\uD83D\uDCD6 Recipes','\uD83D\uDDD1 Wastage'];
   else if(isOrd)tabs=['\uD83D\uDCE6 Place Order','\uD83D\uDCE5 Goods Inward','\uD83D\uDCCB Customer Orders','\uD83D\uDCCB Order History','\uD83D\uDDD1 Wastage'];
-  else tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83D\uDCE6 Orders','\uD83D\uDDD1 Wastage'];
+  else tabs=['\u23F0 Attendance','\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83D\uDCE6 Orders','\uD83D\uDDD1 Wastage'];
   var tabH='';for(var i=0;i<tabs.length;i++)tabH+='<button class="tab-btn'+(S.tab===i?' on':'')+'" data-tab="'+i+'">'+tabs[i]+'</button>';
   var hdr='<div class="app-header"><div class="header-row"><div class="header-left"><div class="header-icon"><img src="data:image/png;base64,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" style="width:auto;height:28px" alt="AB"></div><div><div class="header-title">Akshay Bakery</div><div class="header-role"><span class="sync-dot '+(S.connected?'on':'off')+'"></span>'+roleLabel+' \u2022 Operations Suite</div></div></div></div><div style="display:flex;gap:6px"><button class="logout-btn" id="btnSync">\u21BB Refresh</button><button class="logout-btn" id="btnLogout">Logout</button></div></div><div class="tab-bar">'+tabH+'</div></div>';
   var body='<div class="app-body"><div class="ptr-indicator">\u21BB Pull to refresh</div>';
@@ -770,10 +770,11 @@ function renderApp(){
     else if(S.tab===2)body+=renderRecipeBook();
     else if(S.tab===3)body+=renderWastage();
   }else{
-    if(S.tab===0)body+=renderEntry();
-    else if(S.tab===1)body+=renderHistory();
-    else if(S.tab===2)body+=renderUnifiedOrders();
-    else if(S.tab===3)body+=renderWastage();
+    if(S.tab===0)body+=renderStaffAttendance();
+    else if(S.tab===1)body+=renderEntry();
+    else if(S.tab===2)body+=renderHistory();
+    else if(S.tab===3)body+=renderUnifiedOrders();
+    else if(S.tab===4)body+=renderWastage();
   }
   body+='</div>';
   return hdr+body;
@@ -3388,6 +3389,44 @@ function renderAnalytics(){
   return out;
 }
 
+// ========== STAFF ATTENDANCE HOME ==========
+function renderStaffAttendance(){
+  var out='';
+  var myRole=S.role==='staff'?(S.staffShop===0?'highway':'mainroad'):S.role;
+  var todayRecs=S.attendanceRecords.filter(function(a){return a.date===today()&&a.savedBy===myRole});
+  var lastClock=todayRecs.length?todayRecs[todayRecs.length-1]:null;
+  var isClockedIn=lastClock&&lastClock.action==='clockIn';
+  // Big clock display
+  out+='<div style="text-align:center;padding:24px 16px"><div style="font-size:48px;margin-bottom:8px">'+(isClockedIn?'\uD83D\uDFE2':'\uD83D\uDD34')+'</div>';
+  out+='<div style="font-size:20px;font-weight:800;color:var(--text1)">'+(isClockedIn?'You are Clocked In':'Not Clocked In')+'</div>';
+  if(lastClock){var t=lastClock.savedAt?new Date(lastClock.savedAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'';out+='<div style="font-size:13px;color:var(--text3);margin-top:4px">Last '+(lastClock.action==='clockIn'?'clock in':'clock out')+': '+t+'</div>'}
+  out+='</div>';
+  // Camera preview area
+  out+='<div id="cameraPreview" style="display:none;text-align:center;margin:0 16px 12px"><video id="clockVideo" autoplay playsinline style="width:100%;max-width:320px;border-radius:16px;border:3px solid var(--border)"></video></div>';
+  out+='<div id="capturedPreview" style="display:none;text-align:center;margin:0 16px 12px"><img id="clockPhoto" style="width:100%;max-width:320px;border-radius:16px;border:3px solid var(--green)"><div style="font-size:12px;color:var(--green);margin-top:6px;font-weight:600">\u2705 Photo captured</div></div>';
+  out+='<div id="gpsStatus" style="display:none;text-align:center;font-size:13px;color:var(--text2);margin:0 16px 12px;padding:10px;background:var(--bg);border-radius:12px"></div>';
+  // Big clock buttons
+  out+='<div style="padding:0 16px">';
+  if(!isClockedIn)out+='<button class="save-btn" id="btnClockIn" style="width:100%;padding:18px;font-size:18px;font-weight:800;background:linear-gradient(135deg,var(--green),#2e7d32);border-radius:16px">\uD83D\uDFE2 Clock In</button>';
+  else out+='<button class="save-btn" id="btnClockOut" style="width:100%;padding:18px;font-size:18px;font-weight:800;background:linear-gradient(135deg,var(--rose),#c62828);border-radius:16px">\uD83D\uDD34 Clock Out</button>';
+  out+='</div>';
+  // Today's attendance history
+  if(todayRecs.length){
+    out+='<div class="card" style="margin-top:16px"><div class="ch"><div class="ci g">\uD83D\uDCCB</div><div><div class="ct">Today\'s Log</div><div class="cs">'+todayRecs.length+' record'+(todayRecs.length>1?'s':'')+'</div></div></div>';
+    var sorted=todayRecs.slice().sort(function(a,b){return(b.savedAt||'')>(a.savedAt||'')?1:-1});
+    for(var i=0;i<sorted.length;i++){var a=sorted[i];
+      var time=a.savedAt?new Date(a.savedAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'';
+      var badge=a.action==='clockIn'?'\uD83D\uDFE2 Clock In':'\uD83D\uDD34 Clock Out';
+      var distLabel=a.distanceFromShop!==undefined?Math.round(a.distanceFromShop)+'m from '+esc(a.shopName||'shop'):'';
+      out+='<div class="ir"><div style="flex:1"><div class="in">'+badge+' \u2022 '+time+'</div><div class="ic">'+(distLabel?'\uD83D\uDCCD '+distLabel:'')+(a.gpsAccuracy?' \u2022 GPS \u00B1'+Math.round(a.gpsAccuracy)+'m':'')+'</div></div>';
+      if(a.selfie)out+='<img src="'+a.selfie+'" style="width:44px;height:44px;border-radius:10px;object-fit:cover">';
+      out+='</div>';
+    }
+    out+='</div>';
+  }
+  return out;
+}
+
 // ========== HR MODULE ==========
 function renderHR(){
   var isO=S.role==='owner',isHR=S.role==='hr';
@@ -3441,7 +3480,7 @@ function renderAttendance(){
   if(S.role==='staff'||S.role==='hr'){
     out+='<div class="card"><div class="ch"><div class="ci g">\u23F0</div><div><div class="ct">Clock In / Out</div><div class="cs">GPS + Selfie verification required</div></div></div>';
     // Check if already clocked in today
-    var myRole=S.role;var todayRecs=S.attendanceRecords.filter(function(a){return a.date===today()&&a.savedBy===myRole});
+    var todayRecs=S.attendanceRecords.filter(function(a){return a.date===today()});
     var lastClock=todayRecs.length?todayRecs[todayRecs.length-1]:null;
     var isClockedIn=lastClock&&lastClock.action==='clockIn';
     out+='<div id="clockStatus" style="text-align:center;padding:16px;border-radius:12px;background:'+(isClockedIn?'var(--gl)':'var(--bg)')+';margin-bottom:12px">';
@@ -3604,7 +3643,7 @@ function bindEvents(){
   var pi=document.getElementById('pinInp');if(pi)pi.oninput=function(e){S.pinVal=e.target.value};
   var pc=document.getElementById('pinCancel');if(pc)pc.onclick=function(){S.pinShow=false;render()};
   var pk=document.getElementById('pinOk');if(pk)pk.onclick=function(){callApi('verifyPin',{pin:S.pinVal,role:S.pinRole}).then(function(r){if(r.valid&&r.token){setAuthToken(r.token);S.pinShow=false;if(S.pinRole==='owner'){S.role='owner';S.staffShop=-1;S.shop=0}else if(S.pinRole==='highway'){S.role='staff';S.staffShop=0;S.shop=0}else if(S.pinRole==='mainroad'){S.role='staff';S.staffShop=1;S.shop=1}else if(S.pinRole==='production'){S.role='production';S.staffShop=-1;S.shop=0}else if(S.pinRole==='ordering'){S.role='ordering';S.staffShop=-1;S.shop=0}else if(S.pinRole==='hr'){S.role='hr';S.staffShop=-1;S.shop=0}S.screen='app';S.tab=0;startAutoSync();doFetch()}else{S.pinErr=r.locked?r.message:'Wrong password';S.pinVal='';render()}}).catch(function(e){S.pinErr=e.message;render()})};
-  document.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){var newTab=parseInt(b.dataset.tab);var isOrdTab=(S.role==='ordering'&&newTab===0)||(S.role==='staff'&&newTab===2)||(S.role==='owner'&&newTab===8);if(isOrdTab&&S.tab!==newTab)loadOrderItemsFromSaved();S.tab=newTab;if(S.tab===0)loadForm();render()}});
+  document.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){var newTab=parseInt(b.dataset.tab);var isOrdTab=(S.role==='ordering'&&newTab===0)||(S.role==='staff'&&newTab===3)||(S.role==='owner'&&newTab===8);if(isOrdTab&&S.tab!==newTab)loadOrderItemsFromSaved();S.tab=newTab;if((S.role==='owner'||S.role==='staff')&&S.tab===(S.role==='staff'?1:0))loadForm();render()}});
   var sy=document.getElementById('btnSync');if(sy)sy.onclick=function(){doFetch()};
   var lo=document.getElementById('btnLogout');if(lo)lo.onclick=function(){if(hasUnsavedFormData()&&!confirm('You have unsaved data. Discard and logout?'))return;resetAppSession()};
   var di=document.getElementById('dateInp');if(di)di.onchange=function(e){S.date=e.target.value;loadForm();render()};
@@ -4201,7 +4240,9 @@ function bindEvents(){
       var camPrev=document.getElementById('cameraPreview');if(camPrev)camPrev.style.display='none';
       var capPrev=document.getElementById('capturedPreview');if(capPrev){capPrev.style.display='block';var img=document.getElementById('clockPhoto');if(img)img.src=selfie}
       var nearest=getNearestShopLocation(S.clockGps.lat,S.clockGps.lng);
-      var entry={id:gid(),type:'attendance',action:action,date:today(),empName:S.role,lat:S.clockGps.lat,lng:S.clockGps.lng,gpsAccuracy:S.clockGps.accuracy,distanceFromShop:nearest.location?nearest.distance:null,shopName:nearest.location?(nearest.location.shop==0?'Highway':'Mainroad'):'Unknown',selfie:selfie,savedAt:new Date().toISOString(),savedBy:S.role};
+      var clockRole=S.role==='staff'?(S.staffShop===0?'highway':'mainroad'):S.role;
+      var clockName=S.role==='staff'?(S.staffShop===0?'Highway Staff':'Mainroad Staff'):S.role==='hr'?'HR Staff':S.role;
+      var entry={id:gid(),type:'attendance',action:action,date:today(),empName:clockName,lat:S.clockGps.lat,lng:S.clockGps.lng,gpsAccuracy:S.clockGps.accuracy,distanceFromShop:nearest.location?nearest.distance:null,shopName:nearest.location?(nearest.location.shop==0?'Highway':'Mainroad'):'Unknown',selfie:selfie,savedAt:new Date().toISOString(),savedBy:clockRole};
       return callApi('save',{},entry);
     }).then(function(){
       toast('\u2705 '+(action==='clockIn'?'Clocked in':'Clocked out')+' successfully!');
