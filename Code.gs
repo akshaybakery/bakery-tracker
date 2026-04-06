@@ -21,7 +21,7 @@ function handleRequest(e) {
   var result;
 
   try {
-    if (action === 'save' || action === 'changePin') {
+    if (action === 'save' || action === 'changePin' || action === 'saveAttendance') {
       body = getPayloadObject(e);
     }
 
@@ -45,6 +45,16 @@ function handleRequest(e) {
         break;
       case 'changePin':
         result = changePin(sanitizePayload(body), params);
+        break;
+      case 'getEmployees':
+        result = getEmployeeList();
+        break;
+      case 'saveAttendance':
+        body = sanitizePayload(body);
+        result = saveAttendancePublic(body);
+        break;
+      case 'getAttendanceToday':
+        result = getAttendanceToday();
         break;
       default:
         result = { success: false, error: 'Unknown action: ' + action };
@@ -491,4 +501,80 @@ function changePin(data, params) {
 
   config.getRange('B' + row).setValue(hashSecret(data.newPin));
   return { success: true, message: role + ' password updated' };
+}
+
+// === PUBLIC (no auth) endpoints for login-screen attendance ===
+
+function getEmployeeList() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet || sheet.getLastRow() < 2) return { success: true, data: [] };
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h) { return String(h); });
+  var typeCol = headers.indexOf('type');
+  var idCol = headers.indexOf('id');
+  var employees = [];
+  for (var i = 1; i < data.length; i++) {
+    if (typeCol >= 0 && String(data[i][typeCol]) === 'employee') {
+      var row = {};
+      for (var j = 0; j < headers.length; j++) row[headers[j]] = data[i][j];
+      if (row.status !== 'inactive') {
+        employees.push({ id: row.id, name: String(row.name || ''), shop: row.shop });
+      }
+    }
+  }
+  return { success: true, data: employees };
+}
+
+function saveAttendancePublic(entry) {
+  if (!entry || !entry.empId || !entry.empName || !entry.action) {
+    return { success: false, error: 'Missing required attendance fields' };
+  }
+  if (entry.action !== 'clockIn' && entry.action !== 'clockOut') {
+    return { success: false, error: 'Invalid action' };
+  }
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+  entry.type = 'attendance';
+  entry.savedBy = 'self';
+  if (!entry.id) entry.id = Utilities.getUuid();
+  if (!entry.date) entry.date = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  if (!entry.savedAt) entry.savedAt = new Date().toISOString();
+  var headers = getSheetHeaders(sheet, entry);
+  var row = headers.map(function(header) {
+    if (JSON_FIELDS.indexOf(header) >= 0) return JSON.stringify(entry[header] || []);
+    return entry[header] !== undefined ? entry[header] : '';
+  });
+  sheet.appendRow(row);
+  return { success: true, message: 'Attendance saved' };
+}
+
+function getAttendanceToday() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet || sheet.getLastRow() < 2) return { success: true, data: [] };
+  var todayStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h) { return String(h); });
+  var typeCol = headers.indexOf('type');
+  var dateCol = headers.indexOf('date');
+  var records = [];
+  for (var i = 1; i < data.length; i++) {
+    if (typeCol >= 0 && String(data[i][typeCol]) === 'attendance') {
+      var rowDate = data[i][dateCol] instanceof Date
+        ? Utilities.formatDate(data[i][dateCol], Session.getScriptTimeZone(), 'yyyy-MM-dd')
+        : String(data[i][dateCol]).substring(0, 10);
+      if (rowDate === todayStr) {
+        var row = {};
+        for (var j = 0; j < headers.length; j++) {
+          var val = data[i][j];
+          if (NUMBER_FIELDS.indexOf(headers[j]) >= 0) val = Number(val) || 0;
+          row[headers[j]] = val;
+        }
+        records.push(row);
+      }
+    }
+  }
+  return { success: true, data: records };
 }
