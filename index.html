@@ -607,7 +607,7 @@ else if(/Mac/.test(ua))msg='<b>Mac:</b><br>1. Open in <b>Chrome</b><br>2. Click 
 else msg='Open this page in <b>Chrome</b> or <b>Edge</b> and look for the <b>install icon</b> in the address bar.';
 S.installMsg=msg;render()
 }
-var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],staffLogs:[],activityLogs:[],recipes:[],rawMatRecords:[],grnRecords:[],advOrders:[],prodOrderRecords:[],wastRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advItems:[],advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:'',ledgerShop:'all',ledgerDate:today(),ledgerView:'daily',ledgerPeriod:'thisMonth',ledgerFrom:'',ledgerTo:'',ledgerVendor:'',darkMode:localStorage.getItem('darkMode')==='1',histSearch:'',histFrom:'',histTo:'',histPage:0,ledgerSearch:'',wastItems:[],wastShop:0,wastRecords:[],employees:[],attendanceRecords:[],leaveRequests:[],shopLocations:[],salaryRecords:[],hrTab:0,empForm:{name:'',phone:'',role:'staff',shop:0,monthlySalary:0,annualLeave:12,status:'active'},empEditing:null,salMonth:today().substring(0,7),leaveForm:{empId:'',from:'',to:'',reason:'',type:'casual'},clockedIn:false,clockGps:null,clockSelfie:null,clockEmpId:'',clockStream:null,loginEmps:[],loginAttToday:[],loginAttLoading:false,loginSelEmp:'',loginShowAtt:false,attFilterDate:today()};
+var S={screen:'login',role:null,staffShop:-1,tab:0,shop:0,date:today(),records:[],staffLogs:[],activityLogs:[],recipes:[],rawMatRecords:[],grnRecords:[],advOrders:[],prodOrderRecords:[],wastRecords:[],loading:false,saving:false,oc:[0,0,0,0,0,0,0],cc:[0,0,0,0,0,0,0],upi:0,billed:0,walk:0,exps:[],goodsIn:[],prodOrders:[],rawMats:[],notes:'',pinShow:false,pinVal:'',pinErr:'',pinRole:'',connected:false,reportDate:today(),aShop:'all',rcpForm:{name:'',cat:'Baking',yield:'',yieldUnit:'pcs',prep:'',bake:'',temp:'',ings:[],steps:[''],notes:'',shelf:'',storage:''},rcpAdding:false,rcpView:-1,orderDate:today(),pShop:'all',pRange:'30',giType:'bill',cashRetained:0,ordShop:0,ordItems:[],grnShop:0,grnType:'bill',grnItems:[],advOrders:[],advDate:today(),advCust:'',advProd:'',advQty:'',advUnit:'pcs',advCat:'Baking',advNotes:'',advItems:[],advShop:0,installMsg:null,execRptPeriod:'thisMonth',execRptFrom:'',execRptTo:'',ledgerShop:'all',ledgerDate:today(),ledgerView:'daily',ledgerPeriod:'thisMonth',ledgerFrom:'',ledgerTo:'',ledgerVendor:'',darkMode:localStorage.getItem('darkMode')==='1',histSearch:'',histFrom:'',histTo:'',histPage:0,ledgerSearch:'',wastItems:[],wastShop:0,wastRecords:[],employees:[],attendanceRecords:[],leaveRequests:[],shopLocations:[],salaryRecords:[],hrTab:0,empForm:{name:'',phone:'',role:'staff',shop:0,monthlySalary:0,annualLeave:12,status:'active'},empEditing:null,salMonth:today().substring(0,7),leaveForm:{empId:'',from:'',to:'',reason:'',type:'casual'},clockedIn:false,clockGps:null,clockSelfie:null,clockEmpId:'',clockStream:null,loginEmps:[],loginAttToday:[],loginAttLoading:false,loginSelEmp:'',loginShowAtt:false,attFilterDate:today(),prodEditing:null,prodEditName:'',prodEditCat:'Baking',prodSearch:'',vendorEditing:null,vendorEditName:'',vendorSearch:''};
 
 function h(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
 
@@ -781,7 +781,7 @@ function renderApp(){
   var isO=S.role==='owner',isP=S.role==='production',isS=S.role==='staff',isOrd=S.role==='ordering',isHR=S.role==='hr';
   var roleLabel=isO?'Owner':isP?'Production':isOrd?'Ordering':isHR?'HR':(S.staffShop===0?'Highway Branch':'Mainroad Branch');
   var tabs;
-  if(isO)tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83C\uDFED Production','\uD83D\uDCD1 Report','\uD83D\uDCCA Dashboard','\uD83E\uDDE0 Analytics','\uD83D\uDCDA Ledger','\uD83D\uDCD6 Recipes','\uD83D\uDCE6 Orders','\uD83D\uDDD1 Wastage','\uD83D\uDC65 HR','\u2699\uFE0F Settings'];
+  if(isO)tabs=['\uD83D\uDCDD Entry','\uD83D\uDCCB History','\uD83C\uDFED Production','\uD83D\uDCD1 Report','\uD83D\uDCCA Dashboard','\uD83E\uDDE0 Analytics','\uD83D\uDCDA Ledger','\uD83D\uDCD6 Recipes','\uD83D\uDCE6 Orders','\uD83D\uDDD1 Wastage','\uD83D\uDC65 HR','\uD83C\uDF82 Products','\u2699\uFE0F Settings'];
   else if(isHR)tabs=['\uD83D\uDC65 Staff','\u23F0 Attendance','\uD83D\uDCB0 Salary','\uD83C\uDFD6 Leave'];
   else if(isP)tabs=['\uD83D\uDCE6 Orders','\uD83E\uDDF1 Raw Materials','\uD83D\uDCD6 Recipes','\uD83D\uDDD1 Wastage'];
   else if(isOrd)tabs=['\uD83D\uDCE6 Place Order','\uD83D\uDCE5 Goods Inward','\uD83D\uDCCB Customer Orders','\uD83D\uDCCB Order History','\uD83D\uDDD1 Wastage'];
@@ -801,7 +801,8 @@ function renderApp(){
     else if(S.tab===8)body+=renderUnifiedOrders();
     else if(S.tab===9)body+=renderWastage();
     else if(S.tab===10)body+=renderHR();
-    else if(S.tab===11)body+=renderSettings();
+    else if(S.tab===11)body+=renderProducts();
+    else if(S.tab===12)body+=renderSettings();
   }else if(isHR){
     if(S.tab===0){S.hrTab=0;body+=renderHR()}
     else if(S.tab===1){S.hrTab=1;body+=renderHR()}
@@ -1535,6 +1536,62 @@ function generateVendorHistoryReport(){
   html+='<div class="footer">CONFIDENTIAL \u2014 For Internal Use Only<br>Akshay Bakery \u2022 Vendor Statement: '+S.ledgerVendor+' \u2022 '+genDate+'</div></div></body></html>';
   var w=window.open('','_blank');if(!w){toast('Please allow pop-ups');return}w.document.write(html);w.document.close();
 }
+function renderVendorDirectory(){
+  var known=syncKnownNames();var vendors=known.vendors;
+  var out='<div class="card"><div class="ch"><div class="ci a">\uD83C\uDFEA</div><div><div class="ct">Vendor Directory</div><div class="cs">'+vendors.length+' vendors</div></div></div>';
+  // Add/Edit form
+  out+='<div style="display:flex;gap:8px;margin-bottom:12px"><input class="fi" id="vendorNameInp" placeholder="Vendor name" style="flex:1" value="'+(S.vendorEditName||'')+'"><button class="save-btn" id="saveVendorBtn" style="padding:8px 16px;white-space:nowrap">'+(S.vendorEditing?'\u2705 Update':'\u2795 Add')+'</button></div>';
+  if(S.vendorEditing)out+='<div style="margin-bottom:10px"><button class="ab" id="cancelVendorEdit" style="font-size:11px;padding:3px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs)">Cancel Edit</button></div>';
+  // Search
+  out+='<div style="margin-bottom:10px"><input class="fi" id="vendorSearchInp" placeholder="\uD83D\uDD0D Search vendors..." value="'+(S.vendorSearch||'')+'"></div>';
+  // Vendor list
+  var q=(S.vendorSearch||'').toLowerCase();
+  var filtered=vendors.filter(function(v){return!q||v.toLowerCase().indexOf(q)>=0});
+  if(!filtered.length)out+='<div class="es">No vendors found.</div>';
+  out+='<div class="il">';
+  for(var i=0;i<filtered.length;i++){
+    var v=filtered[i];
+    // Count transactions for this vendor
+    var txCount=0;
+    for(var r=0;r<S.records.length;r++){
+      var gi=S.records[r].goodsInward||[];for(var g=0;g<gi.length;g++){if(gi[g].vendor===v)txCount++}
+      var ex=S.records[r].expenses||[];for(var g=0;g<ex.length;g++){if(ex[g].category==='Vendor Payment'&&ex[g].description===v)txCount++}
+    }
+    out+='<div class="ir"><div style="flex:1"><div class="in">'+esc(v)+'</div>';
+    if(txCount)out+='<div class="ic">'+txCount+' transaction'+(txCount>1?'s':'')+'</div>';
+    out+='</div>';
+    out+='<div style="display:flex;gap:4px"><button class="ab a" data-editvendor="'+esc(v)+'" style="font-size:10px;padding:2px 8px;border-radius:var(--rs)">\u270E</button>';
+    out+='<button class="ab" data-delvendor="'+esc(v)+'" style="font-size:10px;padding:2px 8px;border-radius:var(--rs);background:var(--rl);color:var(--rose)">\u2716</button></div></div>';
+  }
+  out+='</div></div>';
+  out+='<div class="ins"><div class="inst">\uD83D\uDCA1 How Vendors Work</div><div class="insi">\uD83C\uDFEA Vendors added here appear in <strong>autocomplete</strong> for goods inward and vendor payments.</div><div class="insi">\uD83D\uDCE6 Vendors from existing entries are <strong>auto-synced</strong> to this list.</div><div class="insi">\u270E Edit to rename \u2014 note: only updates the name in autocomplete, not in past records.</div></div>';
+  return out;
+}
+function renderProducts(){
+  var prods=syncProductNames();
+  var out='<div class="card"><div class="ch"><div class="ci g">\uD83C\uDF82</div><div><div class="ct">Product Directory</div><div class="cs">'+prods.length+' products</div></div></div>';
+  // Add/Edit form
+  out+='<div style="display:flex;gap:8px;margin-bottom:12px"><input class="fi" id="prodNameInp" placeholder="Product name" style="flex:1" value="'+(S.prodEditName||'')+'"><select class="fi" id="prodCatInp" style="width:auto">';
+  for(var c=0;c<PCATS.length;c++)out+='<option'+(S.prodEditCat===PCATS[c]?' selected':'')+'>'+PCATS[c]+'</option>';
+  out+='</select><button class="save-btn" id="saveProdBtn" style="padding:8px 16px;white-space:nowrap">'+(S.prodEditing?'\u2705 Update':'\u2795 Add')+'</button></div>';
+  if(S.prodEditing)out+='<div style="margin-bottom:10px"><button class="ab" id="cancelProdEdit" style="font-size:11px;padding:3px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs)">Cancel Edit</button></div>';
+  // Search
+  out+='<div style="margin-bottom:10px"><input class="fi" id="prodSearchInp" placeholder="\uD83D\uDD0D Search products..." value="'+(S.prodSearch||'')+'"></div>';
+  // Product list
+  var q=(S.prodSearch||'').toLowerCase();
+  var filtered=prods.filter(function(p){return!q||p.toLowerCase().indexOf(q)>=0});
+  if(!filtered.length)out+='<div class="es">No products found.</div>';
+  out+='<div class="il">';
+  for(var i=0;i<filtered.length;i++){
+    var p=filtered[i];
+    out+='<div class="ir"><div style="flex:1"><div class="in">'+esc(p)+'</div></div>';
+    out+='<div style="display:flex;gap:4px"><button class="ab a" data-editprod="'+esc(p)+'" style="font-size:10px;padding:2px 8px;border-radius:var(--rs)">\u270E</button>';
+    out+='<button class="ab" data-delprod="'+esc(p)+'" style="font-size:10px;padding:2px 8px;border-radius:var(--rs);background:var(--rl);color:var(--rose)">\u2716</button></div></div>';
+  }
+  out+='</div></div>';
+  out+='<div class="ins"><div class="inst">\uD83D\uDCA1 How Products Work</div><div class="insi">\uD83C\uDF82 Products added here appear in <strong>ordering autocomplete</strong> across the app.</div><div class="insi">\uD83D\uDCE6 Products used in orders are <strong>auto-synced</strong> to this list.</div><div class="insi">\u270E Edit to rename a product \u2014 updates the name in autocomplete.</div></div>';
+  return out;
+}
 function renderVendors(){
   var shopF=S.ledgerShop;
   var shopMatch=function(sh){return shopF==='all'||sh==shopF};
@@ -1543,9 +1600,10 @@ function renderVendors(){
   var out='<div class="biz-shop-toggle" style="margin-bottom:8px"><button class="biz-shop-btn'+(shopF==='all'?' on':'')+'" data-ledgershop="all">\uD83C\uDFE2 All Shops</button><button class="biz-shop-btn'+(shopF===0?' on':'')+'" data-ledgershop="0">\uD83D\uDE80 Highway</button><button class="biz-shop-btn'+(shopF===1?' on':'')+'" data-ledgershop="1">\uD83D\uDEE3\uFE0F Mainroad</button></div>';
 
   var v=S.ledgerView;
-  out+='<div class="ldg-view-toggle"><button class="ldg-view-btn'+(v==='daily'?' on':'')+'" data-ldgview="daily">\uD83D\uDCC5 Daily</button><button class="ldg-view-btn'+(v==='summary'?' on':'')+'" data-ldgview="summary">\uD83D\uDCCA Summary</button><button class="ldg-view-btn'+(v==='vendor'?' on':'')+'" data-ldgview="vendor">\uD83C\uDFEA Vendor</button></div>';
+  out+='<div class="ldg-view-toggle"><button class="ldg-view-btn'+(v==='daily'?' on':'')+'" data-ldgview="daily">\uD83D\uDCC5 Daily</button><button class="ldg-view-btn'+(v==='summary'?' on':'')+'" data-ldgview="summary">\uD83D\uDCCA Summary</button><button class="ldg-view-btn'+(v==='vendor'?' on':'')+'" data-ldgview="vendor">\uD83C\uDFEA Vendor</button><button class="ldg-view-btn'+(v==='directory'?' on':'')+'" data-ldgview="directory">\uD83D\uDCCB Directory</button></div>';
 
-  if(v==='summary'){var vMap=ldgBuildVMap(shopMatch);out+=renderLedgerSummary(shopMatch,shopLabel,vMap)}
+  if(v==='directory'){out+=renderVendorDirectory()}
+  else if(v==='summary'){var vMap=ldgBuildVMap(shopMatch);out+=renderLedgerSummary(shopMatch,shopLabel,vMap)}
   else if(v==='vendor'){var vMap=ldgBuildVMap(shopMatch);out+=renderLedgerVendorHistory(shopMatch,shopLabel,vMap)}
   else{out+=renderLedgerDaily(shopMatch,shopLabel)}
 
@@ -4444,6 +4502,57 @@ function bindEvents(){
   document.querySelectorAll('[data-delshoploc]').forEach(function(b){b.onclick=function(){
     if(!confirm('Delete this shop location?'))return;
     callApi('delete',{id:b.dataset.delshoploc}).then(function(){toast('\u2705 Location deleted');return doFetch()}).catch(function(e){toast('\u274C '+e.message)})
+  }});
+
+  // Products tab
+  var saveProdB=document.getElementById('saveProdBtn');if(saveProdB)saveProdB.onclick=function(){
+    var inp=document.getElementById('prodNameInp');var name=(inp?inp.value:'').trim();
+    if(!name){toast('\u274C Enter product name');return}
+    name=name.replace(/\w\S*/g,function(t){return t.charAt(0).toUpperCase()+t.substr(1).toLowerCase()});
+    var arr=loadSavedProducts();
+    if(S.prodEditing){
+      var idx=arr.indexOf(S.prodEditing);if(idx>=0)arr.splice(idx,1);
+      if(arr.indexOf(name)===-1)arr.push(name);
+      arr.sort();saveProductNames(arr);
+      toast('\u2705 Product renamed');S.prodEditing=null;S.prodEditName='';
+    }else{
+      if(arr.indexOf(name)>=0){toast('\u26A0\uFE0F Product already exists');return}
+      arr.push(name);arr.sort();saveProductNames(arr);toast('\u2705 Product added');
+    }
+    render();
+  };
+  var cancelProdB=document.getElementById('cancelProdEdit');if(cancelProdB)cancelProdB.onclick=function(){S.prodEditing=null;S.prodEditName='';render()};
+  var prodSrch=document.getElementById('prodSearchInp');if(prodSrch)prodSrch.oninput=function(){S.prodSearch=prodSrch.value;render()};
+  document.querySelectorAll('[data-editprod]').forEach(function(b){b.onclick=function(){S.prodEditing=b.dataset.editprod;S.prodEditName=b.dataset.editprod;render();var inp=document.getElementById('prodNameInp');if(inp)inp.focus()}});
+  document.querySelectorAll('[data-delprod]').forEach(function(b){b.onclick=function(){
+    var name=b.dataset.delprod;if(!confirm('Delete product "'+name+'"?'))return;
+    var arr=loadSavedProducts();var idx=arr.indexOf(name);if(idx>=0){arr.splice(idx,1);saveProductNames(arr)}
+    toast('\u2705 Product deleted');render();
+  }});
+  // Vendor Directory
+  var saveVendorB=document.getElementById('saveVendorBtn');if(saveVendorB)saveVendorB.onclick=function(){
+    var inp=document.getElementById('vendorNameInp');var name=(inp?inp.value:'').trim();
+    if(!name){toast('\u274C Enter vendor name');return}
+    name=normalizeVendorName(name);
+    var saved=loadSavedNames();var vendors=saved.vendors;var staff=saved.staff;
+    if(S.vendorEditing){
+      var idx=vendors.indexOf(S.vendorEditing);if(idx>=0)vendors.splice(idx,1);
+      if(vendors.indexOf(name)===-1)vendors.push(name);
+      vendors.sort();saveNames(vendors,staff);
+      toast('\u2705 Vendor renamed');S.vendorEditing=null;S.vendorEditName='';
+    }else{
+      if(vendors.indexOf(name)>=0){toast('\u26A0\uFE0F Vendor already exists');return}
+      vendors.push(name);vendors.sort();saveNames(vendors,staff);toast('\u2705 Vendor added');
+    }
+    render();
+  };
+  var cancelVendorB=document.getElementById('cancelVendorEdit');if(cancelVendorB)cancelVendorB.onclick=function(){S.vendorEditing=null;S.vendorEditName='';render()};
+  var vendorSrch=document.getElementById('vendorSearchInp');if(vendorSrch)vendorSrch.oninput=function(){S.vendorSearch=vendorSrch.value;render()};
+  document.querySelectorAll('[data-editvendor]').forEach(function(b){b.onclick=function(){S.vendorEditing=b.dataset.editvendor;S.vendorEditName=b.dataset.editvendor;render();var inp=document.getElementById('vendorNameInp');if(inp)inp.focus()}});
+  document.querySelectorAll('[data-delvendor]').forEach(function(b){b.onclick=function(){
+    var name=b.dataset.delvendor;if(!confirm('Delete vendor "'+name+'"? This only removes from autocomplete, not from past records.'))return;
+    var saved=loadSavedNames();var vendors=saved.vendors;var idx=vendors.indexOf(name);if(idx>=0){vendors.splice(idx,1);saveNames(vendors,saved.staff)}
+    toast('\u2705 Vendor deleted');render();
   }});
 
   // Pull to refresh
