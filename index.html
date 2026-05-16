@@ -1586,9 +1586,10 @@ function renderOrderingEntry(){
   out+='<div style="margin-top:8px;text-align:right"><button class="ab g" id="addOrdItem">\uD83D\uDCE6 Add Item</button></div></div></div>';
   out+=prodDL;
 
-  // Save button
+  // Save & Print buttons
   if(totalItems){
     out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveOrdBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save '+SHOPS[S.ordShop]+' Order')+'</button>';
+    out+='<button class="save-btn" id="printCurrentOrderBtn" style="margin-top:8px;background:linear-gradient(135deg,#374151,#111827)">\uD83D\uDDA8 Print Order</button>';
   }
 
   // Saved orders for selected shop+date (from prodOrderRecords and daily records)
@@ -3606,6 +3607,9 @@ function bindEvents(){
     for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.shop==S.ordShop&&por.date===S.date){var po=por.productOrders||[];for(var j=0;j<po.length;j++)loaded.push(JSON.parse(JSON.stringify(po[j])))}}
     for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.shop==S.ordShop&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup=false;for(var k=0;k<loaded.length;k++){if(loaded[k].id===po[j].id){dup=true;break}}if(!dup)loaded.push(JSON.parse(JSON.stringify(po[j])))}}}
     if(loaded.length){S.ordItems=loaded;render();toast('\u270E Loaded '+loaded.length+' items for editing. Modify and save again.')}
+  };
+  var printCurOrdBtn=document.getElementById('printCurrentOrderBtn');if(printCurOrdBtn)printCurOrdBtn.onclick=function(){
+    if(S.ordItems.length)printShopOrder(S.ordShop,S.ordItems.map(function(o){return{order:o}}));else toast('No items to print');
   };
   var saveOrdBtn=document.getElementById('saveOrdBtn');if(saveOrdBtn)saveOrdBtn.onclick=function(){
     if(S.saving||!S.ordItems.length)return;S.saving=true;saveOrdBtn.textContent='\u23F3 Saving...';saveOrdBtn.className='save-btn off';
