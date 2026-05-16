@@ -1600,7 +1600,7 @@ function renderOrderingEntry(){
     for(var i=0;i<savedOrds.length;i++){var cat=savedOrds[i].order.category||'Baking';if(!sByCat[cat])sByCat[cat]=[];sByCat[cat].push(savedOrds[i])}
     var sTotalQty=0;for(var i=0;i<savedOrds.length;i++)sTotalQty+=savedOrds[i].order.qty||0;
     var sIcons={'Baking':'\uD83C\uDF5E','Oil Work':'\uD83C\uDF5F','Sweets':'\uD83C\uDF6C','Cream Cakes':'\uD83C\uDF82'};
-    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--green)"><div class="ch"><div class="ci g">\u2705</div><div><div class="ct">Saved Orders \u2022 '+SHOPS[S.ordShop]+'</div><div class="cs">'+savedOrds.length+' items \u2022 '+sTotalQty+' total qty \u2022 '+fmtD(S.date)+'</div></div><div style="margin-left:auto;display:flex;gap:6px"><button class="ab" id="editSavedOrds" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text2);cursor:pointer">\u270E Edit All</button>'+(savedOrdRecId?'<button class="ab" id="delSavedOrds" data-delordid="'+savedOrdRecId+'" style="font-size:11px;padding:5px 12px;border:1px solid var(--rose);border-radius:var(--rs);background:var(--card);color:var(--rose);cursor:pointer">\u00D7 All</button>':'')+'</div></div>';
+    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--green)"><div class="ch"><div class="ci g">\u2705</div><div><div class="ct">Saved Orders \u2022 '+SHOPS[S.ordShop]+'</div><div class="cs">'+savedOrds.length+' items \u2022 '+sTotalQty+' total qty \u2022 '+fmtD(S.date)+'</div></div><div style="margin-left:auto;display:flex;gap:6px"><button class="ab" id="printShopOrderBtn" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text2);cursor:pointer">\uD83D\uDDA8 Print</button><button class="ab" id="editSavedOrds" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text2);cursor:pointer">\u270E Edit All</button>'+(savedOrdRecId?'<button class="ab" id="delSavedOrds" data-delordid="'+savedOrdRecId+'" style="font-size:11px;padding:5px 12px;border:1px solid var(--rose);border-radius:var(--rs);background:var(--card);color:var(--rose);cursor:pointer">\u00D7 All</button>':'')+'</div></div>';
     for(var c=0;c<PCATS.length;c++){var cat=PCATS[c];var items=sByCat[cat]||[];if(!items.length)continue;
       out+='<div style="font-size:11px;font-weight:700;color:var(--text2);margin:8px 0 4px;text-transform:uppercase">'+(sIcons[cat]||'')+' '+cat+' ('+items.length+')</div>';
       for(var i=0;i<items.length;i++){var o=items[i].order;var editData=JSON.stringify({recId:items[i].recId,idx:items[i].idx,source:items[i].source,product:o.product,qty:o.qty,unit:o.unit,category:o.category,notes:o.notes||''}).replace(/'/g,'&#39;');out+='<div class="ir"><div><div class="in">'+esc(o.product)+'</div>'+(o.notes?'<div class="ic">'+esc(o.notes)+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+o.qty+' '+o.unit+'</div><button style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;cursor:pointer;color:var(--text2)" data-editsavedord=\''+editData+'\'>\u270E</button><button class="ix" data-delsavedord=\''+editData+'\'>\u00D7</button></div></div>'}}
@@ -1625,6 +1625,8 @@ function renderOrderingEntry(){
     out+='<button class="save-btn" id="shareDispatchWA" style="background:linear-gradient(135deg,#128C7E,#075E54)">\uD83D\uDE9A Share Dispatch Instructions via WhatsApp</button>';
     out+='<div style="display:flex;gap:8px"><button class="save-btn" id="shareOrderML" style="flex:1;background:linear-gradient(135deg,#6d28d9,#4c1d95);font-size:13px">\uD83C\uDF5E Order (Malayalam)</button>';
     out+='<button class="save-btn" id="shareDispatchML" style="flex:1;background:linear-gradient(135deg,#4c1d95,#3b0764);font-size:13px">\uD83D\uDE9A Dispatch (Malayalam)</button></div>';
+    out+='<div style="display:flex;gap:8px"><button class="save-btn" id="printOrderBtn" style="flex:1;background:linear-gradient(135deg,#374151,#111827);font-size:13px">\uD83D\uDDA8 Print Production Order</button>';
+    out+='<button class="save-btn" id="printDispatchBtn" style="flex:1;background:linear-gradient(135deg,#1f2937,#030712);font-size:13px">\uD83D\uDDA8 Print Dispatch</button></div>';
     out+='</div>';
   }else{
     out+='<div style="text-align:center;font-size:11px;color:var(--text3);padding:6px">\uD83D\uDD12 Save orders for both shops to unlock WhatsApp share</div>';
@@ -1644,6 +1646,141 @@ function getOrderData(){
   for(var i=0;i<orders0.length;i++){var o=orders0[i];var k=o.product;if(!prodMap[k])prodMap[k]={cat:o.category||'Baking',unit:o.unit||'pcs',s0:0,s1:0,notes:o.notes||''};prodMap[k].s0+=o.qty||0}
   for(var i=0;i<orders1.length;i++){var o=orders1[i];var k=o.product;if(!prodMap[k])prodMap[k]={cat:o.category||'Baking',unit:o.unit||'pcs',s0:0,s1:0,notes:o.notes||''};prodMap[k].s1+=o.qty||0}
   return prodMap;
+}
+
+// Thermal printer output (58mm/80mm receipt format)
+function printThermalOrder(type){
+  var prodMap=getOrderData();
+  var d=new Date(S.date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  var icons={'Baking':'Baking','Oil Work':'Oil Work','Sweets':'Sweets','Cream Cakes':'Cream Cakes'};
+  var totalQty=0,totalItems=0;
+  var rows=[];
+
+  if(type==='production'){
+    for(var c=0;c<PCATS.length;c++){
+      var cat=PCATS[c];
+      var catItems=[];for(var k in prodMap){if(prodMap[k].cat===cat)catItems.push({name:k,data:prodMap[k]})}
+      if(!catItems.length)continue;
+      rows.push({type:'catHeader',text:cat.toUpperCase()});
+      for(var i=0;i<catItems.length;i++){
+        var p=catItems[i],total=p.data.s0+p.data.s1;
+        rows.push({type:'item',name:p.name,qty:total,unit:p.data.unit,notes:p.data.notes||''});
+        totalQty+=total;totalItems++;
+      }
+    }
+  }else{
+    rows.push({type:'shopHeader',text:'HIGHWAY'});
+    for(var c=0;c<PCATS.length;c++){
+      var cat=PCATS[c];
+      var catItems=[];for(var k in prodMap){if(prodMap[k].cat===cat&&prodMap[k].s0>0)catItems.push({name:k,data:prodMap[k]})}
+      if(!catItems.length)continue;
+      rows.push({type:'catHeader',text:cat});
+      for(var i=0;i<catItems.length;i++){rows.push({type:'item',name:catItems[i].name,qty:catItems[i].data.s0,unit:catItems[i].data.unit,notes:''});totalQty+=catItems[i].data.s0;totalItems++}
+    }
+    rows.push({type:'shopHeader',text:'MAINROAD'});
+    for(var c=0;c<PCATS.length;c++){
+      var cat=PCATS[c];
+      var catItems=[];for(var k in prodMap){if(prodMap[k].cat===cat&&prodMap[k].s1>0)catItems.push({name:k,data:prodMap[k]})}
+      if(!catItems.length)continue;
+      rows.push({type:'catHeader',text:cat});
+      for(var i=0;i<catItems.length;i++){rows.push({type:'item',name:catItems[i].name,qty:catItems[i].data.s1,unit:catItems[i].data.unit,notes:''});totalQty+=catItems[i].data.s1;totalItems++}
+    }
+  }
+
+  var title=type==='production'?'PRODUCTION ORDER':'DISPATCH ORDER';
+  var time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Print Order</title><style>';
+  html+='@page{margin:2mm}';
+  html+='*{margin:0;padding:0;box-sizing:border-box}';
+  html+='body{font-family:"Courier New",monospace;font-size:12px;width:72mm;max-width:72mm;padding:2mm;color:#000}';
+  html+='.center{text-align:center}';
+  html+='.bold{font-weight:bold}';
+  html+='.title{font-size:14px;font-weight:bold;text-align:center;margin-bottom:2px}';
+  html+='.subtitle{font-size:11px;text-align:center;margin-bottom:4px}';
+  html+='.divider{border-top:1px dashed #000;margin:4px 0}';
+  html+='.cat-hdr{font-weight:bold;font-size:11px;background:#000;color:#fff;padding:2px 4px;margin:4px 0 2px}';
+  html+='.shop-hdr{font-weight:bold;font-size:13px;text-align:center;border:1px solid #000;padding:2px;margin:6px 0 2px}';
+  html+='.item-row{display:flex;justify-content:space-between;padding:1px 0;border-bottom:1px dotted #ccc}';
+  html+='.item-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:44mm}';
+  html+='.item-qty{font-weight:bold;text-align:right;white-space:nowrap;min-width:18mm}';
+  html+='.notes{font-size:9px;color:#555;padding-left:4px}';
+  html+='.total-row{display:flex;justify-content:space-between;font-weight:bold;font-size:13px;padding:4px 0}';
+  html+='.footer{font-size:9px;text-align:center;margin-top:6px;color:#555}';
+  html+='@media print{body{width:72mm}}';
+  html+='</style></head><body>';
+  html+='<div class="title">AKSHAY BAKERY</div>';
+  html+='<div class="subtitle">'+title+'</div>';
+  html+='<div class="subtitle">'+d+'</div>';
+  html+='<div class="divider"></div>';
+
+  for(var r=0;r<rows.length;r++){
+    var row=rows[r];
+    if(row.type==='catHeader')html+='<div class="cat-hdr">'+row.text+'</div>';
+    else if(row.type==='shopHeader')html+='<div class="shop-hdr">'+row.text+'</div>';
+    else if(row.type==='item'){html+='<div class="item-row"><span class="item-name">'+row.name+'</span><span class="item-qty">'+row.qty+' '+row.unit+'</span></div>';if(row.notes)html+='<div class="notes">'+row.notes+'</div>'}
+  }
+
+  html+='<div class="divider"></div>';
+  html+='<div class="total-row"><span>TOTAL</span><span>'+totalItems+' items, '+totalQty+' qty</span></div>';
+  html+='<div class="divider"></div>';
+  html+='<div class="footer">Printed: '+time+'</div>';
+  html+='<div class="footer" style="margin-top:8px">.</div>';
+  html+='</body></html>';
+
+  var win=window.open('','_blank','width=320,height=600');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){win.print()},300);
+}
+
+function printShopOrder(shop,orders){
+  var d=new Date(S.date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  var time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  var byCat={};for(var i=0;i<PCATS.length;i++)byCat[PCATS[i]]=[];
+  for(var i=0;i<orders.length;i++){var o=orders[i].order||orders[i];var cat=o.category||'Baking';if(!byCat[cat])byCat[cat]=[];byCat[cat].push(o)}
+  var totalQty=0,totalItems=orders.length;
+  for(var i=0;i<orders.length;i++)totalQty+=(orders[i].order||orders[i]).qty||0;
+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Print Order</title><style>';
+  html+='@page{margin:2mm}';
+  html+='*{margin:0;padding:0;box-sizing:border-box}';
+  html+='body{font-family:"Courier New",monospace;font-size:12px;width:72mm;max-width:72mm;padding:2mm;color:#000}';
+  html+='.center{text-align:center}';
+  html+='.title{font-size:14px;font-weight:bold;text-align:center;margin-bottom:2px}';
+  html+='.subtitle{font-size:11px;text-align:center;margin-bottom:4px}';
+  html+='.divider{border-top:1px dashed #000;margin:4px 0}';
+  html+='.cat-hdr{font-weight:bold;font-size:11px;background:#000;color:#fff;padding:2px 4px;margin:4px 0 2px}';
+  html+='.item-row{display:flex;justify-content:space-between;padding:1px 0;border-bottom:1px dotted #ccc}';
+  html+='.item-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:44mm}';
+  html+='.item-qty{font-weight:bold;text-align:right;white-space:nowrap;min-width:18mm}';
+  html+='.notes{font-size:9px;color:#555;padding-left:4px}';
+  html+='.total-row{display:flex;justify-content:space-between;font-weight:bold;font-size:13px;padding:4px 0}';
+  html+='.footer{font-size:9px;text-align:center;margin-top:6px;color:#555}';
+  html+='@media print{body{width:72mm}}';
+  html+='</style></head><body>';
+  html+='<div class="title">AKSHAY BAKERY</div>';
+  html+='<div class="subtitle">ORDER - '+SHOPS[shop].toUpperCase()+'</div>';
+  html+='<div class="subtitle">'+d+'</div>';
+  html+='<div class="divider"></div>';
+
+  for(var c=0;c<PCATS.length;c++){
+    var cat=PCATS[c];var items=byCat[cat]||[];if(!items.length)continue;
+    html+='<div class="cat-hdr">'+cat.toUpperCase()+'</div>';
+    for(var i=0;i<items.length;i++){var o=items[i];html+='<div class="item-row"><span class="item-name">'+o.product+'</span><span class="item-qty">'+o.qty+' '+o.unit+'</span></div>';if(o.notes)html+='<div class="notes">'+o.notes+'</div>'}
+  }
+
+  html+='<div class="divider"></div>';
+  html+='<div class="total-row"><span>TOTAL</span><span>'+totalItems+' items, '+totalQty+' qty</span></div>';
+  html+='<div class="divider"></div>';
+  html+='<div class="footer">Printed: '+time+'</div>';
+  html+='<div class="footer" style="margin-top:8px">.</div>';
+  html+='</body></html>';
+
+  var win=window.open('','_blank','width=320,height=600');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){win.print()},300);
 }
 
 // Malayalam translation map for common units and labels
@@ -3450,10 +3587,18 @@ function bindEvents(){
   var shareDispWA=document.getElementById('shareDispatchWA');if(shareDispWA)shareDispWA.onclick=function(){window.open('https://wa.me/?text='+encodeURIComponent(formatDispatchOrder('en')),'_blank')};
   var shareOrdML=document.getElementById('shareOrderML');if(shareOrdML)shareOrdML.onclick=function(){window.open('https://wa.me/?text='+encodeURIComponent(formatProductionOrder('ml')),'_blank')};
   var shareDispML=document.getElementById('shareDispatchML');if(shareDispML)shareDispML.onclick=function(){window.open('https://wa.me/?text='+encodeURIComponent(formatDispatchOrder('ml')),'_blank')};
+  var printOrdBtn=document.getElementById('printOrderBtn');if(printOrdBtn)printOrdBtn.onclick=function(){printThermalOrder('production')};
+  var printDispBtn=document.getElementById('printDispatchBtn');if(printDispBtn)printDispBtn.onclick=function(){printThermalOrder('dispatch')};
   var delSaved=document.getElementById('delSavedOrds');if(delSaved)delSaved.onclick=function(){
     if(!confirm('Delete this saved order?'))return;
     var id=delSaved.dataset.delordid;
     callApi('delete',{id:id}).then(function(){toast('Order deleted');return doFetch()}).catch(function(e){toast('\u274C '+e.message)})
+  };
+  var printShopBtn=document.getElementById('printShopOrderBtn');if(printShopBtn)printShopBtn.onclick=function(){
+    var orders=[];
+    for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.shop==S.ordShop&&por.date===S.date){var po=por.productOrders||[];for(var j=0;j<po.length;j++)orders.push({order:po[j]})}}
+    for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.shop==S.ordShop&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup=false;for(var k=0;k<orders.length;k++){if(orders[k].order.id===po[j].id){dup=true;break}}if(!dup)orders.push({order:po[j]})}}}
+    if(orders.length)printShopOrder(S.ordShop,orders);else toast('No saved orders to print');
   };
   var editSaved=document.getElementById('editSavedOrds');if(editSaved)editSaved.onclick=function(){
     // Load saved orders back into S.ordItems for editing
