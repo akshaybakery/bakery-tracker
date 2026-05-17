@@ -1889,7 +1889,8 @@ function renderUnifiedOrders(){
   out+='<div class="fr c3" style="margin-top:8px"><div class="fg"><div class="fl">Quantity</div><input class="fi" type="number" inputmode="numeric" id="uoQty" placeholder="0"></div><div class="fg"><div class="fl">Unit</div><select class="fi" id="uoUnit">'+PUNITS.map(function(u){return'<option>'+u+'</option>'}).join('')+'</select></div><div class="fg"><div class="fl">Notes</div><input class="fi" type="text" id="uoNotes" placeholder="Optional"></div></div>';
   out+='<div style="margin-top:8px;text-align:right"><button class="ab g" id="addUOItem">\uD83D\uDCE6 Add Order</button></div></div></div>';
   out+=prodDL;
-  if(totalItems)out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveUOBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save '+SHOPS[curShop]+' Order')+'</button>';
+  if(totalItems){out+='<button class="save-btn'+(S.saving?' off':'')+'" id="saveUOBtn">'+(S.saving?'\u23F3 Saving...':'\uD83D\uDCBE Save '+SHOPS[curShop]+' Order')+'</button>';
+    out+='<button class="save-btn" id="printUOBtn" style="margin-top:8px;background:linear-gradient(135deg,#374151,#111827)">\uD83D\uDDA8 Print Order</button>';}
 
   // Saved orders
   var savedOrds=[];
@@ -3635,6 +3636,10 @@ function bindEvents(){
   var uoDateInp=document.getElementById('uoDateInp');if(uoDateInp)uoDateInp.onchange=function(e){S.date=e.target.value;render()};
   var uoShopInp=document.getElementById('uoShopInp');if(uoShopInp)uoShopInp.onchange=function(e){S.ordShop=parseInt(e.target.value);render()};
   var addUOItem=document.getElementById('addUOItem');if(addUOItem)addUOItem.onclick=function(){var p=document.getElementById('uoProduct'),q=document.getElementById('uoQty'),u=document.getElementById('uoUnit'),c=document.getElementById('uoCat'),n=document.getElementById('uoNotes');var qty=parseInt(q.value)||0;if(!qty||!p.value){toast('\u274C Product and quantity required');return}S.ordItems.push({id:gid(),product:p.value,category:c.value,qty:qty,unit:u.value,notes:n.value||''});addProductName(p.value);render()};
+  var printUOBtn=document.getElementById('printUOBtn');if(printUOBtn)printUOBtn.onclick=function(){
+    var curShop=S.role==='staff'?S.shop:S.ordShop;
+    if(S.ordItems.length)printShopOrder(curShop,S.ordItems.map(function(o){return{order:o}}));else toast('No items to print');
+  };
   var saveUOBtn=document.getElementById('saveUOBtn');if(saveUOBtn)saveUOBtn.onclick=function(){
     if(S.saving||!S.ordItems.length)return;S.saving=true;saveUOBtn.textContent='\u23F3 Saving...';saveUOBtn.className='save-btn off';
     var curShop=S.role==='staff'?S.shop:S.ordShop;
