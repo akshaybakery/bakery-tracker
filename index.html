@@ -1900,7 +1900,7 @@ function renderUnifiedOrders(){
     var sByCat={};for(var i=0;i<PCATS.length;i++)sByCat[PCATS[i]]=[];
     for(var i=0;i<savedOrds.length;i++){var scat=savedOrds[i].order.category||'Baking';if(!sByCat[scat])sByCat[scat]=[];sByCat[scat].push(savedOrds[i])}
     var sTotalQty=0;for(var i=0;i<savedOrds.length;i++)sTotalQty+=savedOrds[i].order.qty||0;
-    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--green)"><div class="ch"><div class="ci g">\u2705</div><div><div class="ct">Saved Orders \u2022 '+SHOPS[curShop]+'</div><div class="cs">'+savedOrds.length+' items \u2022 '+sTotalQty+' total qty \u2022 '+fmtD(S.date)+'</div></div><div style="margin-left:auto"><button class="ab" id="editUOSaved" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text2);cursor:pointer">\u270E Edit All</button></div></div>';
+    out+='<div class="card" style="margin-top:12px;border-left:3px solid var(--green)"><div class="ch"><div class="ci g">\u2705</div><div><div class="ct">Saved Orders \u2022 '+SHOPS[curShop]+'</div><div class="cs">'+savedOrds.length+' items \u2022 '+sTotalQty+' total qty \u2022 '+fmtD(S.date)+'</div></div><div style="margin-left:auto;display:flex;gap:6px"><button class="ab" id="printUOSavedBtn" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text2);cursor:pointer">\uD83D\uDDA8 Print</button><button class="ab" id="editUOSaved" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--card);color:var(--text2);cursor:pointer">\u270E Edit All</button></div></div>';
     for(var c=0;c<PCATS.length;c++){var cat=PCATS[c];var sitems=sByCat[cat]||[];if(!sitems.length)continue;
       out+='<div style="font-size:11px;font-weight:700;color:var(--text2);margin:8px 0 4px;text-transform:uppercase">'+(icons[cat]||'')+' '+cat+' ('+sitems.length+')</div>';
       for(var i=0;i<sitems.length;i++){var o=sitems[i].order;var editData=JSON.stringify({recId:sitems[i].recId,idx:sitems[i].idx,source:sitems[i].source,product:o.product,qty:o.qty,unit:o.unit,category:o.category,notes:o.notes||''}).replace(/'/g,'&#39;');out+='<div class="ir"><div><div class="in">'+esc(o.product)+'</div>'+(o.notes?'<div class="ic">'+esc(o.notes)+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><div class="order-qty">'+o.qty+' '+o.unit+'</div><button style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;cursor:pointer;color:var(--text2)" data-editsavedord=\''+editData+'\'>\u270E</button><button class="ix" data-delsavedord=\''+editData+'\'>\u00D7</button></div></div>'}}
@@ -3659,6 +3659,12 @@ function bindEvents(){
     var entry={id:existingId||gid(),type:'productOrder',shop:curShop,date:S.date,productOrders:merged,savedAt:new Date().toISOString(),savedBy:S.role||(S.staffShop>=0?'staff':'unknown')};
     logActivity('save_product_order','Saved '+merged.length+' items for '+SHOPS[curShop]);
     callApi('save',{},entry).then(function(){toast('\u2705 Order saved!');S.ordItems=[];return doFetch()}).catch(function(e){toast('\u274C '+e.message)}).then(function(){S.saving=false;var b=document.getElementById('saveUOBtn');if(b){b.textContent='\uD83D\uDCBE Save Order';b.className='save-btn'}})
+  };
+  var printUOSavedBtn=document.getElementById('printUOSavedBtn');if(printUOSavedBtn)printUOSavedBtn.onclick=function(){
+    var curShop=S.role==='staff'?S.shop:S.ordShop;var orders=[];
+    for(var i=0;i<(S.prodOrderRecords||[]).length;i++){var por=S.prodOrderRecords[i];if(por.shop==curShop&&por.date===S.date){var po=por.productOrders||[];for(var j=0;j<po.length;j++)orders.push({order:po[j]})}}
+    for(var i=0;i<S.records.length;i++){var r=S.records[i];if(r.shop==curShop&&r.date===S.date){var po=r.productOrders||[];for(var j=0;j<po.length;j++){var dup=false;for(var k=0;k<orders.length;k++){if(orders[k].order.id===po[j].id){dup=true;break}}if(!dup)orders.push({order:po[j]})}}}
+    if(orders.length)printShopOrder(curShop,orders);else toast('No saved orders to print');
   };
   var editUOSaved=document.getElementById('editUOSaved');if(editUOSaved)editUOSaved.onclick=function(){
     var curShop=S.role==='staff'?S.shop:S.ordShop;var loaded=[];
